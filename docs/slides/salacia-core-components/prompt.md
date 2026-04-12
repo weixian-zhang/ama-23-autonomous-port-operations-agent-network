@@ -38,9 +38,12 @@ Salacia Edge Agents
 
 Edge Event Mesh A high-speed message hub enabling low-latency, event-driven communication between Cloud Agents and Edge Agents.
 
+🖥️ Salacia Hive The centralized Web UI command center for managing the entire Salacia platform.
+
 Salacia Nomad A mobile/tablet app (iOS & Android) for field operators. It provides a read-only digital twin view of the MetaRealm 3D Map and key operational modules (Berth, Crane, Fleet, Yard, Metallic Queen).
 
-🖥️ Salacia Hive The centralized Web UI command center for managing the entire Salacia platform.
+Microservices
+ * Alert service
 
 💬 MS Teams → Agent Gateway Enables human operators to use MS Teams chat to interact directly with agents, such as instructing the Fleet Market to dispatch equipment or handle a breakdown.
 
