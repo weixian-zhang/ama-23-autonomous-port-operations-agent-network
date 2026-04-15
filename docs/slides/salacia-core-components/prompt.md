@@ -1,8 +1,8 @@
 
 ## style guide
 
-color: Primary Palette (Monochromatic Lean): The image is dominated by cool tones to create a "clean," high-tech, and professional atmosphere.
-High-Contrast Accents: To prevent the image from looking flat, vibrant "pop" colors are used for containers - orange, red, yellow, and green.
+color: dominated by cool tones to create a "clean," high-tech, and professional atmosphere.
+High-Contrast Accents: To prevent the image from looking flat, vibrant "pop" colors.
 Style: The style is a clean, technical digital drawing with a futuristic sci-fi aesthetic. Labels with text in futuristic, semi-transparent UI callout boxes.
 resolution: 8k resolution, architectural concept art style.
 Atmosphere: Scientific, clinical, and innovative.
@@ -17,10 +17,11 @@ Salacia is a fake next generation AI powered terminal OS used in port. Below con
 ## tasks
 
 * Generate infographics for `core components`. Ensure each core component has a graphic to visually describe component
-* Do not include title 
+* Do not include title, and the words `frontend` and `backend`
 * Create futuristic and innovative graphics to best visually describe each core component
 * Special focus on metarealm 3d virtual world focus located in the center that connects everything 
-* Separation between front end and back end have section of space between them 
+* Separation between front end and back end have section of space between them
+* create AI Agent graphics for each cloud agents
 
 ## core components
 
@@ -35,7 +36,7 @@ frontend
 
  * MCP clients - enable external AI agents to use Salacia as AI tools
 
- * MS Teams - human operators can chat with Cloud Agents.
+ * Teams chatbots - human operators uses Teams chat with Cloud Agents.
 
 
 Salacia Gateway - The core communication channel between frontend and backend components.
@@ -51,13 +52,22 @@ Backend components
     * Crane Auctioneer Agent: Dynamically allocates cranes to vessels and assigns specific container-move jobs to operators. Fully queryable via chat.
     * Fleet Market: An internal marketplace that dispatches AGVs and reach stackers. Supports chat queries for real-time positioning, status, and manual dispatch overrides.
     * Yard King: Optimizes yard storage by creating allocation plans and assigning precise drop-off locations to vehicles. Fully queryable via chat.
-    * Metallic Queen: Monitors the real-time health and telemetry of all cranes, AGVs, and reachers. Fully queryable via chat.
- * Salacia Wisdom - A agent skills hub that equips Cloud Agents with domain-specific workflows to handle specialized tasks.
+    * Guardian: Monitors the real-time health and telemetry of all cranes, AGVs, and reachers. Fully queryable via chat.
+
+ * Services
+    * Salacia Wisdom - A agent skills hub that equips Cloud and Edge Agents with domain-specific workflows to handle specialized tasks.
+        * skills e.g:
+            * Edge Agent can download new agent skill to manage new vehicle telemetry and features
+            * Metallic Queen download new agent skill to monitor new vehicle type
+     * Salacia MCP Server - expose Salacia features as AI tools to external AI agents
+     * Alert microservice - Guardian sends alerts to Teams on vehicle breakdown
+     * Human-Behavior Detection microservice - detects crane operator 
+     TOS Adapter microservice - interfaces with existing Terminal OS
 
 
  * Edge Event Mesh A high-speed message hub enabling low-latency, event-driven communication between Cloud Agents and Edge Agents.
 
- * Salacia MCP Server - expose Salacia features as AI tools to external AI agents
+
 
  * IoT Device Management (via Azure IoT Hub) Handles the secure onboarding, authentication, and patching of all hardware control devices (Cranes, AGVs, Reachers).
 
