@@ -18,6 +18,7 @@ Salacia is a fake next generation AI powered terminal OS used in port. Below con
 
 * Generate infographics for `core components`. Ensure each core component has a graphic to visually describe component
 * Do not include title, and the words `frontend` and `backend`
+* shorten description of component if necessary to squeeze into infographics
 * Create futuristic and innovative graphics to best visually describe each core component
 * Special focus on metarealm 3d virtual world focus located in the center that connects everything 
 * Separation between front end and back end have section of space between them
@@ -28,9 +29,18 @@ Salacia is a fake next generation AI powered terminal OS used in port. Below con
 
 frontend
  * Salacia Edge Agents
-    • Crane Edge Agent
-    • AGV Edge Agent
-    • Stack Reacher Edge Agent
+        Crane Edge Agent
+            ○ Bidding: Competes for crane-to-bay and container-move jobs auctioned by the Crane Auctioneer.
+            ○ Safety: Streams crane operator images to detect fatigue or distress in real time.
+            ○ Telemetry: Continuously reports crane health and performance data to the Health Guardian.
+        
+        AGV Edge Agent
+            ○ Bidding: Competes for transport jobs auctioned by the Fleet Market Agent.
+            ○ Telemetry: Continuously reports AGV health and performance data to the Health Guardian.
+            
+        Stacker Edge Agent
+            ○ Bidding: Competes for transport jobs auctioned by the Fleet Market Agent.
+    Telemetry: Continuously reports stacker health and performance data to the Health Guardian.
 
  * Salacia Nomad A mobile/tablet app (iOS & Android) for field operators. It provides a read-only digital twin view of the MetaRealm 3D Map and key operational modules (Berth, Crane, Fleet, Yard, Metallic Queen).
 
@@ -46,13 +56,39 @@ Backend components
 
 * Salacia MetaRealm A live 3D digital twin VR environment of the entire port—including vessels, yard, equipment, and personnel.
 
-* Salacia Cloud Agents (The Intelligence Layer)
-    * Berth Planner Agent: Automatically assigns vessels to berths and creates scheduling plans. Fully queryable via chat.
-        * Vessel Arrival Oracle Agent - ombines XGBoost predictions of historical vessel arrival data with live weather feeds to accurately predicts vessel arrtival time 
-    * Crane Auctioneer Agent: Dynamically allocates cranes to vessels and assigns specific container-move jobs to operators. Fully queryable via chat.
-    * Fleet Market: An internal marketplace that dispatches AGVs and reach stackers. Supports chat queries for real-time positioning, status, and manual dispatch overrides.
-    * Yard King: Optimizes yard storage by creating allocation plans and assigning precise drop-off locations to vehicles. Fully queryable via chat.
-    * Guardian: Monitors the real-time health and telemetry of all cranes, AGVs, and reachers. Fully queryable via chat.
+* Salacia Cloud Agents
+        Apex Planner Agent
+        Role: The Master Conductor
+            * Function: Implements the Supervisor design pattern - Orchestrates the Berth Planner, Crane Auctioneer, and Yard King agents to produce and continuously refine vessel-to-berth, crane-to-bay, and yard allocation plans.
+            * Impact: One command hub that keeps berth, crane, and yard plans in sync, from vessel arrival to final container placement.
+        
+        Vessel Arrival Oracle Agent
+        Role: The Predictive Strategist.
+            * Intelligence: Combines XGBoost ML for ETA forecasting with GenAI to reason over external factors (e.g., weather warnings or captain risk profiles).
+            * Impact: Refines raw data into high-confidence, context-aware arrival predictions.
+            
+        Berth Planner Agent
+        Role: The Docking Coordinator.
+            * Function: Consults the Oracle Agent for arrival certainties to dynamically create or adjust vessel-to-berth schedules.
+            * Impact: Ensures optimal dock utilization based on real-time intelligence.
+            
+        Crane Auctioneer Agent
+            * Workflow: Uses a Cognitive Bidding Pattern to auction jobs to cranes.
+            * Optimization: Monitors container-move telemetry; if performance lags, it automatically auctions additional crane assignments to maintain the schedule.
+            
+        Fleet Market Agent
+        Role: The Logistics Broker.
+            * Operation: Awards transport jobs to AGVs and stackers via Market Auctioning.
+            * Visibility: Syncs with MetaRealm for equipment telemetry and coordinates with the Yard King for precise container positioning.
+            
+        Yard King
+        Role: The Spatial Strategist.
+            * Function: Generates the Yard Allocation Plan by simulating "what-if" scenarios based on stowage data and yard maps.
+            * Execution: Requests heavy machinery from the Fleet Market Agent to execute yard moves.
+            
+        Health Guardian
+            * Monitoring: Tracks the mechanical health and status of all hardware (Cranes, AGVs, Stackers).
+            * Alerting: Proactively broadcasts breakdown notifications and maintenance alerts to Teams channels
 
  * Services
     * Salacia Wisdom - A agent skills hub that equips Cloud and Edge Agents with domain-specific workflows to handle specialized tasks.
