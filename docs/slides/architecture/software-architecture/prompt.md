@@ -1,11 +1,10 @@
 ## style guide
 
-color: Primary Palette (Monochromatic Lean): The image is dominated by cool tones to create a "clean," high-tech, and professional atmosphere.
-Style: The style is a clean, technical digital drawing with a futuristic sci-fi aesthetic. Labels with text in futuristic, semi-transparent UI callout boxes.
+color: dominated by cool tones to create a clean high-tech, and professional atmosphere.
+Style: The style is a clean, technical digital drawing.
 resolution: 8k resolution, architectural concept art style.
 Atmosphere: Scientific, clinical, and innovative.
 Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
-Lighting: Bright, high-key, and sterile.
 Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 
 ## context
@@ -15,7 +14,9 @@ attached Image is a software architecture diagram
 
 ## tasks
 
-* Generate infographics for Salacia software architecture diagram.
+* use attached Image is a software architecture diagram to create infographics for Salacia software architecture diagram.
+* free to rearrange things inside the software architecture diagram.
+* free to add product icons to diagram
 * Ensure diagram is easy to understand and sections are well separated.
-* each core component has a graphic to visually describe component. free to replace existing icon in diagram with most appropriate ones. Use actual product logo or icon if need to.
+* free to replace existing icon in diagram with most appropriate ones. Use actual product logo or icon if need to.
 * Do not include title 
