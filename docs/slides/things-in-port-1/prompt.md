@@ -19,10 +19,11 @@ Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 
 ## Things in port
 
-1. Vessel Stowage Plan – detailed vessel bay‑row‑tier layout (bay‑row‑tier)
-2. Vessel‑to‑Berth Plan – shows which vessel docks at which berth. show each berth contains 2-3 quay cranes
-3. crane-to-bay plan - shows multiple quat cranes carefully assigned to different bays of a vessel
-4. AGV – automated guided vehicles (AGV) moveing containers from berth to yard automatically
-5. Reach Stackers – lifts container from AGV and stacks it on assigned yard location 
+1. vessel automatic identification system - a mandatory maritime tracking system that uses VHF radio transceivers to broadcast a vessel's identity, position, speed, and course to other ships and coastal authorities
+2. Vessel Stowage Plan – detailed vessel bay‑row‑tier layout (bay‑row‑tier)
+3. Vessel‑to‑Berth Plan – shows which vessel docks at which berth. show each berth contains 2-3 quay cranes
+4. crane-to-bay plan - shows multiple quat cranes carefully assigned to different bays of a vessel
+5. AGV – automated guided vehicles (AGV) moveing containers from berth to yard automatically
+6. Reach Stackers – lifts container from AGV and stacks it on assigned yard location 
 
 
