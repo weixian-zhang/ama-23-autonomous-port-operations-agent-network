@@ -1,7 +1,8 @@
 
 ## style guide
 
-* whiteboardhand hand sketch, clean and neat
+* artist hand sketch, cartoonish on paper
+* ensure infographics take up full space and is large and visible
 * resolution: 8k resolution. Text must be clearly visible and readable
 * no line border for all boxes
 * no grid lines

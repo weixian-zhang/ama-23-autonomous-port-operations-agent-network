@@ -7,11 +7,11 @@ Style: The style is a clean, technical digital drawing with a futuristic sci-fi
 Atmosphere: Scientific, clinical, and innovative.
 Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
 Lighting: Bright, high-key, and sterile.
-Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
+Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 
 ## tasks
 
-* Generate the infographic for each steps of the import and export container flow with graphics to describe each of the steps 
+* create the infographic for each steps of the import and export container flow with graphics to describe each of the steps 
 * Do not include title
 
 ## Import export flow steps

@@ -1,10 +1,10 @@
 
 ## style guide
 
-color: dominated by cool tones to create a "clean," high-tech, and professional atmosphere.
+color: dominated by cool tones to create a clean high-tech, and professional atmosphere.
 High-Contrast Accents: To prevent the image from looking flat, vibrant "pop" colors.
-Style: The style is a clean, technical digital drawing with a futuristic sci-fi aesthetic. Labels with text in futuristic, semi-transparent UI callout boxes.
-resolution: 8k resolution, architectural concept art style.
+Style: The style is a clean, technical digital drawing. Labels with text in futuristic, semi-transparent UI callout boxes.
+resolution: widescreen 16:9, 8k resolution, architectural concept art style.
 Atmosphere: Scientific, clinical, and innovative.
 Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
 Lighting: Bright, high-key, and sterile.
@@ -57,9 +57,10 @@ Backend components
 * Salacia MetaRealm A live 3D digital twin VR environment of the entire port—including vessels, yard, equipment, and personnel.
 
 * Salacia Cloud Agents
+
         Apex Planner Agent
-        Role: The Master Conductor
-            * Function: Implements the Supervisor design pattern - Orchestrates the Berth Planner, Crane Auctioneer, and Yard King agents to produce and continuously refine vessel-to-berth, crane-to-bay, and yard allocation plans.
+        Role: The Master Planner
+            * Function: planning Supervisor that orchestrates Berth Planner, Crane Auctioneer, and Yard King agents to produce and continuously refine vessel-to-berth, crane-to-bay, and yard allocation plans.
             * Impact: One command hub that keeps berth, crane, and yard plans in sync, from vessel arrival to final container placement.
         
         Vessel Arrival Oracle Agent
@@ -102,8 +103,6 @@ Backend components
 
 
  * Edge Event Mesh A high-speed message hub enabling low-latency, event-driven communication between Cloud Agents and Edge Agents.
-
-
 
  * IoT Device Management (via Azure IoT Hub) Handles the secure onboarding, authentication, and patching of all hardware control devices (Cranes, AGVs, Reachers).
 
