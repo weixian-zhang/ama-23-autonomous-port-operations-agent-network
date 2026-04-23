@@ -8,6 +8,7 @@ import { BerthLocations } from './BerthLocations'
 import { YardLocations } from './YardLocations'
 import { Cranes } from './Cranes'
 import { Stackers } from './Stackers'
+import { Berth5Animation } from './Berth5Animation'
 
 function KeyboardMovement({ speed = 45 }: { speed?: number }) {
   const { camera } = useThree()
@@ -61,6 +62,7 @@ export function MetaRealm() {
           <YardLocations />
           <Cranes />
           <Stackers />
+          <Berth5Animation />
         </group>
       </Suspense>
       <PointerLockControls />
