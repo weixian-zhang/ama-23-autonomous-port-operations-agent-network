@@ -4,7 +4,9 @@ import { Suspense, useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { PortTerrain } from './PortTerrain'
 import { Agv } from './Agv'
-import { BerthLabels } from './BerthLabels'
+import { BerthLocations } from './BerthLocations'
+import { YardLocations } from './YardLocations'
+import { Cranes } from './Cranes'
 
 function KeyboardMovement({ speed = 45 }: { speed?: number }) {
   const { camera } = useThree()
@@ -54,11 +56,13 @@ export function MetaRealm() {
         <group>
           <PortTerrain />
           <Agv />
-          <BerthLabels />
+          <BerthLocations />
+          <YardLocations />
+          <Cranes />
         </group>
       </Suspense>
       <PointerLockControls />
-      <KeyboardMovement speed={45} />
+      <KeyboardMovement speed={55} />
     </Canvas>
   )
 }
