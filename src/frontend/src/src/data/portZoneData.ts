@@ -61,26 +61,6 @@ export function placeContainer(zoneId: number, row: number, col: number, contain
   return null // stack full
 }
 
-export function removeContainer(zoneId: number, row: number, col: number): string | null {
-  const zone = PORT_ZONES.find((z) => z.id === zoneId)
-  if (!zone) return null
-
-  // Remove topmost container
-  for (let t = zone.yardGrid.tiers - 1; t >= 0; t--) {
-    const key = cellKey(zoneId, row, col, t)
-    const id = yardOccupancy.get(key)
-    if (id) {
-      yardOccupancy.delete(key)
-      return id
-    }
-  }
-  return null
-}
-
-export function getContainerAt(zoneId: number, row: number, col: number, tier: number): string | null {
-  return yardOccupancy.get(cellKey(zoneId, row, col, tier)) ?? null
-}
-
 export function getStackHeight(zoneId: number, row: number, col: number): number {
   const zone = PORT_ZONES.find((z) => z.id === zoneId)
   if (!zone) return 0
@@ -88,6 +68,63 @@ export function getStackHeight(zoneId: number, row: number, col: number): number
     if (yardOccupancy.has(cellKey(zoneId, row, col, t))) return t + 1
   }
   return 0
+}
+
+export function isYardFull(zoneId: number): boolean {
+  const zone = PORT_ZONES.find((z) => z.id === zoneId)
+  if (!zone) return true
+  const { rows, cols, tiers } = zone.yardGrid
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      for (let t = 0; t < tiers; t++) {
+        if (!yardOccupancy.has(cellKey(zoneId, r, c, t))) return false
+      }
+    }
+  }
+  return true
+}
+
+export function findNextAvailableSlots(zoneId: number, count: number): ({ row: number; col: number } | null)[] {
+  const zone = PORT_ZONES.find((z) => z.id === zoneId)
+  if (!zone) return Array(count).fill(null)
+  const { rows, cols, tiers } = zone.yardGrid
+
+  // Build list of all cells with their current height
+  const cells: { row: number; col: number; height: number }[] = []
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      const h = getStackHeight(zoneId, r, c)
+      if (h < tiers) cells.push({ row: r, col: c, height: h })
+    }
+  }
+  // Sort by height ascending — spread across cells before stacking
+  cells.sort((a, b) => a.height - b.height)
+
+  const results: ({ row: number; col: number } | null)[] = []
+  const used = new Set<number>() // indices into cells already picked this batch
+  for (let n = 0; n < count; n++) {
+    let picked = false
+    for (let ci = 0; ci < cells.length; ci++) {
+      if (!used.has(ci)) {
+        results.push({ row: cells[ci].row, col: cells[ci].col })
+        used.add(ci)
+        picked = true
+        break
+      }
+    }
+    if (!picked) results.push(null)
+  }
+  return results
+}
+
+export function clearZoneContainers(zoneId: number): void {
+  const keysToDelete: string[] = []
+  for (const key of yardOccupancy.keys()) {
+    if (key.startsWith(`${zoneId}-`)) keysToDelete.push(key)
+  }
+  for (const key of keysToDelete) {
+    yardOccupancy.delete(key)
+  }
 }
 
 const YARD_GRID_DEFAULTS: Omit<YardGrid, 'origin'> = {
