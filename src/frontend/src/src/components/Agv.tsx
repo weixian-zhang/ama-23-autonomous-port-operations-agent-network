@@ -1,48 +1,58 @@
-import { useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
-import { useEffect, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
+import { BERTHS } from '../data/berthData'
+
+const AGV_SCALE = 10
+const AGVS_PER_BERTH = 5
+const BERTH_Z_HALF_RANGE = 100
+const AGV_X_MIN = -25
+const AGV_X_MAX = 50
+const AGV_Y = 0.76
+
+function seededRandom(seed: number) {
+  const x = Math.sin(seed) * 10000
+  return x - Math.floor(x)
+}
 
 export function Agv() {
   const { scene } = useGLTF('/blender-asset/agv.glb')
-  const { scene: rootScene } = useThree()
-  const groupRef = useRef<THREE.Group>(null)
-  const scale = 10
+  const agvRefs = useRef<Map<string, THREE.Group>>(new Map())
 
-  useEffect(() => {
-    if (!groupRef.current) return
-
-    // Cast a ray downward from above the QuayRoad (x=-25, z=0) to find road surface
-    const raycaster = new THREE.Raycaster()
-    const origin = new THREE.Vector3(-25, 100, 0)
-    const direction = new THREE.Vector3(0, -1, 0)
-    raycaster.set(origin, direction)
-
-    // Only collect road meshes — exclude floating labels, berth signs, etc.
-    const roadMeshes: THREE.Mesh[] = []
-    rootScene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        const name = child.name.toLowerCase()
-        const parentName = child.parent?.name?.toLowerCase() ?? ''
-        if (name.includes('road') || parentName.includes('road')) {
-          roadMeshes.push(child)
-        }
+  const agvPositions = useMemo(() => {
+    const positions: { name: string; position: [number, number, number] }[] = []
+    BERTHS.forEach((berth) => {
+      for (let i = 0; i < AGVS_PER_BERTH; i++) {
+        const seed = berth.id * 100 + i
+        const x = AGV_X_MIN + seededRandom(seed) * (AGV_X_MAX - AGV_X_MIN)
+        const z = berth.road[2] - BERTH_Z_HALF_RANGE + seededRandom(seed + 1) * BERTH_Z_HALF_RANGE * 2
+        positions.push({
+          name: `agv-berth-${berth.id}-${i}`,
+          position: [x, AGV_Y, z],
+        })
       }
     })
-
-    const intersects = raycaster.intersectObjects(roadMeshes, false)
-    if (intersects.length > 0) {
-      const hitY = intersects[0].point.y
-      groupRef.current.position.set(-25, hitY, 0)
-    } else {
-      // Fallback: place directly on QuayRoad surface (y=0.76)
-      groupRef.current.position.set(-25, 0.76, 0)
-    }
-  }, [rootScene, scale])
+    return positions
+  }, [])
 
   return (
-    <group ref={groupRef} position={[-25, 0, 0]}>
-      <primitive object={scene} scale={scale} />
+    <group>
+      {agvPositions.map(({ name, position }) => {
+        const clone = scene.clone(true)
+        return (
+          <group
+            key={name}
+            ref={(el) => {
+              if (el) agvRefs.current.set(name, el)
+              else agvRefs.current.delete(name)
+            }}
+            position={position}
+            name={name}
+          >
+            <primitive object={clone} scale={AGV_SCALE} />
+          </group>
+        )
+      })}
     </group>
   )
 }

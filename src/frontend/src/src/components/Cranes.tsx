@@ -1,4 +1,6 @@
 import { useGLTF } from '@react-three/drei'
+import { useRef } from 'react'
+import * as THREE from 'three'
 import { BERTHS } from '../data/berthData'
 
 const CRANE_SCALE = 30.5
@@ -8,6 +10,7 @@ const CRANE_SPACING = 20
 
 export function Cranes() {
   const { scene } = useGLTF('/blender-asset/crane.glb')
+  const craneRefs = useRef<Map<string, THREE.Group>>(new Map())
 
   return (
     <group>
@@ -17,12 +20,17 @@ export function Cranes() {
         return Array.from({ length: CRANES_PER_BERTH }, (_, i) => {
           const clone = scene.clone(true)
           const z = berth.quay[2] - offset + i * CRANE_SPACING
+          const name = `crane-berth-${id}-${i}`
           return (
             <group
-              key={`${id}-${i}`}
+              key={name}
+              ref={(el) => {
+                if (el) craneRefs.current.set(name, el)
+                else craneRefs.current.delete(name)
+              }}
               position={[berth.quay[0], berth.quay[1], z]}
               rotation={[0, 0, 0]}
-              name={`crane-berth-${id}-${i}`}
+              name={name}
             >
               <primitive object={clone} scale={CRANE_SCALE} />
             </group>
