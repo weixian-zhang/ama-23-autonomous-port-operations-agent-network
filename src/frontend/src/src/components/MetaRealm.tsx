@@ -7,6 +7,7 @@ import { Agv } from './Agv'
 import { BerthLocations } from './BerthLocations'
 import { YardLocations } from './YardLocations'
 import { Cranes } from './Cranes'
+import { Stackers } from './Stackers'
 
 function KeyboardMovement({ speed = 45 }: { speed?: number }) {
   const { camera } = useThree()
@@ -59,6 +60,7 @@ export function MetaRealm() {
           <BerthLocations />
           <YardLocations />
           <Cranes />
+          <Stackers />
         </group>
       </Suspense>
       <PointerLockControls />
