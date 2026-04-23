@@ -1,7 +1,7 @@
 import { useGLTF } from '@react-three/drei'
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { YARDS } from '../data/yardData'
+import { PORT_ZONES } from '../data/portZoneData'
 
 const STACKER_SCALE = 10
 const STACKERS_PER_YARD = 5
@@ -21,13 +21,13 @@ export function Stackers() {
 
   const stackerPositions = useMemo(() => {
     const positions: { name: string; position: [number, number, number] }[] = []
-    YARDS.forEach((yard) => {
+    PORT_ZONES.forEach((zone) => {
       for (let i = 0; i < STACKERS_PER_YARD; i++) {
-        const seed = yard.id * 200 + i
+        const seed = zone.id * 200 + i
         const x = YARD_X_MIN + seededRandom(seed) * (YARD_X_MAX - YARD_X_MIN)
-        const z = yard.center[2] - YARD_Z_HALF_RANGE + seededRandom(seed + 1) * YARD_Z_HALF_RANGE * 2
+        const z = zone.yard[2] - YARD_Z_HALF_RANGE + seededRandom(seed + 1) * YARD_Z_HALF_RANGE * 2
         positions.push({
-          name: `stacker-yard-${yard.id}-${i}`,
+          name: `stacker-yard-${zone.id}-${i}`,
           position: [x, STACKER_Y, z],
         })
       }

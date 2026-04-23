@@ -1,10 +1,10 @@
-import { YARDS } from '../data/yardData'
+import { PORT_ZONES } from '../data/portZoneData'
 
 export function YardLocations() {
   return (
     <group>
-      {YARDS.map((yard) => (
-        <group key={yard.id} position={yard.center} name={`yard-${yard.id}`} />
+      {PORT_ZONES.map((zone) => (
+        <group key={zone.id} position={zone.yard} name={`yard-${zone.id}`} />
       ))}
     </group>
   )

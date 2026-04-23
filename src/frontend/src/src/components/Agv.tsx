@@ -1,7 +1,7 @@
 import { useGLTF } from '@react-three/drei'
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { BERTHS } from '../data/berthData'
+import { PORT_ZONES } from '../data/portZoneData'
 
 const AGV_SCALE = 10
 const AGVS_PER_BERTH = 5
@@ -21,13 +21,13 @@ export function Agv() {
 
   const agvPositions = useMemo(() => {
     const positions: { name: string; position: [number, number, number] }[] = []
-    BERTHS.forEach((berth) => {
+    PORT_ZONES.forEach((zone) => {
       for (let i = 0; i < AGVS_PER_BERTH; i++) {
-        const seed = berth.id * 100 + i
+        const seed = zone.id * 100 + i
         const x = AGV_X_MIN + seededRandom(seed) * (AGV_X_MAX - AGV_X_MIN)
-        const z = berth.road[2] - BERTH_Z_HALF_RANGE + seededRandom(seed + 1) * BERTH_Z_HALF_RANGE * 2
+        const z = zone.road[2] - BERTH_Z_HALF_RANGE + seededRandom(seed + 1) * BERTH_Z_HALF_RANGE * 2
         positions.push({
-          name: `agv-berth-${berth.id}-${i}`,
+          name: `agv-berth-${zone.id}-${i}`,
           position: [x, AGV_Y, z],
         })
       }
