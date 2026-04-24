@@ -74,6 +74,11 @@ export function Vessel({
       const pos = lerpTuple(seaPos, dockPos, p)
       g.position.set(pos[0], pos[1], pos[2])
       g.rotation.y = (Math.PI / 2) * (1 - p)
+    } else if (t < leaveStart) {
+      // Docked — hold at dock position
+      g.visible = true
+      g.position.set(dockPos[0], dockPos[1], dockPos[2])
+      g.rotation.y = 0
     } else if (t >= leaveStart) {
       g.visible = true
       const p = progress(t, leaveStart, leaveEnd)

@@ -10,6 +10,8 @@ import { Cranes } from './Cranes'
 import { Stackers } from './Stackers'
 import { Berth5Animation } from './Berth5Animation'
 import { Berth2Animation } from './Berth2Animation'
+import { Berth4Animation } from './Berth4Animation'
+import { Berth1Animation } from './Berth1Animation'
 
 function KeyboardMovement({ speed = 45 }: { speed?: number }) {
   const { camera } = useThree()
@@ -74,6 +76,8 @@ export function MetaRealm() {
           <Stackers />
           <Berth5Animation />
           <Berth2Animation />
+          <Berth4Animation />
+          <Berth1Animation />
         </group>
       </Suspense>
       <PointerLockControls />
