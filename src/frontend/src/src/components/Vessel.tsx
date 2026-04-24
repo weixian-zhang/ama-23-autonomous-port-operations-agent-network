@@ -14,7 +14,7 @@ function seeded(seed: number) {
   return h / 0x100000000
 }
 
-const VESSEL_GLBS = ['/blender-asset/vessel-1.glb', '/blender-asset/vessel-2.glb']
+const VESSEL_GLBS = ['/blender-asset/vessel-1.glb', '/blender-asset/vessel-2.glb', '/blender-asset/vessel-3.glb']
 
 function progress(t: number, start: number, end: number): number {
   return Math.min(Math.max((t - start) / (end - start), 0), 1)
@@ -52,7 +52,7 @@ export function Vessel({
   seed = 42,
 }: VesselProps) {
   const vesselPick = useMemo(
-    () => (seeded(seed) > 0.5 ? VESSEL_GLBS[0] : VESSEL_GLBS[1]),
+    () => VESSEL_GLBS[Math.floor(seeded(seed) * VESSEL_GLBS.length)],
     [seed],
   )
   const vesselGltf = useGLTF(vesselPick)
