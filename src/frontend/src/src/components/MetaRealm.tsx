@@ -80,7 +80,6 @@ export function MetaRealm() {
           <Berth2Animation />
           <Berth4Animation />
           <Berth1Animation />
-          <OperatorNPCYard_5_1_Route_Animation count={8} />
         </group>
       </Suspense>
       <PointerLockControls />
