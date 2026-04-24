@@ -196,13 +196,15 @@ export function LoadAnimation({
       const pickPos = pickPositions.current[i]
       if (!stacker || !pickPos) continue
       const stagger = i * STAGGER
+      const cranePos = zone.cranes[i].position
+      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
 
       if (ct < C.stackerStart + stagger) {
         // Stacker at yard position
         stacker.position.set(pickPos[0], pickPos[1], pickPos[2])
       } else if (ct <= C.stackerEnd) {
         const p = progress(ct, C.stackerStart + stagger, C.stackerEnd)
-        const pos = lerpTuple(pickPos, zone.yardHandover, p)
+        const pos = lerpTuple(pickPos, handover, p)
         stacker.position.set(pos[0], pos[1], pos[2])
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
@@ -218,17 +220,19 @@ export function LoadAnimation({
       if (!agv || !pickPositions.current[i]) continue
       const cranePos = zone.cranes[i].position
       const stagger = i * STAGGER
+      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
 
       if (ct < C.agvStart) {
         if (ct >= C.stackerStart) {
-          agv.position.set(zone.yardHandover[0], zone.yardHandover[1], zone.yardHandover[2])
+          agv.position.set(handover[0], handover[1], handover[2])
+          agv.rotation.set(0, 0, 0)
         }
       } else if (ct <= C.agvEnd) {
         const p = progress(ct, C.agvStart + stagger, C.agvEnd)
-        const startPos: THREE.Vector3Tuple = zone.yardHandover
         const endPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1], cranePos[2]]
-        const pos = lerpTuple(startPos, endPos, p)
+        const pos = lerpTuple(handover, endPos, p)
         agv.position.set(pos[0], pos[1], pos[2])
+        agv.rotation.set(0, 0, 0)
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
           cRef.rotation.set(0, YARD_ROTATION, 0)
@@ -271,20 +275,47 @@ export function LoadAnimation({
       }
     }
 
-    // === Phase 4: Stackers and AGVs retreat ===
+    // === Phase 4: AGVs retreat from road → handover, Stackers retreat from handover → yard ===
     for (let i = 0; i < 4; i++) {
       const stacker = stackerRefs.current[i]
       const agv = agvRefs.current[i]
       const pickPos = pickPositions.current[i]
       if (!pickPos) continue
+      const cranePos = zone.cranes[i].position
+      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+      const stagger = i * STAGGER
 
-      if (ct > C.retreatStart) {
-        if (stacker) {
-          stacker.position.set(zone.yardHandover[0], zone.yardHandover[1], zone.yardHandover[2])
-        }
+      if (ct > C.retreatStart && ct <= C.retreatEnd) {
+        const p = progress(ct, C.retreatStart + stagger, C.retreatEnd)
+
+        // AGV: road → handover, rotated 180° (facing handover direction) then settle to 90°
         if (agv) {
-          const cranePos = zone.cranes[i].position
-          agv.position.set(zone.road[0], zone.road[1], cranePos[2])
+          const roadPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1], cranePos[2]]
+          const pos = lerpTuple(roadPos, handover, p)
+          agv.position.set(pos[0], pos[1], pos[2])
+          if (p < 0.8) {
+            // Traveling: face toward handover (+X direction = 180° / Math.PI)
+            agv.rotation.set(0, Math.PI, 0)
+          } else {
+            // Settling: rotate from 180° back to 90° for container pickup
+            const settleP = (p - 0.8) / 0.2
+            agv.rotation.set(0, Math.PI - (Math.PI / 2) * settleP, 0)
+          }
+        }
+
+        // Stacker: handover → back toward yard (its pick position as proxy)
+        if (stacker) {
+          const pos = lerpTuple(handover, pickPos, p)
+          stacker.position.set(pos[0], pos[1], pos[2])
+        }
+      } else if (ct > C.retreatEnd) {
+        // Hold at end positions
+        if (agv) {
+          agv.position.set(handover[0], handover[1], handover[2])
+          agv.rotation.set(0, Math.PI / 2, 0)
+        }
+        if (stacker) {
+          stacker.position.set(pickPos[0], pickPos[1], pickPos[2])
         }
       }
     }
