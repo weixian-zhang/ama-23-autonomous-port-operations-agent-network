@@ -1,0 +1,502 @@
+[
+  {
+    "vesselName": "MSC Aurora",
+    "containerNumber": "TGHU2181960",
+    "status": "LoadedOnVessel",
+    "cargoType": "Electronics",
+    "grossWeightKg": 21149,
+    "shipper": "Panasonic Holdings Corporation",
+    "originPort": "JPTYO",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "MSC Aurora",
+    "containerNumber": "WHLU3863794",
+    "status": "InYard",
+    "cargoType": "AutoParts",
+    "grossWeightKg": 20279,
+    "shipper": "Hyundai Motor Company",
+    "originPort": "IDJKT",
+    "destinationPort": "SGSIN"
+  },
+  {
+    "vesselName": "Maersk Eindhoven",
+    "containerNumber": "CMAU1161559",
+    "status": "LoadedOnVessel",
+    "cargoType": "Machinery",
+    "grossWeightKg": 19552,
+    "shipper": "Mitsubishi Electric Corporation",
+    "originPort": "CNSHA",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "Maersk Eindhoven",
+    "containerNumber": "APZU9593103",
+    "status": "LoadedOnVessel",
+    "cargoType": "FoodProducts",
+    "grossWeightKg": 15201,
+    "shipper": "Nestlé S.A.",
+    "originPort": "CNNGB",
+    "destinationPort": "JPTYO"
+  },
+  {
+    "vesselName": "CMA CGM Marco Polo",
+    "containerNumber": "CMAU2553419",
+    "status": "GateOut",
+    "cargoType": "Electronics",
+    "grossWeightKg": 15227,
+    "shipper": "Foxconn Technology Group",
+    "originPort": "JPTYO",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "Maersk Eindhoven",
+    "containerNumber": "WHLU3503056",
+    "status": "LoadedOnVessel",
+    "cargoType": "Electronics",
+    "grossWeightKg": 16573,
+    "shipper": "Foxconn Technology Group",
+    "originPort": "VNVUT",
+    "destinationPort": "DEHAM"
+  },
+  {
+    "vesselName": "OOCL Shenzhen",
+    "containerNumber": "EMCU2423884",
+    "status": "GateIn",
+    "cargoType": "Machinery",
+    "grossWeightKg": 18483,
+    "shipper": "Hyundai Motor Company",
+    "originPort": "THBKK",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "OOCL Shenzhen",
+    "containerNumber": "WHLU7101226",
+    "status": "LoadedOnVessel",
+    "cargoType": "Machinery",
+    "grossWeightKg": 20930,
+    "shipper": "Bosch Group",
+    "originPort": "HKHKG",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "Maersk Eindhoven",
+    "containerNumber": "APZU8018451",
+    "status": "GateIn",
+    "cargoType": "AutoParts",
+    "grossWeightKg": 21763,
+    "shipper": "Bridgestone Corporation",
+    "originPort": "THBKK",
+    "destinationPort": "JPTYO"
+  },
+  {
+    "vesselName": "COSCO Shipping Galaxy",
+    "containerNumber": "OOLU8148932",
+    "status": "InYard",
+    "cargoType": "Machinery",
+    "grossWeightKg": 15053,
+    "shipper": "Honda Motor Co., Ltd.",
+    "originPort": "JPTYO",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "Ever Alot",
+    "containerNumber": "MSCU1543039",
+    "status": "LoadedOnVessel",
+    "cargoType": "Furniture",
+    "grossWeightKg": 19813,
+    "shipper": "IKEA Supply AG",
+    "originPort": "KRPUS",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "Wan Hai 507",
+    "containerNumber": "EMCU8248963",
+    "status": "UnderInspection",
+    "cargoType": "ConsumerGoods",
+    "grossWeightKg": 16727,
+    "shipper": "Unilever PLC",
+    "originPort": "CNSHA",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "OOCL Shenzhen",
+    "containerNumber": "WHLU7133150",
+    "status": "GateOut",
+    "cargoType": "Machinery",
+    "grossWeightKg": 21537,
+    "shipper": "Hyundai Motor Company",
+    "originPort": "KRPUS",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "Maersk Eindhoven",
+    "containerNumber": "MSCU3105183",
+    "status": "UnderInspection",
+    "cargoType": "Electronics",
+    "grossWeightKg": 9117,
+    "shipper": "Foxconn Technology Group",
+    "originPort": "CNNGB",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "Ever Alot",
+    "containerNumber": "ONEY9737631",
+    "status": "UnderInspection",
+    "cargoType": "ConsumerGoods",
+    "grossWeightKg": 16834,
+    "shipper": "Unilever PLC",
+    "originPort": "CNSHA",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "ONE Innovation",
+    "containerNumber": "MSCU1065133",
+    "status": "GateOut",
+    "cargoType": "Machinery",
+    "grossWeightKg": 21939,
+    "shipper": "Mitsubishi Electric Corporation",
+    "originPort": "VNVUT",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "MSC Aurora",
+    "containerNumber": "EMCU3178108",
+    "status": "LoadedOnVessel",
+    "cargoType": "FoodProducts",
+    "grossWeightKg": 15912,
+    "shipper": "Nestlé S.A.",
+    "originPort": "CNSHA",
+    "destinationPort": "DEHAM"
+  },
+  {
+    "vesselName": "APL Sentosa",
+    "containerNumber": "TGHU6026064",
+    "status": "Discharged",
+    "cargoType": "Electronics",
+    "grossWeightKg": 15658,
+    "shipper": "Foxconn Technology Group",
+    "originPort": "THBKK",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "OOCL Shenzhen",
+    "containerNumber": "TGHU0980500",
+    "status": "GateIn",
+    "cargoType": "Machinery",
+    "grossWeightKg": 17536,
+    "shipper": "Mitsubishi Electric Corporation",
+    "originPort": "HKHKG",
+    "destinationPort": "DEHAM"
+  },
+  {
+    "vesselName": "ONE Innovation",
+    "containerNumber": "OOLU1913619",
+    "status": "GateOut",
+    "cargoType": "ConsumerGoods",
+    "grossWeightKg": 8931,
+    "shipper": "Procter & Gamble Company",
+    "originPort": "MYPKG",
+    "destinationPort": "SGSIN"
+  },
+  {
+    "vesselName": "Maersk Eindhoven",
+    "containerNumber": "ONEY9854353",
+    "status": "GateIn",
+    "cargoType": "Machinery",
+    "grossWeightKg": 25147,
+    "shipper": "Siemens AG",
+    "originPort": "CNNGB",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "Wan Hai 507",
+    "containerNumber": "MSCU7991183",
+    "status": "Discharged",
+    "cargoType": "Machinery",
+    "grossWeightKg": 22491,
+    "shipper": "Toyota Motor Corporation",
+    "originPort": "KRPUS",
+    "destinationPort": "SGSIN"
+  },
+  {
+    "vesselName": "Wan Hai 507",
+    "containerNumber": "APZU2784980",
+    "status": "Discharged",
+    "cargoType": "Machinery",
+    "grossWeightKg": 16127,
+    "shipper": "Toyota Motor Corporation",
+    "originPort": "HKHKG",
+    "destinationPort": "DEHAM"
+  },
+  {
+    "vesselName": "Maersk Eindhoven",
+    "containerNumber": "WHLU2449353",
+    "status": "GateOut",
+    "cargoType": "Electronics",
+    "grossWeightKg": 13333,
+    "shipper": "Panasonic Holdings Corporation",
+    "originPort": "CNNGB",
+    "destinationPort": "SGSIN"
+  },
+  {
+    "vesselName": "APL Sentosa",
+    "containerNumber": "EISU4005242",
+    "status": "GateOut",
+    "cargoType": "FoodProducts",
+    "grossWeightKg": 9832,
+    "shipper": "Unilever PLC",
+    "originPort": "CNNGB",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "CMA CGM Marco Polo",
+    "containerNumber": "OOLU8059826",
+    "status": "LoadedOnVessel",
+    "cargoType": "Electronics",
+    "grossWeightKg": 10832,
+    "shipper": "Mitsubishi Electric Corporation",
+    "originPort": "CNNGB",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "CMA CGM Marco Polo",
+    "containerNumber": "TGHU1586923",
+    "status": "InYard",
+    "cargoType": "Electronics",
+    "grossWeightKg": 9653,
+    "shipper": "Lenovo Group Limited",
+    "originPort": "KRPUS",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "ONE Innovation",
+    "containerNumber": "TGHU4216073",
+    "status": "GateIn",
+    "cargoType": "Electronics",
+    "grossWeightKg": 11938,
+    "shipper": "Mitsubishi Electric Corporation",
+    "originPort": "KRPUS",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "HMM Oslo",
+    "containerNumber": "TGHU6541458",
+    "status": "UnderInspection",
+    "cargoType": "Electronics",
+    "grossWeightKg": 12728,
+    "shipper": "ASUS Tek Computer Inc.",
+    "originPort": "HKHKG",
+    "destinationPort": "SGSIN"
+  },
+  {
+    "vesselName": "COSCO Shipping Galaxy",
+    "containerNumber": "OOLU9401965",
+    "status": "GateIn",
+    "cargoType": "Furniture",
+    "grossWeightKg": 10452,
+    "shipper": "IKEA Supply AG",
+    "originPort": "CNNGB",
+    "destinationPort": "DEHAM"
+  },
+  {
+    "vesselName": "HMM Oslo",
+    "containerNumber": "APZU0608835",
+    "status": "LoadedOnVessel",
+    "cargoType": "Machinery",
+    "grossWeightKg": 21311,
+    "shipper": "Siemens AG",
+    "originPort": "IDJKT",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "CMA CGM Marco Polo",
+    "containerNumber": "APZU8465648",
+    "status": "InYard",
+    "cargoType": "Electronics",
+    "grossWeightKg": 19868,
+    "shipper": "Acer Inc.",
+    "originPort": "CNNGB",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "HMM Oslo",
+    "containerNumber": "ONEY4680443",
+    "status": "GateOut",
+    "cargoType": "Machinery",
+    "grossWeightKg": 26097,
+    "shipper": "Mitsubishi Electric Corporation",
+    "originPort": "CNSHA",
+    "destinationPort": "JPTYO"
+  },
+  {
+    "vesselName": "COSCO Shipping Galaxy",
+    "containerNumber": "TGHU8721489",
+    "status": "LoadedOnVessel",
+    "cargoType": "Electronics",
+    "grossWeightKg": 16618,
+    "shipper": "Siemens AG",
+    "originPort": "THBKK",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "OOCL Shenzhen",
+    "containerNumber": "MSCU0379176",
+    "status": "InYard",
+    "cargoType": "Electronics",
+    "grossWeightKg": 12680,
+    "shipper": "Foxconn Technology Group",
+    "originPort": "HKHKG",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "Wan Hai 507",
+    "containerNumber": "MSCU1632870",
+    "status": "InYard",
+    "cargoType": "AutoParts",
+    "grossWeightKg": 18547,
+    "shipper": "Bridgestone Corporation",
+    "originPort": "HKHKG",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "Wan Hai 507",
+    "containerNumber": "WHLU8957986",
+    "status": "GateIn",
+    "cargoType": "Electronics",
+    "grossWeightKg": 11184,
+    "shipper": "Panasonic Holdings Corporation",
+    "originPort": "THBKK",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "ONE Innovation",
+    "containerNumber": "APZU8734714",
+    "status": "Discharged",
+    "cargoType": "Machinery",
+    "grossWeightKg": 22373,
+    "shipper": "Honda Motor Co., Ltd.",
+    "originPort": "JPTYO",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "COSCO Shipping Galaxy",
+    "containerNumber": "OOLU3623166",
+    "status": "GateOut",
+    "cargoType": "Electronics",
+    "grossWeightKg": 17849,
+    "shipper": "Acer Inc.",
+    "originPort": "CNNGB",
+    "destinationPort": "NLRTM"
+  },
+  {
+    "vesselName": "COSCO Shipping Galaxy",
+    "containerNumber": "EISU6909670",
+    "status": "Discharged",
+    "cargoType": "FoodProducts",
+    "grossWeightKg": 10020,
+    "shipper": "Nestlé S.A.",
+    "originPort": "HKHKG",
+    "destinationPort": "MYPKG"
+  },
+  {
+    "vesselName": "COSCO Shipping Galaxy",
+    "containerNumber": "TGHU7346706",
+    "status": "UnderInspection",
+    "cargoType": "AutoParts",
+    "grossWeightKg": 20818,
+    "shipper": "Bridgestone Corporation",
+    "originPort": "MYPKG",
+    "destinationPort": "JPTYO"
+  },
+  {
+    "vesselName": "CMA CGM Marco Polo",
+    "containerNumber": "WHLU0699016",
+    "status": "GateIn",
+    "cargoType": "RubberProducts",
+    "grossWeightKg": 18657,
+    "shipper": "Bridgestone Corporation",
+    "originPort": "CNSHA",
+    "destinationPort": "JPTYO"
+  },
+  {
+    "vesselName": "Ever Alot",
+    "containerNumber": "TGHU7556464",
+    "status": "GateIn",
+    "cargoType": "AutoParts",
+    "grossWeightKg": 16262,
+    "shipper": "Honda Motor Co., Ltd.",
+    "originPort": "VNVUT",
+    "destinationPort": "DEHAM"
+  },
+  {
+    "vesselName": "ONE Innovation",
+    "containerNumber": "MAEU0033092",
+    "status": "InYard",
+    "cargoType": "Electronics",
+    "grossWeightKg": 14733,
+    "shipper": "Samsung Electronics Co., Ltd.",
+    "originPort": "HKHKG",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "Ever Alot",
+    "containerNumber": "APZU5299124",
+    "status": "GateOut",
+    "cargoType": "ConsumerGoods",
+    "grossWeightKg": 17240,
+    "shipper": "Unilever PLC",
+    "originPort": "HKHKG",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "OOCL Shenzhen",
+    "containerNumber": "TGHU1931491",
+    "status": "LoadedOnVessel",
+    "cargoType": "Electronics",
+    "grossWeightKg": 18433,
+    "shipper": "Samsung Electronics Co., Ltd.",
+    "originPort": "VNVUT",
+    "destinationPort": "USLAX"
+  },
+  {
+    "vesselName": "APL Sentosa",
+    "containerNumber": "WHLU5067165",
+    "status": "UnderInspection",
+    "cargoType": "Electronics",
+    "grossWeightKg": 19838,
+    "shipper": "ASUS Tek Computer Inc.",
+    "originPort": "KRPUS",
+    "destinationPort": "SGSIN"
+  },
+  {
+    "vesselName": "COSCO Shipping Galaxy",
+    "containerNumber": "APZU9877694",
+    "status": "InYard",
+    "cargoType": "Machinery",
+    "grossWeightKg": 17885,
+    "shipper": "Toyota Motor Corporation",
+    "originPort": "MYPKG",
+    "destinationPort": "KRPUS"
+  },
+  {
+    "vesselName": "CMA CGM Marco Polo",
+    "containerNumber": "EMCU9965075",
+    "status": "GateIn",
+    "cargoType": "Electronics",
+    "grossWeightKg": 16385,
+    "shipper": "Sony Group Corporation",
+    "originPort": "HKHKG",
+    "destinationPort": "MYPKG"
+  },
+  {
+    "vesselName": "ONE Innovation",
+    "containerNumber": "APZU9480831",
+    "status": "UnderInspection",
+    "cargoType": "Machinery",
+    "grossWeightKg": 28071,
+    "shipper": "Hyundai Motor Company",
+    "originPort": "JPTYO",
+    "destinationPort": "DEHAM"
+  }
+]
