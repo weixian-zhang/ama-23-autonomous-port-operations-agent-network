@@ -46,7 +46,7 @@ export function MetaRealm({ onVesselClick }: MetaRealmProps) {
           <Berth1Animation onVesselClick={onVesselClick} />
         </group>
       </Suspense>
-      <FirstPersonControls movementSpeed={55} lookSpeed={0.07} />
+      <FirstPersonControls movementSpeed={40} lookSpeed={0.07} />
       <InitialCameraView />
     </Canvas>
   )
