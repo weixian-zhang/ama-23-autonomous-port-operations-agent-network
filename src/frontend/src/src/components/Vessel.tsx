@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import type { MutableRefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
@@ -38,6 +38,8 @@ interface VesselProps {
   seaX?: number
   dockX?: number
   seed?: number
+  onVesselClick?: (vesselGlb: string, berthId: number) => void
+  berthId?: number
 }
 
 export function Vessel({
@@ -50,6 +52,8 @@ export function Vessel({
   seaX = -200,
   dockX = -55,
   seed = 42,
+  onVesselClick,
+  berthId = 0,
 }: VesselProps) {
   const vesselPick = useMemo(
     () => VESSEL_GLBS[Math.floor(seeded(seed) * VESSEL_GLBS.length)],
@@ -59,6 +63,13 @@ export function Vessel({
   const vesselScene = useMemo(() => vesselGltf.scene.clone(true), [vesselGltf])
 
   const groupRef = useRef<THREE.Group>(null)
+
+  // Tag this group so the interact raycast can identify it as a vessel
+  useEffect(() => {
+    if (groupRef.current) {
+      groupRef.current.userData = { type: 'vessel', vesselGlb: vesselPick, berthId }
+    }
+  }, [vesselPick, berthId])
 
   const seaPos: THREE.Vector3Tuple = useMemo(() => [seaX, 0, zone.quay[2]], [seaX, zone.quay])
   const dockPos: THREE.Vector3Tuple = useMemo(() => [dockX, 0, zone.quay[2]], [dockX, zone.quay])
@@ -90,7 +101,14 @@ export function Vessel({
   })
 
   return (
-    <group ref={groupRef} position={[seaPos[0], seaPos[1], seaPos[2]]}>
+    <group
+      ref={groupRef}
+      position={[seaPos[0], seaPos[1], seaPos[2]]}
+      onClick={(e) => {
+        e.stopPropagation()
+        onVesselClick?.(vesselPick, berthId)
+      }}
+    >
       <primitive object={vesselScene} scale={scale} />
     </group>
   )

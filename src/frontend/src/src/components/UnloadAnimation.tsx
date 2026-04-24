@@ -53,6 +53,7 @@ interface UnloadAnimationProps {
   vesselScale?: number
   vesselSeed?: number
   containerSeed?: number
+  onVesselClick?: (vesselGlb: string, berthId: number) => void
 }
 
 export function UnloadAnimation({
@@ -60,6 +61,7 @@ export function UnloadAnimation({
   vesselScale = 60,
   vesselSeed = 42,
   containerSeed = 100,
+  onVesselClick,
 }: UnloadAnimationProps) {
   const zone = PORT_ZONES.find((z) => z.id === berthId)!
   const totalCells = zone.yardGrid.rows * zone.yardGrid.cols
@@ -249,6 +251,8 @@ export function UnloadAnimation({
         leaveEnd={vesselLeaveEnd}
         scale={vesselScale}
         seed={vesselSeed}
+        onVesselClick={onVesselClick}
+        berthId={berthId}
       />
       <Container ref={containerRef} seed={containerSeed} />
     </group>

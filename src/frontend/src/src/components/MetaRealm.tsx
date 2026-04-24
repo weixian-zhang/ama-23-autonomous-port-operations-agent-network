@@ -1,6 +1,6 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { PointerLockControls } from '@react-three/drei'
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef, useCallback } from 'react'
 import * as THREE from 'three'
 import { PortTerrain } from './PortTerrain'
 import { Agv } from './Agv'
@@ -54,6 +54,34 @@ function KeyboardMovement({ speed = 45 }: { speed?: number }) {
   return null
 }
 
+function InteractKey({ onVesselClick }: { onVesselClick?: (vesselGlb: string, berthId: number) => void }) {
+  const { camera, scene } = useThree()
+  const raycaster = useRef(new THREE.Raycaster())
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.code !== 'KeyE') return
+    raycaster.current.setFromCamera(new THREE.Vector2(0, 0), camera)
+    const hits = raycaster.current.intersectObjects(scene.children, true)
+    for (const hit of hits) {
+      let obj: THREE.Object3D | null = hit.object
+      while (obj) {
+        if (obj.userData?.type === 'vessel') {
+          onVesselClick?.(obj.userData.vesselGlb, obj.userData.berthId)
+          return
+        }
+        obj = obj.parent
+      }
+    }
+  }, [camera, scene, onVesselClick])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
+
+  return null
+}
+
 function InitialCameraView() {
   const { camera } = useThree()
   useEffect(() => {
@@ -63,7 +91,11 @@ function InitialCameraView() {
   return null
 }
 
-export function MetaRealm() {
+interface MetaRealmProps {
+  onVesselClick?: (vesselGlb: string, berthId: number) => void
+}
+
+export function MetaRealm({ onVesselClick }: MetaRealmProps) {
   return (
     <Canvas camera={{ position: [-300, 250, 70], fov: 60 }}>
       <ambientLight intensity={0.5} />
@@ -76,14 +108,15 @@ export function MetaRealm() {
           <YardLocations />
           <Cranes />
           <Stackers />
-          <Berth5Animation />
-          <Berth2Animation />
-          <Berth4Animation />
-          <Berth1Animation />
+          <Berth5Animation onVesselClick={onVesselClick} />
+          <Berth2Animation onVesselClick={onVesselClick} />
+          <Berth4Animation onVesselClick={onVesselClick} />
+          <Berth1Animation onVesselClick={onVesselClick} />
         </group>
       </Suspense>
       <PointerLockControls />
       <KeyboardMovement speed={55} />
+      <InteractKey onVesselClick={onVesselClick} />
       <InitialCameraView />
     </Canvas>
   )

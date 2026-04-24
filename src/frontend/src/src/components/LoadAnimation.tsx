@@ -38,6 +38,7 @@ interface LoadAnimationProps {
   vesselScale?: number
   vesselSeed?: number
   containerSeed?: number
+  onVesselClick?: (vesselGlb: string, berthId: number) => void
 }
 
 export function LoadAnimation({
@@ -45,6 +46,7 @@ export function LoadAnimation({
   vesselScale = 60,
   vesselSeed = 42,
   containerSeed = 300,
+  onVesselClick,
 }: LoadAnimationProps) {
   const zone = PORT_ZONES.find((z) => z.id === berthId)!
   const { rows, cols } = zone.yardGrid
@@ -331,6 +333,8 @@ export function LoadAnimation({
         leaveEnd={vesselLeaveEnd}
         scale={vesselScale}
         seed={vesselSeed}
+        onVesselClick={onVesselClick}
+        berthId={berthId}
       />
       <Container ref={containerRef} craneCount={1} seed={containerSeed} />
     </group>
