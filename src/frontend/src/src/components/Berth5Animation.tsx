@@ -1,55 +1,39 @@
 import { useFrame, useThree } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
-import { useMemo, useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { PORT_ZONES, getYardCellPosition, placeContainer, clearZoneContainers, type Vec3 } from '../data/portZoneData'
+import { Vessel } from './Vessel'
+import { Container } from './Container'
+import type { ContainerHandle } from './Container'
 
 const ZONE = PORT_ZONES.find((z) => z.id === 5)!
 
-const VESSEL_SCALE = 40
-const CONTAINER_SCALE = 8
+// Sub-cycle timing — 20 unload cycles per animation loop
+const UNLOAD_CYCLES = 20
+const CYCLE_DURATION = 15.5  // seconds per unload sub-cycle
 
-// Phase timing (seconds) — 30s total, then loops
-const LOOP_DURATION = 30
-const P = {
-  vesselStart: 0,    vesselEnd: 7,
-  craneStart: 5,     craneEnd: 12,
-  agvStart: 12,      agvEnd: 19,
-  stackerStart: 19,  stackerEnd: 24,
-  retreatStart: 24,  retreatEnd: 27,
-  vesselLeaveStart: 27, vesselLeaveEnd: 32,
+// Relative timings within each sub-cycle
+const C = {
+  craneStart: 0,     craneEnd: 2.5,
+  agvStart: 2.5,     agvEnd: 7.5,
+  stackerStart: 7.5, stackerEnd: 12.5,
+  retreatStart: 12.5, retreatEnd: 15.5,
 }
+const STAGGER = 0.4
 
-// Seeded random — deterministic across renders
-function seeded(seed: number) {
-  const x = Math.sin(seed * 9301 + 49297) * 49297
-  return x - Math.floor(x)
-}
+const VESSEL_ARRIVE_END = 7
+const CYCLE_OFFSET = VESSEL_ARRIVE_END  // unloading starts after vessel is fully docked
+const VESSEL_LEAVE_START = CYCLE_OFFSET + UNLOAD_CYCLES * CYCLE_DURATION
+const VESSEL_LEAVE_END = VESSEL_LEAVE_START + 5
+const LOOP_DURATION = VESSEL_LEAVE_END + 2
 
-const CONTAINER_GLBS = [
-  '/blender-asset/container-blue-1.glb',
-  '/blender-asset/container-red-1.glb',
-  '/blender-asset/container-yellow-1.glb',
-]
-
-// Pre-pick random choices with stable seed
-const VESSEL_PICK = seeded(42) > 0.5 ? '/blender-asset/vessel-1.glb' : '/blender-asset/vessel-2.glb'
-const CONTAINER_PICKS = ZONE.cranes.map((_, i) => CONTAINER_GLBS[Math.floor(seeded(100 + i) * 3)])
-
-// Existing scene object names — 4 AGVs and 4 stackers from Berth/Yard 5
-const AGV_NAMES = [0, 1, 2, 3].map((i) => `agv-berth-5-${i}`)
-const STACKER_NAMES = [0, 1, 2, 3].map((i) => `stacker-yard-5-${i}`)
-
-// Sea origin — vessel sails from far negative X toward the quay wall
-const VESSEL_SEA: THREE.Vector3Tuple = [-200, 0, ZONE.quay[2]]
-const VESSEL_DOCK: THREE.Vector3Tuple = [-55, 0, ZONE.quay[2]]
-
-// Crane lifts container from vessel deck height down to road level
 const CRANE_LIFT_Y = 20
 const TOTAL_CELLS = ZONE.yardGrid.rows * ZONE.yardGrid.cols
 const MAX_CONTAINERS = TOTAL_CELLS * ZONE.yardGrid.tiers
 
-// Deterministic slot assignment: loop N gets cells offset by N*4
+const AGV_NAMES = [0, 1, 2, 3].map((i) => `agv-berth-5-${i}`)
+const STACKER_NAMES = [0, 1, 2, 3].map((i) => `stacker-yard-5-${i}`)
+
 function getSlotsForLoop(loop: number): { row: number; col: number; tier: number }[] {
   const { rows, tiers } = ZONE.yardGrid
   const baseIdx = (loop * 4) % TOTAL_CELLS
@@ -76,103 +60,75 @@ function lerpTuple(a: THREE.Vector3Tuple, b: THREE.Vector3Tuple, t: number): THR
 }
 
 export function Berth5Animation() {
-  // Preload GLBs for vessel and containers only
-  const vesselGltf = useGLTF(VESSEL_PICK)
-  const containerGltfs = [
-    useGLTF('/blender-asset/container-blue-1.glb'),
-    useGLTF('/blender-asset/container-red-1.glb'),
-    useGLTF('/blender-asset/container-yellow-1.glb'),
-  ]
-
   const { scene: rootScene } = useThree()
+  const containerRef = useRef<ContainerHandle>(null)
 
   const elapsed = useRef(0)
   const placed = useRef<boolean[]>([false, false, false, false])
   const loopCount = useRef(0)
+  const currentCycle = useRef(-1)
 
-  // Dynamic yard slots resolved at each loop start
   const yardSlots = useRef<{ row: number; col: number; tier: number }[]>([])
-  // Cached target positions resolved once per loop
   const yardTargetPositions = useRef<(Vec3 | null)[]>([null, null, null, null])
+  const placedContainers = useRef<THREE.Group[]>([])
+  const containerRefs = useRef<(THREE.Group | null)[]>([null, null, null, null])
 
-  function resolveSlots() {
-    const slots = getSlotsForLoop(loopCount.current)
+  const agvRefs = useRef<(THREE.Object3D | null)[]>([null, null, null, null])
+  const stackerRefs = useRef<(THREE.Object3D | null)[]>([null, null, null, null])
+
+  function resolveSlots(cycleIndex: number) {
+    const slots = getSlotsForLoop(cycleIndex)
     yardSlots.current = slots
     yardTargetPositions.current = slots.map((s) =>
       getYardCellPosition(ZONE.yardGrid, s.row, s.col, s.tier)
     )
   }
-  // Accumulated container groups that remain in the yard across loops
-  const placedContainers = useRef<THREE.Group[]>([])
-  const animGroupRef = useRef<THREE.Group>(null)
-
-  const vesselRef = useRef<THREE.Group>(null)
-  const containerRefs = useRef<(THREE.Group | null)[]>([null, null, null, null])
 
   function spawnContainers() {
-    if (!animGroupRef.current) return
+    if (!containerRef.current) return
+    containerRef.current.removeContainers(containerRefs.current)
+    const groups = containerRef.current.spawnContainers()
     for (let i = 0; i < 4; i++) {
-      const idx = CONTAINER_GLBS.indexOf(CONTAINER_PICKS[i])
-      const clone = containerGltfs[idx].scene.clone(true)
-      const group = new THREE.Group()
-      group.add(clone)
-      group.scale.setScalar(CONTAINER_SCALE)
-      group.visible = false
-      animGroupRef.current.add(group)
-      containerRefs.current[i] = group
+      containerRefs.current[i] = groups[i] ?? null
     }
   }
 
-  // References to existing AGVs and stackers found in scene
-  const agvRefs = useRef<(THREE.Object3D | null)[]>([null, null, null, null])
-  const stackerRefs = useRef<(THREE.Object3D | null)[]>([null, null, null, null])
-  // Store original positions to restore if needed
-  const agvOriginalPos = useRef<THREE.Vector3Tuple[]>([])
-  const stackerOriginalPos = useRef<THREE.Vector3Tuple[]>([])
+  // Consistent yard rotation for all placed containers
+  const YARD_ROTATION = Math.PI / 2
 
-  // Find existing AGVs and stackers by name once the scene is ready
+  function placeContainerInYard(i: number, cRef: THREE.Group, targetPos: Vec3, slot: { row: number; col: number }) {
+    placed.current[i] = true
+    const containerId = `anim-container-5-${loopCount.current}-${currentCycle.current}-${i}`
+    placeContainer(5, slot.row, slot.col, containerId)
+    cRef.position.set(targetPos[0], targetPos[1] + 2, targetPos[2])
+    // Reset all rotations then apply consistent yard orientation
+    cRef.quaternion.identity()
+    cRef.rotation.set(0, YARD_ROTATION, 0)
+    cRef.visible = true
+    cRef.updateMatrixWorld(true)
+    placedContainers.current.push(cRef)
+    containerRefs.current[i] = null
+  }
+
   useEffect(() => {
     for (let i = 0; i < 4; i++) {
       const agv = rootScene.getObjectByName(AGV_NAMES[i])
-      if (agv) {
-        agvRefs.current[i] = agv
-        agvOriginalPos.current[i] = agv.position.toArray()
-      }
+      if (agv) agvRefs.current[i] = agv
       const stacker = rootScene.getObjectByName(STACKER_NAMES[i])
-      if (stacker) {
-        stackerRefs.current[i] = stacker
-        stackerOriginalPos.current[i] = stacker.position.toArray()
-      }
+      if (stacker) stackerRefs.current[i] = stacker
     }
   }, [rootScene])
 
-  // Clone vessel and container scenes once
-  const clones = useMemo(() => {
-    const vessel = vesselGltf.scene.clone(true)
-    const containers = CONTAINER_PICKS.map((path) => {
-      const idx = CONTAINER_GLBS.indexOf(path)
-      return containerGltfs[idx].scene.clone(true)
-    })
-    return { vessel, containers }
-  }, [])
-
   useFrame((_, delta) => {
     elapsed.current += delta
+    const t = elapsed.current
 
-    // Spawn containers on very first frame
-    if (loopCount.current === 0 && elapsed.current === delta) {
-      spawnContainers()
-      resolveSlots()
-    }
-
-    // Loop every LOOP_DURATION seconds
-    if (elapsed.current >= LOOP_DURATION) {
+    if (t >= LOOP_DURATION) {
       elapsed.current = 0
-      placed.current = [false, false, false, false]
       loopCount.current += 1
+      currentCycle.current = -1
 
-      // If all grid cells have been filled, clear and restart from cell 0
-      if (loopCount.current * 4 >= MAX_CONTAINERS) {
+      if (loopCount.current * UNLOAD_CYCLES * 4 >= MAX_CONTAINERS) {
         loopCount.current = 0
         clearZoneContainers(5)
         for (const c of placedContainers.current) {
@@ -180,135 +136,110 @@ export function Berth5Animation() {
         }
         placedContainers.current = []
       }
+      return
+    }
 
-      // Resolve next available slots for this loop's 4 containers
-      resolveSlots()
+    const cycleIdx = Math.floor((t - CYCLE_OFFSET) / CYCLE_DURATION)
+    const ct = (t - CYCLE_OFFSET) - cycleIdx * CYCLE_DURATION
 
-      // Spawn fresh container meshes for the new loop
+    if (cycleIdx < 0 || cycleIdx >= UNLOAD_CYCLES) return
+
+    if (cycleIdx !== currentCycle.current) {
+      currentCycle.current = cycleIdx
+      const absoluteCycle = loopCount.current * UNLOAD_CYCLES + cycleIdx
+      resolveSlots(absoluteCycle)
       spawnContainers()
+      placed.current = [false, false, false, false]
     }
 
-    const t = elapsed.current
-
-    // === Phase 1: Vessel sails from sea to dock ===
-    if (vesselRef.current) {
-      if (t <= P.vesselEnd) {
-        vesselRef.current.visible = true
-        const p = progress(t, P.vesselStart, P.vesselEnd)
-        const pos = lerpTuple(VESSEL_SEA, VESSEL_DOCK, p)
-        vesselRef.current.position.set(pos[0], pos[1], pos[2])
-      } else if (t >= P.vesselLeaveStart) {
-        // === Phase 6: Vessel sails back to sea and disappears ===
-        vesselRef.current.visible = true
-        const p = progress(t, P.vesselLeaveStart, P.vesselLeaveEnd)
-        const pos = lerpTuple(VESSEL_DOCK, VESSEL_SEA, p)
-        vesselRef.current.position.set(pos[0], pos[1], pos[2])
-        if (p >= 1) vesselRef.current.visible = false
-      }
-    }
-
-    // === Phase 2: Cranes unload containers (vessel deck → road level) ===
+    // === Phase 2: Cranes unload containers ===
     for (let i = 0; i < 4; i++) {
       const ref = containerRefs.current[i]
       if (!ref) continue
-
       const cranePos = ZONE.cranes[i].position
-      const stagger = i * 1
+      const stagger = i * STAGGER
 
-      if (t < P.craneStart + stagger) {
+      if (ct < C.craneStart + stagger) {
         ref.visible = false
-      } else if (t <= P.craneEnd) {
+      } else if (ct <= C.craneEnd) {
         ref.visible = true
-        const p = progress(t, P.craneStart + stagger, P.craneEnd)
+        const p = progress(ct, C.craneStart + stagger, C.craneEnd)
         const startPos: THREE.Vector3Tuple = [cranePos[0], CRANE_LIFT_Y, cranePos[2]]
         const endPos: THREE.Vector3Tuple = [ZONE.road[0], ZONE.road[1] + 2, cranePos[2]]
         const pos = lerpTuple(startPos, endPos, p)
         ref.position.set(pos[0], pos[1], pos[2])
+        ref.rotation.set(0, (Math.PI / 2) * p, 0)
       }
     }
 
-    // === Phase 3: Existing AGVs carry containers from road → yardHandover ===
+    // === Phase 3: AGVs carry containers ===
     for (let i = 0; i < 4; i++) {
       const agv = agvRefs.current[i]
       const cRef = containerRefs.current[i]
       if (!agv) continue
-
       const cranePos = ZONE.cranes[i].position
-      const stagger = i * 1
+      const stagger = i * STAGGER
 
-      if (t < P.agvStart) {
-        // Move AGV to road under its crane before phase starts
-        if (t >= P.craneStart) {
-          agv.position.set(ZONE.road[0], ZONE.road[1], cranePos[2])
-        }
-      } else if (t <= P.agvEnd) {
-        const p = progress(t, P.agvStart + stagger, P.agvEnd)
-        const startPos: THREE.Vector3Tuple = [ZONE.road[0], ZONE.road[1], cranePos[2]]
-        const endPos: THREE.Vector3Tuple = ZONE.yardHandover
-        const pos = lerpTuple(startPos, endPos, p)
+      if (ct < C.agvStart) {
+        if (ct >= C.craneStart) agv.position.set(ZONE.road[0], ZONE.road[1], cranePos[2])
+      } else if (ct <= C.agvEnd) {
+        const p = progress(ct, C.agvStart + stagger, C.agvEnd)
+        const pos = lerpTuple([ZONE.road[0], ZONE.road[1], cranePos[2]], ZONE.yardHandover, p)
         agv.position.set(pos[0], pos[1], pos[2])
-
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
+          cRef.rotation.set(0, Math.PI / 2, 0)
         }
       }
     }
 
-    // === Phase 4 & 5: Existing stackers carry from yardHandover → yard grid, then retreat ===
+    // === Phase 4 & 5: Stackers carry to yard, then retreat ===
     for (let i = 0; i < 4; i++) {
       const stacker = stackerRefs.current[i]
       const cRef = containerRefs.current[i]
       if (!stacker) continue
-
       const slot = yardSlots.current[i]
       const targetPos = yardTargetPositions.current[i]
       if (!slot || !targetPos) continue
-      const stagger = i * 1
+      const stagger = i * STAGGER
 
-      if (t < P.stackerStart) {
-        // Move stacker to yardHandover before phase starts
-        if (t >= P.agvStart) {
-          stacker.position.set(ZONE.yardHandover[0], ZONE.yardHandover[1], ZONE.yardHandover[2])
-        }
-      } else if (t <= P.stackerEnd) {
-        const p = progress(t, P.stackerStart + stagger, P.stackerEnd)
+      if (ct < C.stackerStart) {
+        if (ct >= C.agvStart) stacker.position.set(ZONE.yardHandover[0], ZONE.yardHandover[1], ZONE.yardHandover[2])
+      } else if (ct <= C.stackerEnd) {
+        const p = progress(ct, C.stackerStart + stagger, C.stackerEnd)
         const pos = lerpTuple(ZONE.yardHandover, targetPos, p)
         stacker.position.set(pos[0], pos[1], pos[2])
-
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
+          cRef.rotation.set(0, Math.PI / 2, 0)
         }
-
-        if (p >= 1 && !placed.current[i]) {
-          placed.current[i] = true
-          const containerId = `anim-container-5-${loopCount.current}-${i}`
-          placeContainer(5, slot.row, slot.col, containerId)
-
-          // Detach container from animation refs and leave it in the yard
-          if (cRef) {
-            cRef.position.set(targetPos[0], targetPos[1] + 2, targetPos[2])
-            placedContainers.current.push(cRef)
-            containerRefs.current[i] = null
-          }
+        if (p >= 1 && !placed.current[i] && cRef) {
+          placeContainerInYard(i, cRef, targetPos, slot)
         }
-      } else if (t <= P.retreatEnd) {
-        // Phase 5: Stacker retreats to yardHandover (container already detached)
-        const p = progress(t, P.retreatStart + stagger, P.retreatEnd)
+      } else if (ct <= C.retreatEnd) {
+        if (!placed.current[i] && cRef) placeContainerInYard(i, cRef, targetPos, slot)
+        const p = progress(ct, C.retreatStart + stagger, C.retreatEnd)
         const pos = lerpTuple(targetPos, ZONE.yardHandover, p)
         stacker.position.set(pos[0], pos[1], pos[2])
       } else {
+        if (!placed.current[i] && cRef) placeContainerInYard(i, cRef, targetPos, slot)
         stacker.position.set(ZONE.yardHandover[0], ZONE.yardHandover[1], ZONE.yardHandover[2])
       }
     }
   })
 
   return (
-    <group ref={animGroupRef}>
-      {/* Vessel */}
-      <group ref={vesselRef} position={[VESSEL_SEA[0], VESSEL_SEA[1], VESSEL_SEA[2]]}>
-        <primitive object={clones.vessel} scale={VESSEL_SCALE} />
-      </group>
-      {/* Containers are dynamically added/removed via spawnContainers() */}
+    <group>
+      <Vessel
+        zone={ZONE}
+        elapsedRef={elapsed}
+        arriveEnd={VESSEL_ARRIVE_END}
+        leaveStart={VESSEL_LEAVE_START}
+        leaveEnd={VESSEL_LEAVE_END}
+        scale={60}
+        seed={42}
+      />
+      <Container ref={containerRef} seed={100} />
     </group>
   )
 }

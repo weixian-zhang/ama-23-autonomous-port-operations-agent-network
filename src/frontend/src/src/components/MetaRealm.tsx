@@ -49,9 +49,18 @@ function KeyboardMovement({ speed = 45 }: { speed?: number }) {
   return null
 }
 
+function InitialCameraView() {
+  const { camera } = useThree()
+  useEffect(() => {
+    camera.position.set(-300, 250, 0)
+    camera.lookAt(0, 0, 0)
+  }, [camera])
+  return null
+}
+
 export function MetaRealm() {
   return (
-    <Canvas camera={{ position: [50, 50, 50], fov: 60 }}>
+    <Canvas camera={{ position: [-300, 250, 70], fov: 60 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 20, 10]} intensity={1} />
       <Suspense fallback={null}>
@@ -67,6 +76,7 @@ export function MetaRealm() {
       </Suspense>
       <PointerLockControls />
       <KeyboardMovement speed={55} />
+      <InitialCameraView />
     </Canvas>
   )
 }

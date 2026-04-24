@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
 
-const CRANE_SCALE = 30.5
+const CRANE_SCALE = 40
 
 export function Cranes() {
   const { scene } = useGLTF('/blender-asset/crane.glb')
