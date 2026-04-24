@@ -12,6 +12,8 @@ import { Berth5Animation } from './Berth5Animation'
 import { Berth2Animation } from './Berth2Animation'
 import { Berth4Animation } from './Berth4Animation'
 import { Berth1Animation } from './Berth1Animation'
+import { OperatorNPCYard_5_1_Route_Animation } from './OperatorNPCYard_5_1_Route_Animation'
+import { OperatorNPC } from './OperatorNPC'
 
 function KeyboardMovement({ speed = 45 }: { speed?: number }) {
   const { camera } = useThree()
@@ -78,6 +80,7 @@ export function MetaRealm() {
           <Berth2Animation />
           <Berth4Animation />
           <Berth1Animation />
+          <OperatorNPCYard_5_1_Route_Animation count={8} />
         </group>
       </Suspense>
       <PointerLockControls />
