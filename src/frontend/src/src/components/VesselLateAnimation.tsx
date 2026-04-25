@@ -1,5 +1,5 @@
 import { useFrame, useThree } from '@react-three/fiber'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 import * as THREE from 'three'
 import { PORT_ZONES, getYardCellPosition, placeContainer, clearZoneContainers, type Vec3 } from '../data/portZoneData'
 import { Vessel } from './Vessel'
@@ -7,11 +7,10 @@ import { Container } from './Container'
 import type { ContainerHandle } from './Container'
 import { useAgvOwnership } from '../context/AgvOwnershipContext'
 
-// Sub-cycle timing — 20 unload cycles per animation loop
+// Same sub-cycle timing as UnloadAnimation
 const UNLOAD_CYCLES = 20
-const CYCLE_DURATION = 15.5  // seconds per unload sub-cycle
+const CYCLE_DURATION = 15.5
 
-// Relative timings within each sub-cycle
 const C = {
   craneStart: 0,     craneEnd: 2.5,
   agvStart: 2.5,     agvEnd: 7.5,
@@ -20,7 +19,7 @@ const C = {
 }
 const STAGGER = 0.4
 const CRANE_LIFT_Y = 20
-const VESSEL_ARRIVE_END = 7
+const VESSEL_ARRIVE_END = 0.01 // vessel starts already docked
 const CYCLE_OFFSET = VESSEL_ARRIVE_END
 const YARD_ROTATION = Math.PI / 2
 
@@ -49,21 +48,36 @@ function getSlotsForLoop(rows: number, cols: number, tiers: number, loop: number
   })
 }
 
-interface UnloadAnimationProps {
+/** Description of a borrowed AGV+stacker pair */
+export interface BorrowedUnit {
+  agvName: string
+  stackerName: string
+}
+
+export interface VesselLateAnimationHandle {
+  /** Borrow AGV+stacker pairs from other berths to participate in this animation */
+  borrowUnits: (units: BorrowedUnit[]) => void
+  /** Release all borrowed units back to their original animations */
+  resetAnimation: () => void
+}
+
+interface VesselLateAnimationProps {
   berthId: number
   vesselScale?: number
   vesselSeed?: number
   containerSeed?: number
   onVesselClick?: (vesselGlb: string, berthId: number) => void
+  handleRef?: React.MutableRefObject<VesselLateAnimationHandle | null>
 }
 
-export function UnloadAnimation({
+export function VesselLateAnimation({
   berthId,
   vesselScale = 60,
-  vesselSeed = 42,
-  containerSeed = 100,
+  vesselSeed = 99,
+  containerSeed = 500,
   onVesselClick,
-}: UnloadAnimationProps) {
+  handleRef,
+}: VesselLateAnimationProps) {
   const zone = PORT_ZONES.find((z) => z.id === berthId)!
   const totalCells = zone.yardGrid.rows * zone.yardGrid.cols
   const maxContainers = totalCells * zone.yardGrid.tiers
@@ -72,14 +86,11 @@ export function UnloadAnimation({
   const vesselLeaveEnd = vesselLeaveStart + 5
   const loopDuration = vesselLeaveEnd + 2
 
-  const agvNames = [0, 1, 2, 3].map((i) => `agv-berth-${berthId}-${i}`)
-  const stackerNames = [0, 1, 2, 3].map((i) => `stacker-yard-${berthId}-${i}`)
-
   const { scene: rootScene } = useThree()
-  const { getOwner } = useAgvOwnership()
+  const { claim, release, saveOriginalPosition, getOriginalPosition } = useAgvOwnership()
   const containerRef = useRef<ContainerHandle>(null)
 
-  const elapsed = useRef(0)
+  const elapsed = useRef(1) // start past VESSEL_ARRIVE_END so vessel is docked from the start
   const placed = useRef<boolean[]>([false, false, false, false])
   const loopCount = useRef(0)
   const currentCycle = useRef(-1)
@@ -89,8 +100,17 @@ export function UnloadAnimation({
   const placedContainers = useRef<THREE.Group[]>([])
   const containerRefs = useRef<(THREE.Group | null)[]>([null, null, null, null])
 
+  // Borrowed AGVs/stackers — up to 4 lanes
+  const borrowedUnits = useRef<BorrowedUnit[]>([])
   const agvRefs = useRef<(THREE.Object3D | null)[]>([null, null, null, null])
   const stackerRefs = useRef<(THREE.Object3D | null)[]>([null, null, null, null])
+
+  // Whether animation is active (has borrowed units)
+  const active = useRef(false)
+  // Travel phase: borrowed units moving to berth 3 positions
+  const travelProgress = useRef<number[]>([0, 0, 0, 0])
+  const travelPhase = useRef<'idle' | 'arriving' | 'active' | 'returning'>('idle')
+  const TRAVEL_SPEED = 0.075 // progress per second for arrival/return travel
 
   function resolveSlots(cycleIndex: number) {
     const slots = getSlotsForLoop(zone.yardGrid.rows, zone.yardGrid.cols, zone.yardGrid.tiers, cycleIndex)
@@ -111,7 +131,7 @@ export function UnloadAnimation({
 
   function placeContainerInYard(i: number, cRef: THREE.Group, targetPos: Vec3, slot: { row: number; col: number }) {
     placed.current[i] = true
-    const containerId = `anim-container-${berthId}-${loopCount.current}-${currentCycle.current}-${i}`
+    const containerId = `anim-container-late-${berthId}-${loopCount.current}-${currentCycle.current}-${i}`
     placeContainer(berthId, slot.row, slot.col, containerId)
     cRef.position.set(targetPos[0], targetPos[1] + 2, targetPos[2])
     cRef.quaternion.identity()
@@ -122,18 +142,147 @@ export function UnloadAnimation({
     containerRefs.current[i] = null
   }
 
-  useEffect(() => {
-    for (let i = 0; i < 4; i++) {
-      const agv = rootScene.getObjectByName(agvNames[i])
-      if (agv) agvRefs.current[i] = agv
-      const stacker = rootScene.getObjectByName(stackerNames[i])
-      if (stacker) stackerRefs.current[i] = stacker
+  const borrowUnits = useCallback((units: BorrowedUnit[]) => {
+    const capped = units.slice(0, 4)
+
+    // Save original positions and claim ownership
+    for (const unit of capped) {
+      const agv = rootScene.getObjectByName(unit.agvName)
+      if (agv) {
+        saveOriginalPosition(unit.agvName, [agv.position.x, agv.position.y, agv.position.z])
+        claim(unit.agvName, 'vesselLate')
+      }
+      const stacker = rootScene.getObjectByName(unit.stackerName)
+      if (stacker) {
+        saveOriginalPosition(unit.stackerName, [stacker.position.x, stacker.position.y, stacker.position.z])
+        claim(unit.stackerName, 'vesselLate')
+      }
     }
-  }, [rootScene])
+
+    borrowedUnits.current = capped
+    // Resolve refs
+    for (let i = 0; i < 4; i++) {
+      if (i < capped.length) {
+        agvRefs.current[i] = rootScene.getObjectByName(capped[i].agvName) ?? null
+        stackerRefs.current[i] = rootScene.getObjectByName(capped[i].stackerName) ?? null
+      } else {
+        agvRefs.current[i] = null
+        stackerRefs.current[i] = null
+      }
+    }
+
+    // Reset animation state
+    elapsed.current = 0
+    loopCount.current = 0
+    currentCycle.current = -1
+    travelProgress.current = [0, 0, 0, 0]
+    travelPhase.current = 'arriving'
+    active.current = true
+  }, [rootScene, claim, saveOriginalPosition])
+
+  const resetAnimation = useCallback(() => {
+    if (!active.current) return
+    travelPhase.current = 'returning'
+  }, [])
+
+  // Expose handle to parent
+  useEffect(() => {
+    if (handleRef) {
+      handleRef.current = { borrowUnits, resetAnimation }
+    }
+  }, [handleRef, borrowUnits, resetAnimation])
 
   useFrame((_, delta) => {
+    if (!active.current) return
+
+    const units = borrowedUnits.current
+    if (units.length === 0) return
+
+    // === Travel phase: arriving — lerp borrowed units from original position to berth 3 working positions ===
+    if (travelPhase.current === 'arriving') {
+      let allArrived = true
+      for (let i = 0; i < units.length; i++) {
+        travelProgress.current[i] = Math.min(travelProgress.current[i] + delta * TRAVEL_SPEED, 1)
+        if (travelProgress.current[i] < 1) allArrived = false
+
+        const agv = agvRefs.current[i]
+        const stacker = stackerRefs.current[i]
+        const cranePos = zone.cranes[i]?.position
+        if (!cranePos) continue
+
+        const agvOrigin = getOriginalPosition(units[i].agvName)
+        const agvTarget: Vec3 = [zone.road[0], zone.road[1], cranePos[2]]
+        if (agv && agvOrigin) {
+          const pos = lerpTuple(agvOrigin, agvTarget, travelProgress.current[i])
+          agv.position.set(pos[0], pos[1], pos[2])
+        }
+
+        const stackerOrigin = getOriginalPosition(units[i].stackerName)
+        const stackerTarget: Vec3 = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+        if (stacker && stackerOrigin) {
+          const pos = lerpTuple(stackerOrigin, stackerTarget, travelProgress.current[i])
+          stacker.position.set(pos[0], pos[1], pos[2])
+        }
+      }
+      if (allArrived) {
+        travelPhase.current = 'active'
+        elapsed.current = 0
+      }
+      return
+    }
+
+    // === Travel phase: returning — lerp back to original positions, then release ===
+    if (travelPhase.current === 'returning') {
+      let allReturned = true
+      for (let i = 0; i < units.length; i++) {
+        travelProgress.current[i] = Math.min(travelProgress.current[i] + delta * TRAVEL_SPEED, 1)
+        if (travelProgress.current[i] < 1) allReturned = false
+
+        const agv = agvRefs.current[i]
+        const stacker = stackerRefs.current[i]
+        const cranePos = zone.cranes[i]?.position
+        if (!cranePos) continue
+
+        const agvOrigin = getOriginalPosition(units[i].agvName)
+        const agvCurrent: Vec3 = [zone.road[0], zone.road[1], cranePos[2]]
+        if (agv && agvOrigin) {
+          const pos = lerpTuple(agvCurrent, agvOrigin, travelProgress.current[i])
+          agv.position.set(pos[0], pos[1], pos[2])
+        }
+
+        const stackerOrigin = getOriginalPosition(units[i].stackerName)
+        const stackerCurrent: Vec3 = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+        if (stacker && stackerOrigin) {
+          const pos = lerpTuple(stackerCurrent, stackerOrigin, travelProgress.current[i])
+          stacker.position.set(pos[0], pos[1], pos[2])
+        }
+      }
+      if (allReturned) {
+        // Release ownership
+        for (const unit of units) {
+          release(unit.agvName, 'vesselLate')
+          release(unit.stackerName, 'vesselLate')
+        }
+        borrowedUnits.current = []
+        agvRefs.current = [null, null, null, null]
+        stackerRefs.current = [null, null, null, null]
+        travelPhase.current = 'idle'
+        active.current = false
+
+        // Clean up yard
+        clearZoneContainers(berthId)
+        for (const c of placedContainers.current) {
+          c.removeFromParent()
+        }
+        placedContainers.current = []
+      }
+      return
+    }
+
+    // === Active phase: same unload animation as UnloadAnimation ===
     elapsed.current += delta
     const t = elapsed.current
+    const laneCount = units.length
 
     if (t >= loopDuration) {
       elapsed.current = 0
@@ -165,7 +314,7 @@ export function UnloadAnimation({
     }
 
     // === Phase 2: Cranes unload containers ===
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < laneCount; i++) {
       const ref = containerRefs.current[i]
       if (!ref) continue
       const cranePos = zone.cranes[i].position
@@ -185,36 +334,40 @@ export function UnloadAnimation({
     }
 
     // === Phase 3: AGVs carry containers ===
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < laneCount; i++) {
       const agv = agvRefs.current[i]
       const cRef = containerRefs.current[i]
       if (!agv) continue
-      const agvOwner = getOwner(agvNames[i])
-      if (agvOwner !== null && agvOwner !== 'unload') continue
       const cranePos = zone.cranes[i].position
       const stagger = i * STAGGER
       const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+      const roadPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1], cranePos[2]]
 
       if (ct < C.agvStart) {
-        if (ct >= C.craneStart) agv.position.set(zone.road[0], zone.road[1], cranePos[2])
+        if (ct >= C.craneStart) agv.position.set(roadPos[0], roadPos[1], roadPos[2])
       } else if (ct <= C.agvEnd) {
         const p = progress(ct, C.agvStart + stagger, C.agvEnd)
-        const pos = lerpTuple([zone.road[0], zone.road[1], cranePos[2]], handover, p)
+        const pos = lerpTuple(roadPos, handover, p)
         agv.position.set(pos[0], pos[1], pos[2])
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
           cRef.rotation.set(0, Math.PI / 2, 0)
         }
+      } else if (ct <= C.stackerEnd) {
+        // AGV retreat: handover → road during stacker carry phase
+        const p = progress(ct, C.agvEnd + stagger, C.stackerEnd)
+        const pos = lerpTuple(handover, roadPos, p)
+        agv.position.set(pos[0], pos[1], pos[2])
+      } else {
+        agv.position.set(roadPos[0], roadPos[1], roadPos[2])
       }
     }
 
     // === Phase 4 & 5: Stackers carry to yard, then retreat ===
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < laneCount; i++) {
       const stacker = stackerRefs.current[i]
       const cRef = containerRefs.current[i]
       if (!stacker) continue
-      const stackerOwner = getOwner(stackerNames[i])
-      if (stackerOwner !== null && stackerOwner !== 'unload') continue
       const slot = yardSlots.current[i]
       const targetPos = yardTargetPositions.current[i]
       if (!slot || !targetPos) continue
@@ -255,6 +408,7 @@ export function UnloadAnimation({
         arriveEnd={VESSEL_ARRIVE_END}
         leaveStart={vesselLeaveStart}
         leaveEnd={vesselLeaveEnd}
+        seaX={-55}
         scale={vesselScale}
         seed={vesselSeed}
         onVesselClick={onVesselClick}

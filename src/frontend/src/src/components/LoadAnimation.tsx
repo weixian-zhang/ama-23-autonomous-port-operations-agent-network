@@ -5,6 +5,7 @@ import { PORT_ZONES, getYardCellPosition, clearZoneContainers, type Vec3 } from 
 import { Vessel } from './Vessel'
 import { Container } from './Container'
 import type { ContainerHandle } from './Container'
+import { useAgvOwnership } from '../context/AgvOwnershipContext'
 
 const INITIAL_CONTAINERS = 50
 const YARD_ROTATION = Math.PI / 2
@@ -59,6 +60,7 @@ export function LoadAnimation({
   const stackerNames = [0, 1, 2, 3].map((i) => `stacker-yard-${berthId}-${i}`)
 
   const { scene: rootScene } = useThree()
+  const { getOwner } = useAgvOwnership()
   const containerRef = useRef<ContainerHandle>(null)
 
   const elapsed = useRef(0)
@@ -197,6 +199,8 @@ export function LoadAnimation({
       const cRef = containerRefs.current[i]
       const pickPos = pickPositions.current[i]
       if (!stacker || !pickPos) continue
+      const stackerOwner = getOwner(stackerNames[i])
+      if (stackerOwner !== null && stackerOwner !== 'load') continue
       const stagger = i * STAGGER
       const cranePos = zone.cranes[i].position
       const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
@@ -220,6 +224,8 @@ export function LoadAnimation({
       const agv = agvRefs.current[i]
       const cRef = containerRefs.current[i]
       if (!agv || !pickPositions.current[i]) continue
+      const agvOwner = getOwner(agvNames[i])
+      if (agvOwner !== null && agvOwner !== 'load') continue
       const cranePos = zone.cranes[i].position
       const stagger = i * STAGGER
       const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
@@ -283,6 +289,10 @@ export function LoadAnimation({
       const agv = agvRefs.current[i]
       const pickPos = pickPositions.current[i]
       if (!pickPos) continue
+      const agvOwner = getOwner(agvNames[i])
+      const stackerOwner = getOwner(stackerNames[i])
+      const agvBorrowed = agvOwner !== null && agvOwner !== 'load'
+      const stackerBorrowed = stackerOwner !== null && stackerOwner !== 'load'
       const cranePos = zone.cranes[i].position
       const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
       const stagger = i * STAGGER
@@ -291,7 +301,7 @@ export function LoadAnimation({
         const p = progress(ct, C.retreatStart + stagger, C.retreatEnd)
 
         // AGV: road → handover, rotated 180° (facing handover direction) then settle to 90°
-        if (agv) {
+        if (agv && !agvBorrowed) {
           const roadPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1], cranePos[2]]
           const pos = lerpTuple(roadPos, handover, p)
           agv.position.set(pos[0], pos[1], pos[2])
@@ -306,17 +316,17 @@ export function LoadAnimation({
         }
 
         // Stacker: handover → back toward yard (its pick position as proxy)
-        if (stacker) {
+        if (stacker && !stackerBorrowed) {
           const pos = lerpTuple(handover, pickPos, p)
           stacker.position.set(pos[0], pos[1], pos[2])
         }
       } else if (ct > C.retreatEnd) {
         // Hold at end positions
-        if (agv) {
+        if (agv && !agvBorrowed) {
           agv.position.set(handover[0], handover[1], handover[2])
           agv.rotation.set(0, Math.PI / 2, 0)
         }
-        if (stacker) {
+        if (stacker && !stackerBorrowed) {
           stacker.position.set(pickPos[0], pickPos[1], pickPos[2])
         }
       }

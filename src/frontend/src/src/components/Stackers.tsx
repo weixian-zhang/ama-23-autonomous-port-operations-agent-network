@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
 
 const STACKER_SCALE = 10
-const STACKERS_PER_YARD = 5
+const STACKERS_PER_YARD = 4
 const YARD_Z_HALF_RANGE = 100
 const YARD_X_MIN = 30
 const YARD_X_MAX = 120
