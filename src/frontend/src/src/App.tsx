@@ -14,7 +14,7 @@ function App() {
       { agvName: 'agv-berth-5-0', stackerName: 'stacker-yard-5-0' },
       { agvName: 'agv-berth-2-0', stackerName: 'stacker-yard-2-0' },
     ]
-    vesselLateRef.current?.borrowUnits(units ?? defaultUnits)
+    vesselLateRef.current?.borrow_AGV_Stackers(units ?? defaultUnits)
   }
   ;(window as any).reset_late_vessel_animation = () => {
     vesselLateRef.current?.resetAnimation()

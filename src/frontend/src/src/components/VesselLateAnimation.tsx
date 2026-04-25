@@ -56,7 +56,7 @@ export interface BorrowedUnit {
 
 export interface VesselLateAnimationHandle {
   /** Borrow AGV+stacker pairs from other berths to participate in this animation */
-  borrowUnits: (units: BorrowedUnit[]) => void
+  borrow_AGV_Stackers: (units: BorrowedUnit[]) => void
   /** Release all borrowed units back to their original animations */
   resetAnimation: () => void
 }
@@ -142,7 +142,7 @@ export function VesselLateAnimation({
     containerRefs.current[i] = null
   }
 
-  const borrowUnits = useCallback((units: BorrowedUnit[]) => {
+  const borrow_AGV_Stackers = useCallback((units: BorrowedUnit[]) => {
     const capped = units.slice(0, 4)
 
     // Save original positions and claim ownership
@@ -188,9 +188,9 @@ export function VesselLateAnimation({
   // Expose handle to parent
   useEffect(() => {
     if (handleRef) {
-      handleRef.current = { borrowUnits, resetAnimation }
+      handleRef.current = { borrow_AGV_Stackers: borrow_AGV_Stackers, resetAnimation }
     }
-  }, [handleRef, borrowUnits, resetAnimation])
+  }, [handleRef, borrow_AGV_Stackers, resetAnimation])
 
   useFrame((_, delta) => {
     if (!active.current) return
