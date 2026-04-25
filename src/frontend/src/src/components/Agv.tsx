@@ -21,7 +21,7 @@ export function Agv() {
 
   const agvPositions = useMemo(() => {
     const positions: { name: string; position: [number, number, number] }[] = []
-    PORT_ZONES.forEach((zone) => {
+    PORT_ZONES.filter((zone) => zone.id !== 3).forEach((zone) => {
       for (let i = 0; i < AGVS_PER_BERTH; i++) {
         const seed = zone.id * 100 + i
         const x = AGV_X_MIN + seededRandom(seed) * (AGV_X_MAX - AGV_X_MIN)

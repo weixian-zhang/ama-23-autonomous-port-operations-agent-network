@@ -21,7 +21,7 @@ export function Stackers() {
 
   const stackerPositions = useMemo(() => {
     const positions: { name: string; position: [number, number, number] }[] = []
-    PORT_ZONES.forEach((zone) => {
+    PORT_ZONES.filter((zone) => zone.id !== 3).forEach((zone) => {
       for (let i = 0; i < STACKERS_PER_YARD; i++) {
         const seed = zone.id * 200 + i
         const x = YARD_X_MIN + seededRandom(seed) * (YARD_X_MAX - YARD_X_MIN)
