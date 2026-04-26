@@ -8,6 +8,28 @@
 			"problemMatcher": [],
 			"label": "npm run dev",
 			"detail": "vite"
+		},
+		{
+			"label": "start ngrok",
+			"type": "shell",
+			"command": "ngrok http 3978",
+			"isBackground": true,
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^never$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^Session Status",
+					"endsPattern": "^Forwarding"
+				}
+			}
+		},
+		{
+			"label": "zip teams manifest",
+			"type": "shell",
+			"command": "cd ${workspaceFolder}/src/frontend/ms-teams && zip -j salacia-teams-bot.zip color.png manifest.json outline.png",
+			"problemMatcher": []
 		}
 	]
 }

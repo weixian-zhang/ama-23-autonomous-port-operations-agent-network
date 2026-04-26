@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.19",
+  "version": "1.0.0",
+  "id": "f552feab-c584-4c47-813a-64a0d1198f54",
+  "developer": {
+    "name": "Salacia",
+    "websiteUrl": "https://salacia.com",
+    "privacyUrl": "https://salacia.com/privacy",
+    "termsOfUseUrl": "https://salacia.com/terms"
+  },
+  "name": {
+    "short": "Salacia",
+    "full": "Salacia Agents"
+  },
+  "description": {
+    "short": "Port operations management in MS Teams.",
+    "full": "Salacia is AI-powered next generation Terminal OS for managing port operations through AI-Agent coordination."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#0078D4",
+  "bots": [
+    {
+      "botId": "f552feab-c584-4c47-813a-64a0d1198f54",
+      "scopes": [
+        "personal",
+        "team",
+        "groupChat"
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": false,
+      "commandLists": [
+        {
+          "scopes": ["personal", "team", "groupChat"],
+          "commands": [
+            {
+              "title": "help",
+              "description": "Show available commands"
+            },
+            {
+              "title": "status",
+              "description": "Get port operations status"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": []
+}
