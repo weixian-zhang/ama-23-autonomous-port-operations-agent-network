@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach by Process ID",
+            "name": "debug backend",
             "processId": "${command:PickProcess}",
             "request": "attach",
             "skipFiles": [
