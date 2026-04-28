@@ -32,3 +32,11 @@ server.listen(PORT, () => {
   console.log(`[Server] Bot endpoint: POST /api/messages`);
   console.log(`[Server] WebSocket:    ws://localhost:${PORT}/ws`);
 });
+
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[Server] Port ${PORT} is already in use. Kill the other process and retry.`);
+  } else {
+    console.error('[Server] Error:', err);
+  }
+});

@@ -21,8 +21,8 @@ function AgentPanel({
   messages: ChatMessage[]
   onSend: (agentId: AgentId, text: string) => void
 }) {
-  const bottomRef = useRef<HTMLDivElement>(null)
   const [input, setInput] = useState('')
+  const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -81,10 +81,16 @@ export function Chat() {
 
   useEffect(() => {
     socketClient.connect()
-    const unsubFleet = socketClient.on('fleet_market', (msg) => {
-      const text = typeof msg.text === 'string' ? msg.text : JSON.stringify(msg)
+    const unsubFleet1 = socketClient.on('fleet-market', (msg) => {
+      const text = typeof msg.message === 'string' ? msg.message : JSON.stringify(msg)
       setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
     })
+    const unsubFleet2 = socketClient.on('teams-message', (msg) => {
+      const from = typeof msg.from === 'string' ? msg.from : 'Teams'
+      const text = typeof msg.text === 'string' ? `[${from}]: ${msg.text}` : JSON.stringify(msg)
+      setFleetMessages((prev) => [...prev, { role: 'user', text, source: 'ws' }])
+    })
+    const unsubFleetMarket = () => { unsubFleet1(); unsubFleet2() }
     const unsubCrane = socketClient.on('crane_auctioneer', (msg) => {
       const text = typeof msg.text === 'string' ? msg.text : JSON.stringify(msg)
       setCraneMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
@@ -95,17 +101,17 @@ export function Chat() {
     })
 
     // Fleet Market: randomly pick AGV/stacker conversations every 2s
-    const fleetTimer = setInterval(() => {
-      const entry = agvStackerConversations[Math.floor(Math.random() * agvStackerConversations.length)]
-      const text = `${entry.name}: ${entry.message}`
-      setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'json' }])
-    }, 5000)
+    // const fleetTimer = setInterval(() => {
+    //   const entry = agvStackerConversations[Math.floor(Math.random() * agvStackerConversations.length)]
+    //   const text = `${entry.name}: ${entry.message}`
+    //   setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'json' }])
+    // }, 10000)
 
     return () => {
-      unsubFleet()
+      unsubFleetMarket()
       unsubCrane()
       unsubYard()
-      clearInterval(fleetTimer)
+      // clearInterval(fleetTimer)
     }
   }, [])
 

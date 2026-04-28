@@ -2,18 +2,31 @@ import {
   CloudAdapter,
   ConfigurationBotFrameworkAuthentication,
   type TurnContext,
+  type ConversationReference,
   ActivityHandler,
   MessageFactory,
+  TurnContext as TurnContextClass,
 } from 'botbuilder';
 import { broadcast } from './websocket.js';
+import { FleetMarketAgentChat } from './agents/FleetMarketAgentChat.js';
+
+// ── Conversation references for proactive messaging ──────────────────
+
+const conversationReferences = new Map<string, Partial<ConversationReference>>();
 
 // ── Bot logic ────────────────────────────────────────────────────────
 
 class TeamsBot extends ActivityHandler {
+  private fleetMarketAgent = new FleetMarketAgentChat();
+
   constructor() {
     super();
 
     this.onMessage(async (context: TurnContext, next) => {
+      // Store conversation reference for proactive messaging
+      const ref = TurnContextClass.getConversationReference(context.activity);
+      conversationReferences.set(ref.conversation!.id, ref);
+
       const text = context.activity.text?.trim() ?? '';
       const from = context.activity.from?.name ?? 'unknown';
       console.log(`[Bot] Message from ${from}: ${text}`);
@@ -26,10 +39,14 @@ class TeamsBot extends ActivityHandler {
         timestamp: new Date().toISOString(),
       });
 
+      // Send to FleetMarketAgentChat and get reply
+      const reply = await this.fleetMarketAgent.chat(text);
+
+      // Broadcast agent reply to frontend
+      broadcast({ type: 'fleet-market', message: reply });
+
       // Reply back to Teams
-      await context.sendActivity(
-        MessageFactory.text(`Received: "${text}"`)
-      );
+      await context.sendActivity(MessageFactory.text(reply));
 
       await next();
     });
@@ -66,3 +83,22 @@ adapter.onTurnError = async (context, error) => {
 };
 
 export const bot = new TeamsBot();
+
+/**
+ * Send a proactive message to all stored Teams conversations.
+ */
+export async function sendToTeams(text: string): Promise<void> {
+  for (const ref of conversationReferences.values()) {
+    try {
+      await adapter.continueConversationAsync(
+        process.env.MICROSOFT_APP_ID ?? '',
+        ref,
+        async (ctx) => {
+          await ctx.sendActivity(MessageFactory.text(text));
+        },
+      );
+    } catch (err) {
+      console.error('[Bot] Failed to send proactive message:', err);
+    }
+  }
+}

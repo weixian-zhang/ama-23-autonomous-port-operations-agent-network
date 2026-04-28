@@ -1,6 +1,7 @@
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { FirstPersonControls } from '@react-three/drei'
 import { Suspense, useEffect, useRef } from 'react'
+import * as THREE from 'three'
 import { PortTerrain } from './PortTerrain'
 import { Agv } from './Agv'
 import { BerthLocations } from './BerthLocations'
@@ -17,6 +18,33 @@ import { OperatorNPC } from './OperatorNPC'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 
+const IDLE_TIMEOUT_MS = 150
+
+function IdleMouseGuard({ controlsRef }: { controlsRef: React.RefObject<any> }) {
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    const onMove = () => {
+      if (controlsRef.current) controlsRef.current.lookSpeed = 0.07
+      if (timer.current) clearTimeout(timer.current)
+      timer.current = setTimeout(() => {
+        if (controlsRef.current) controlsRef.current.lookSpeed = 0
+      }, IDLE_TIMEOUT_MS)
+    }
+
+    window.addEventListener('mousemove', onMove)
+    // Start with look disabled until the mouse moves
+    if (controlsRef.current) controlsRef.current.lookSpeed = 0
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      if (timer.current) clearTimeout(timer.current)
+    }
+  }, [controlsRef])
+
+  return null
+}
+
 function InitialCameraView() {
   const { camera } = useThree()
   useEffect(() => {
@@ -32,6 +60,7 @@ interface MetaRealmProps {
 }
 
 export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps) {
+  const controlsRef = useRef<any>(null)
   return (
     <Canvas camera={{ position: [-300, 250, 70], fov: 60 }}>
       <ambientLight intensity={0.5} />
@@ -53,7 +82,8 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
           </group>
         </AgvOwnershipProvider>
       </Suspense>
-      <FirstPersonControls movementSpeed={40} lookSpeed={0.07} />
+      <FirstPersonControls ref={controlsRef} movementSpeed={70} lookSpeed={0.07} />
+      <IdleMouseGuard controlsRef={controlsRef} />
       <InitialCameraView />
     </Canvas>
   )

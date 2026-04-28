@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import type { Server } from 'http';
 import { FleetMarketAgentChat } from './agents/FleetMarketAgentChat.js';
+import { sendToTeams } from './bot.js';
 
 const clients = new Set<WebSocket>();
 
@@ -22,8 +23,16 @@ export function setupWebSocket(server: Server): WebSocketServer {
         const { type, message: userMessage } = message as { type?: string; message?: string };
 
         if (type === 'hive-fleet-market' && userMessage) {
+          // Also forward to Teams
+          await sendToTeams(userMessage);
+
           const reply = await fleetMarketAgent.chat(userMessage);
-          ws.send(JSON.stringify({ type: 'fleet_market', text: reply }));
+
+          ws.send(JSON.stringify({ type: 'fleet-market', message: reply }));
+
+          // Also forward to Teams
+          await sendToTeams(reply);
+          
         } else {
           // Unhandled type – ack for now; additional types will be added later
           ws.send(JSON.stringify({ type: 'ack', data: message }));
