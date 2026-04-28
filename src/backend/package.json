@@ -9,6 +9,9 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@azure/identity": "^4.13.1",
+    "@langchain/core": "^1.1.42",
+    "@langchain/openai": "^1.4.5",
     "botbuilder": "^4.23.1",
     "express": "^4.21.2",
     "ws": "^8.18.0"

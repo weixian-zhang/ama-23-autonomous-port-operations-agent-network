@@ -9,13 +9,12 @@
             "type": "node",
             "request": "launch",
             "runtimeExecutable": "${workspaceFolder}/src/backend/node_modules/.bin/tsx",
-            "runtimeArgs": ["watch", "src/index.ts"],
+            "runtimeArgs": ["src/index.ts"],
             "cwd": "${workspaceFolder}/src/backend",
             "envFile": "${workspaceFolder}/src/backend/.env",
             "skipFiles": ["<node_internals>/**"],
             "sourceMaps": true,
-            "console": "integratedTerminal",
-            "restart": true
+            "console": "integratedTerminal"
         },
         {
             "type": "node",

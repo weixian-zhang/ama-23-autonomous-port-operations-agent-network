@@ -10,7 +10,7 @@ export class SocketClient {
   private shouldReconnect = true
 
   constructor(url?: string) {
-    this.url = url ?? `ws://${location.host}/ws`
+    this.url = url ?? import.meta.env.VITE_WS_URL ?? `ws://${location.host}/ws`
   }
 
   connect(): void {

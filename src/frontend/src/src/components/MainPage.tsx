@@ -32,90 +32,34 @@ export function MainPage() {
   }
 
   return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        background: '#000',
-        display: 'flex',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="flex h-screen w-screen overflow-hidden bg-black">
       {/* ── Hamburger Button ── */}
       <button
         onClick={() => setSidebarOpen((v) => !v)}
-        style={{
-          position: 'absolute',
-          top: 12,
-          left: 12,
-          zIndex: 200,
-          background: 'rgba(0,0,0,0.7)',
-          border: '1px solid cyan',
-          boxShadow: '0 0 8px rgba(0,255,255,0.4)',
-          borderRadius: 6,
-          color: 'cyan',
-          fontSize: 22,
-          width: 38,
-          height: 38,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          lineHeight: 1,
-        }}
+        className="absolute top-3 left-3 z-[200] flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-md border border-cyan-400 bg-black/70 text-[22px] leading-none text-cyan-400 shadow-[0_0_8px_rgba(0,255,255,0.4)]"
       >
         ☰
       </button>
 
       {/* ── Sidebar ── */}
       <div
-        style={{
-          width: sidebarOpen ? 220 : 0,
-          minWidth: sidebarOpen ? 220 : 0,
-          height: '100%',
-          background: 'rgba(0,0,0,0.95)',
-          borderRight: sidebarOpen ? '1px solid cyan' : 'none',
-          boxShadow: sidebarOpen ? '2px 0 16px rgba(0,255,255,0.25)' : 'none',
-          transition: 'width 0.25s ease, min-width 0.25s ease',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
+        className={`flex h-full flex-col overflow-hidden transition-all duration-[250ms] ease-in-out ${
+          sidebarOpen
+            ? 'w-[220px] min-w-[220px] border-r border-cyan-400 shadow-[2px_0_16px_rgba(0,255,255,0.25)]'
+            : 'w-0 min-w-0'
+        } bg-black/95`}
       >
         {/* Logo area */}
-        <div
-          style={{
-            padding: '14px 16px 10px 56px',
-            borderBottom: '1px solid rgba(0,255,255,0.2)',
-          }}
-        >
-          <img src="/logo-icon.png" alt="logo" style={{ height: 28 }} />
+        <div className="border-b border-cyan-400/20 pt-3.5 pr-4 pb-2.5 pl-14">
+          <img src="/logo-icon.png" alt="logo" className="h-7" />
         </div>
 
         {/* Menu items */}
-        <nav style={{ flex: 1, padding: '8px 0' }}>
+        <nav className="flex-1 py-2">
           {menuItems.map((item) => (
             <div
               key={item}
-              style={{
-                padding: '10px 20px',
-                color: 'cyan',
-                fontSize: 13,
-                fontWeight: 500,
-                letterSpacing: 0.5,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                borderLeft: '3px solid transparent',
-                transition: 'background 0.15s, border-color 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0,255,255,0.08)'
-                e.currentTarget.style.borderLeftColor = 'cyan'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.borderLeftColor = 'transparent'
-              }}
+              className="cursor-pointer whitespace-nowrap border-l-[3px] border-transparent px-5 py-2.5 text-[13px] font-medium tracking-wide text-cyan-400 transition-[background,border-color] duration-150 hover:border-l-cyan-400 hover:bg-cyan-400/[0.08]"
             >
               {item}
             </div>
@@ -124,19 +68,9 @@ export function MainPage() {
       </div>
 
       {/* ── Main Panels ── */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', height: '100%' }}>
+      <div className="flex h-full flex-1 overflow-hidden">
         {/* Panel 1 – MetaRealm (80%) */}
-        <div
-          style={{
-            width: '80%',
-            position: 'relative',
-            border: '1px solid cyan',
-            boxShadow: '0 0 10px rgba(0,255,255,0.3), inset 0 0 10px rgba(0,255,255,0.05)',
-            borderRadius: 6,
-            margin: 8,
-            overflow: 'hidden',
-          }}
-        >
+        <div className="relative m-2 w-4/5 overflow-hidden rounded-md border border-cyan-400 shadow-[0_0_8px_cyan,inset_0_0_8px_rgba(0,255,255,0.1)]">
           <MetaRealm
             onVesselClick={(vesselGlb, berthId) => setVesselInfo({ vesselGlb, berthId })}
             vesselLateHandleRef={vesselLateRef}
@@ -144,13 +78,7 @@ export function MainPage() {
         </div>
 
         {/* Panel 2 – Chat (20%) */}
-        <div
-          style={{
-            width: '20%',
-            margin: '8px 8px 8px 0',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="mt-2 mr-2 mb-2 w-1/5 overflow-hidden">
           <Chat />
         </div>
       </div>

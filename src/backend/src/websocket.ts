@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import type { Server } from 'http';
+import { FleetMarketAgentChat } from './agents/FleetMarketAgentChat.js';
 
 const clients = new Set<WebSocket>();
 
@@ -10,14 +11,26 @@ export function setupWebSocket(server: Server): WebSocketServer {
     clients.add(ws);
     console.log(`[WS] Client connected (total: ${clients.size})`);
 
-    ws.on('message', (data) => {
+    // Per-connection agent instance (maintains conversation history)
+    const fleetMarketAgent = new FleetMarketAgentChat();
+
+    ws.on('message', async (data) => {
       try {
         const message = JSON.parse(data.toString());
         console.log('[WS] Received:', message);
-        // Echo back to sender as acknowledgement
-        ws.send(JSON.stringify({ type: 'ack', data: message }));
-      } catch {
-        console.warn('[WS] Invalid JSON received');
+
+        const { type, message: userMessage } = message as { type?: string; message?: string };
+
+        if (type === 'hive-fleet-market' && userMessage) {
+          const reply = await fleetMarketAgent.chat(userMessage);
+          ws.send(JSON.stringify({ type: 'fleet_market', text: reply }));
+        } else {
+          // Unhandled type – ack for now; additional types will be added later
+          ws.send(JSON.stringify({ type: 'ack', data: message }));
+        }
+      } catch (err) {
+        console.error('[WS] Error processing message:', err);
+        ws.send(JSON.stringify({ type: 'error', text: 'Failed to process message' }));
       }
     });
 

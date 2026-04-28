@@ -1,69 +1,74 @@
 import { useEffect, useRef, useState } from 'react'
 import { socketClient } from '../SocketClient'
+import agvStackerConversations from '../data/agv-stacker-conversations.json'
 
 interface ChatMessage {
   role: 'agent' | 'user'
   text: string
+  source?: 'json' | 'ws'
 }
 
-const panelStyle: React.CSSProperties = {
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  background: '#000',
-  border: '1px solid cyan',
-  boxShadow: '0 0 8px cyan, inset 0 0 8px rgba(0,255,255,0.1)',
-  borderRadius: 6,
-  overflow: 'hidden',
-}
+type AgentId = 'crane_auctioneer' | 'fleet_market' | 'yard_king'
 
-const headerStyle: React.CSSProperties = {
-  padding: '6px 12px',
-  fontSize: 13,
-  fontWeight: 700,
-  color: 'cyan',
-  borderBottom: '1px solid rgba(0,255,255,0.3)',
-  textTransform: 'uppercase',
-  letterSpacing: 1,
-}
-
-const messagesStyle: React.CSSProperties = {
-  flex: 1,
-  overflowY: 'auto',
-  padding: '8px 12px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 4,
-  fontSize: 13,
-  color: '#e0e0e0',
-}
-
-function AgentPanel({ name, messages }: { name: string; messages: ChatMessage[] }) {
+function AgentPanel({
+  name,
+  agentId,
+  messages,
+  onSend,
+}: {
+  name: string
+  agentId: AgentId
+  messages: ChatMessage[]
+  onSend: (agentId: AgentId, text: string) => void
+}) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const [input, setInput] = useState('')
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const handleSend = () => {
+    const text = input.trim()
+    if (!text) return
+    onSend(agentId, text)
+    setInput('')
+  }
+
   return (
-    <div style={panelStyle}>
-      <div style={headerStyle}>{name}</div>
-      <div style={messagesStyle}>
+    <div className="flex flex-1 flex-col overflow-hidden rounded-md border border-cyan-400 bg-black shadow-[0_0_8px_cyan,inset_0_0_8px_rgba(0,255,255,0.1)]">
+      <div className="border-b border-cyan-400/30 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-cyan-400">
+        {name}
+      </div>
+      <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-2 text-[13px] text-gray-200">
         {messages.map((m, i) => (
           <div
             key={i}
-            style={{
-              alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
-              background: m.role === 'user' ? 'rgba(0,255,255,0.15)' : 'rgba(255,255,255,0.05)',
-              padding: '4px 8px',
-              borderRadius: 4,
-              maxWidth: '85%',
-            }}
+            className={`max-w-[85%] rounded px-2 py-1 ${
+              m.role === 'user'
+                ? 'self-end bg-cyan-400/15'
+                : 'self-start bg-white/5'
+            } ${m.source === 'json' ? 'text-[#ffffff]' : 'text-orange-400'}`}
           >
             {m.text}
           </div>
         ))}
         <div ref={bottomRef} />
+      </div>
+      <div className="flex gap-1 border-t border-cyan-400/30 p-1">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="Type a message…"
+          className="flex-1 rounded border border-cyan-400/30 bg-white/5 px-2 py-1 text-xs text-gray-200 outline-none placeholder:text-gray-500"
+        />
+        <button
+          onClick={handleSend}
+          className="cursor-pointer rounded border border-cyan-400 bg-cyan-400/15 px-2.5 py-1 text-xs text-cyan-400"
+        >
+          ▶
+        </button>
       </div>
     </div>
   )
@@ -76,30 +81,55 @@ export function Chat() {
 
   useEffect(() => {
     socketClient.connect()
-    const unsub = socketClient.on('fleet_market', (msg) => {
+    const unsubFleet = socketClient.on('fleet_market', (msg) => {
       const text = typeof msg.text === 'string' ? msg.text : JSON.stringify(msg)
-      setFleetMessages((prev) => [...prev, { role: 'agent', text }])
+      setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
     })
+    const unsubCrane = socketClient.on('crane_auctioneer', (msg) => {
+      const text = typeof msg.text === 'string' ? msg.text : JSON.stringify(msg)
+      setCraneMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
+    })
+    const unsubYard = socketClient.on('yard_king', (msg) => {
+      const text = typeof msg.text === 'string' ? msg.text : JSON.stringify(msg)
+      setYardMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
+    })
+
+    // Fleet Market: randomly pick AGV/stacker conversations every 2s
+    const fleetTimer = setInterval(() => {
+      const entry = agvStackerConversations[Math.floor(Math.random() * agvStackerConversations.length)]
+      const text = `${entry.name}: ${entry.message}`
+      setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'json' }])
+    }, 5000)
+
     return () => {
-      unsub()
+      unsubFleet()
+      unsubCrane()
+      unsubYard()
+      clearInterval(fleetTimer)
     }
   }, [])
 
+  const agentTypeMap: Record<AgentId, string> = {
+    fleet_market: 'hive-fleet-market',
+    crane_auctioneer: 'hive-crane-auctioneer',
+    yard_king: 'hive-yard-king',
+  }
+
+  const handleSend = (agentId: AgentId, text: string) => {
+    const setters: Record<AgentId, React.Dispatch<React.SetStateAction<ChatMessage[]>>> = {
+      crane_auctioneer: setCraneMessages,
+      fleet_market: setFleetMessages,
+      yard_king: setYardMessages,
+    }
+    setters[agentId]((prev) => [...prev, { role: 'user', text }])
+    socketClient.send({ type: agentTypeMap[agentId], message: text })
+  }
+
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        padding: 8,
-        boxSizing: 'border-box',
-      }}
-    >
-      <AgentPanel name="Crane Auctioneer Agent" messages={craneMessages} />
-      <AgentPanel name="Fleet Market Agent" messages={fleetMessages} />
-      <AgentPanel name="Yard King Agent" messages={yardMessages} />
+    <div className="flex h-full w-full flex-col gap-2 box-border p-2">
+      <AgentPanel name="Crane Auctioneer Agent" agentId="crane_auctioneer" messages={craneMessages} onSend={handleSend} />
+      <AgentPanel name="Fleet Market Agent" agentId="fleet_market" messages={fleetMessages} onSend={handleSend} />
+      <AgentPanel name="Yard King Agent" agentId="yard_king" messages={yardMessages} onSend={handleSend} />
     </div>
   )
 }
