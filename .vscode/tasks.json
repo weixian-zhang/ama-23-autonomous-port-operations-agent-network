@@ -6,7 +6,7 @@
 			"script": "dev",
 			"path": "src/frontend/src",
 			"problemMatcher": [],
-			"label": "npm run dev",
+			"label": "run frontend",
 			"detail": "vite"
 		},
 		{

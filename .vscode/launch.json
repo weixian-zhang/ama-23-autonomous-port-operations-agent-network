@@ -6,13 +6,16 @@
     "configurations": [
         {
             "name": "debug backend",
-            "processId": "${command:PickProcess}",
-            "request": "attach",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
             "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/src/backend/node_modules/.bin/tsx",
+            "runtimeArgs": ["watch", "src/index.ts"],
             "cwd": "${workspaceFolder}/src/backend",
+            "envFile": "${workspaceFolder}/src/backend/.env",
+            "skipFiles": ["<node_internals>/**"],
+            "sourceMaps": true,
+            "console": "integratedTerminal",
+            "restart": true
         },
         {
             "type": "node",

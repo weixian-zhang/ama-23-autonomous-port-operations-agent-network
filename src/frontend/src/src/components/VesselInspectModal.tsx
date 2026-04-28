@@ -189,7 +189,7 @@ export function VesselInspectModal({ open, info, onClose }: VesselInspectModalPr
           </IconButton>
         </Box>
         <Box sx={{ width: '100%', height: 'calc(100% - 48px)' }}>
-          <Canvas camera={{ position: [0, 35, 55], fov: 50 }} style={{ background: '#ffffff' }}>
+          <Canvas camera={{ position: [0, 60, 80], fov: 50 }} style={{ background: '#ffffff' }}>
             <ambientLight intensity={0.6} />
             <directionalLight position={[10, 30, 15]} intensity={1} />
             <Suspense fallback={null}>
