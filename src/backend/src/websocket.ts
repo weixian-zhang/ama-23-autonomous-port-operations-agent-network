@@ -1,6 +1,8 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import type { Server } from 'http';
-import { FleetMarketAgentChat } from './agents/FleetMarketAgentChat.js';
+import { FleetMarketAgentChat } from './agents/fleet-market/FleetMarketAgentChat.js';
+import { CraneAuctioneerAgentChat } from './agents/crane-auctioneer/CraneAuctioneerAgentChat.js';
+import { YardKingAgentChat } from './agents/yard-king/YardKingAgentChat.js';
 import { sendToTeams } from './bot.js';
 
 const clients = new Set<WebSocket>();
@@ -12,8 +14,10 @@ export function setupWebSocket(server: Server): WebSocketServer {
     clients.add(ws);
     console.log(`[WS] Client connected (total: ${clients.size})`);
 
-    // Per-connection agent instance (maintains conversation history)
+    // Per-connection agent instances (maintains conversation history)
     const fleetMarketAgent = new FleetMarketAgentChat();
+    const craneAuctioneerAgent = new CraneAuctioneerAgentChat();
+    const yardKingAgent = new YardKingAgentChat();
 
     ws.on('message', async (data) => {
       try {
@@ -32,7 +36,15 @@ export function setupWebSocket(server: Server): WebSocketServer {
 
           // Also forward to Teams
           await sendToTeams(reply);
-          
+
+        } else if (type === 'hive-crane-auctioneer' && userMessage) {
+          const reply = await craneAuctioneerAgent.chat(userMessage);
+          ws.send(JSON.stringify({ type: 'crane_auctioneer', text: reply }));
+
+        } else if (type === 'hive-yard-king' && userMessage) {
+          const reply = await yardKingAgent.chat(userMessage);
+          ws.send(JSON.stringify({ type: 'yard_king', text: reply }));
+
         } else {
           // Unhandled type – ack for now; additional types will be added later
           ws.send(JSON.stringify({ type: 'ack', data: message }));

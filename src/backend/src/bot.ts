@@ -8,7 +8,7 @@ import {
   TurnContext as TurnContextClass,
 } from 'botbuilder';
 import { broadcast } from './websocket.js';
-import { FleetMarketAgentChat } from './agents/FleetMarketAgentChat.js';
+import { FleetMarketAgentChat } from './agents/fleet-market/FleetMarketAgentChat.js';
 
 // ── Conversation references for proactive messaging ──────────────────
 

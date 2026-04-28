@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { socketClient } from '../SocketClient'
 import agvStackerConversations from '../data/agv-stacker-conversations.json'
+import craneEdgeConversations from '../data/crane-edge-agent-conversation.json'
+import yardKingConversations from '../data/fleetmarket-to-yardking-conversations.json'
 
 interface ChatMessage {
   role: 'agent' | 'user'
@@ -48,7 +50,7 @@ function AgentPanel({
               m.role === 'user'
                 ? 'self-end bg-cyan-400/15'
                 : 'self-start bg-white/5'
-            } ${m.source === 'json' ? 'text-[#ffffff]' : 'text-orange-400'}`}
+            } ${m.source === 'json' ? 'text-[#ffffff]' : 'text-[#33ff33] font-mono'}`}
           >
             {m.text}
           </div>
@@ -107,11 +109,25 @@ export function Chat() {
     //   setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'json' }])
     // }, 10000)
 
+    // Crane Auctioneer: randomly pick crane edge agent conversations every 10s
+    const craneTimer = setInterval(() => {
+      const entry = craneEdgeConversations[Math.floor(Math.random() * craneEdgeConversations.length)]
+      const text = `${entry.crane_name} [bid:${entry.bid_value}]: ${entry.edge_thought}`
+      setCraneMessages((prev) => [...prev, { role: 'agent', text, source: 'json' }])
+    }, 10000)
+
+    // Yard King: randomly pick fleet-to-yard conversations every 10s
+    const yardTimer = setInterval(() => {
+      const entry = yardKingConversations[Math.floor(Math.random() * yardKingConversations.length)]
+      setYardMessages((prev) => [...prev, { role: 'agent', text: entry.message, source: 'json' }])
+    }, 10000)
+
     return () => {
       unsubFleetMarket()
       unsubCrane()
       unsubYard()
-      // clearInterval(fleetTimer)
+      clearInterval(craneTimer)
+      clearInterval(yardTimer)
     }
   }, [])
 

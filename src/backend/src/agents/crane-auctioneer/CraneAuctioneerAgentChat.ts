@@ -8,21 +8,20 @@ import { dirname, join } from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const SYSTEM_PROMPT = readFileSync(join(__dirname, 'fleetmarket-chat-system-prompt.md'), 'utf-8')
+const SYSTEM_PROMPT = readFileSync(join(__dirname, 'crane-auctioneer-chat-system-prompt.md'), 'utf-8')
 
 const credential = new DefaultAzureCredential()
 const azureADTokenProvider = getBearerTokenProvider(credential, 'https://cognitiveservices.azure.com/.default')
 
-export class FleetMarketAgentChat {
+export class CraneAuctioneerAgentChat {
   private model: AzureChatOpenAI
   private history: BaseMessage[] = [new SystemMessage(SYSTEM_PROMPT)]
 
   constructor() {
     this.model = new AzureChatOpenAI({
-      azureOpenAIApiInstanceName: 'foundry-ama-dev',
-      azureOpenAIBasePath: 'https://foundry-ama-dev.services.ai.azure.com/openai/deployments',
-      azureOpenAIApiDeploymentName: 'gpt-5.4-mini',
-      azureOpenAIApiVersion: '2024-12-01-preview',
+      azureOpenAIBasePath: process.env.AZURE_OPENAI_BASE_PATH ?? '',
+      azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_DEPLOYMENT_NAME ?? '',
+      azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '',
       azureADTokenProvider,
       temperature: 0.7,
     })

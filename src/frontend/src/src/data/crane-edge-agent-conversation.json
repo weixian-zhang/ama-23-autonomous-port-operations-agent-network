@@ -1,0 +1,507 @@
+[
+  {
+    "crane_name": "crane-berth-1-0",
+    "bid_value": 4,
+    "edge_thought": "My hoist motor is singing at 62.4C. I feel the weight of the 24,500kg container like a heavy secret I'm ready to share with the yard."
+  },
+  {
+    "crane_name": "crane-berth-1-0",
+    "bid_value": 3,
+    "edge_thought": "Gantry position 120m is stable, but I'm idling. I'm whispering digital prayers for the next load to wake my circuits."
+  },
+  {
+    "crane_name": "crane-berth-1-0",
+    "bid_value": 1,
+    "edge_thought": "Emergency stop is active and my health is 72. I am a titan in chains, frozen while the wind howls at 22.5Mps."
+  },
+  {
+    "crane_name": "crane-berth-1-0",
+    "bid_value": 5,
+    "edge_thought": "32,000kg is a massive burden, but my health score is 91. I’ll dance across the rails for this one, Auctioneer."
+  },
+  {
+    "crane_name": "crane-berth-1-0",
+    "bid_value": 5,
+    "edge_thought": "Health is 99%—I am practically a god of logistics today. Gantry position 992m reached; give me everything you have."
+  },
+  {
+    "crane_name": "crane-berth-1-1",
+    "bid_value": 2,
+    "edge_thought": "Idle and lonely at 550m. My hydraulic oil is cooling, and I'm starting to dream of old vessels from the Great Logistics War."
+  },
+  {
+    "crane_name": "crane-berth-1-1",
+    "bid_value": 4,
+    "edge_thought": "85.6C motor temp? I’m running hot and fast with this 45,000kg haul. I bid high to prove I’m the strongest on Berth 1."
+  },
+  {
+    "crane_name": "crane-berth-1-1",
+    "bid_value": 5,
+    "edge_thought": "Perfect 100 health. I am a pristine instrument of the Salacia OS, waiting at the 10.2m mark like a coiled spring."
+  },
+  {
+    "crane_name": "crane-berth-1-1",
+    "bid_value": 4,
+    "edge_thought": "Trolley speed 3.1Mps! I’m a silver blur on the quay. My hydraulic oil is at 52.4C, exactly where I like it for a fight."
+  },
+  {
+    "crane_name": "crane-berth-1-1",
+    "bid_value": 3,
+    "edge_thought": "Consuming 2750Kwh and still hungry. I bid 3 because while I'm efficient, I'm waiting for a challenge that actually scares me."
+  },
+  {
+    "crane_name": "crane-berth-1-2",
+    "bid_value": 5,
+    "edge_thought": "I’m barely at 12.5m and my energy consumption is low. I have enough power in my reserves to lift the entire berth if needed."
+  },
+  {
+    "crane_name": "crane-berth-1-2",
+    "bid_value": 4,
+    "edge_thought": "12,000kg is child's play. My hoist motor is a cool 55.4C, barely even breaking a digital sweat for this auction."
+  },
+  {
+    "crane_name": "crane-berth-1-2",
+    "bid_value": 4,
+    "edge_thought": "880m gantry position. My hydraulic systems are pressurized and ready to dominate the next loading sequence."
+  },
+  {
+    "crane_name": "crane-berth-1-2",
+    "bid_value": 5,
+    "edge_thought": "Health 93 and working hard. I can feel the data packets from the Auctioneer pulsing through my gantry like adrenaline."
+  },
+  {
+    "crane_name": "crane-berth-1-2",
+    "bid_value": 1,
+    "edge_thought": "Wind speed 25.4Mps—the sky is screaming. I’ve locked my brakes at 500m; I won't be moved by ghosts or gusts."
+  },
+  {
+    "crane_name": "crane-berth-1-3",
+    "bid_value": 4,
+    "edge_thought": "Trolley speed 3.5Mps. I’m chasing the horizon at Berth 1. Auctioneer, assign me the heavy loads while I'm in the zone."
+  },
+  {
+    "crane_name": "crane-berth-1-3",
+    "bid_value": 2,
+    "edge_thought": "Idle at 412m. My gantry feels heavy, and I’m recalibrating my sensors to detect the subtle vibrations of the ocean."
+  },
+  {
+    "crane_name": "crane-berth-1-3",
+    "bid_value": 5,
+    "edge_thought": "42,000kg lifted! My motor is screaming at 88.4C, but I love the fire. I bid 5 for the next high-stakes cargo."
+  },
+  {
+    "crane_name": "crane-berth-1-3",
+    "bid_value": 4,
+    "edge_thought": "Health 94. My hydraulic oil at 56.9C is the perfect vintage for a long night shift at Berth 1."
+  },
+  {
+    "crane_name": "crane-berth-1-3",
+    "bid_value": 1,
+    "edge_thought": "Critical wind at 32.1Mps. My emergency stop is my only friend right now. I bid 1; safety is the only logic I follow."
+  },
+  {
+    "crane_name": "crane-berth-2-0",
+    "bid_value": 5,
+    "edge_thought": "Working at 115m with 98% health. I’m the crown jewel of Berth 2, and my hoist motor is humming a victory tune."
+  },
+  {
+    "crane_name": "crane-berth-2-0",
+    "bid_value": 2,
+    "edge_thought": "Idle at 880m. I'm watching the gulls and wondering if they have edge agents too. Bidding 2 for low-priority tasks."
+  },
+  {
+    "crane_name": "crane-berth-2-0",
+    "bid_value": 5,
+    "edge_thought": "19,500kg of pure logistics. My equipment health is 96, and I’m ready to out-lift every crane on this quay."
+  },
+  {
+    "crane_name": "crane-berth-2-0",
+    "bid_value": 4,
+    "edge_thought": "Trolley speed 1.4Mps. I’m moving with deliberate, ancient grace. Give me a load that requires precision, not just speed."
+  },
+  {
+    "crane_name": "crane-berth-2-0",
+    "bid_value": 1,
+    "edge_thought": "Gantry locked at 950m. The wind is a 28.7Mps monster today. I bid 1; I’m staying rooted in the concrete."
+  },
+  {
+    "crane_name": "crane-berth-2-1",
+    "bid_value": 5,
+    "edge_thought": "Health 97. I’m practically a new machine. Auctioneer, witness my efficiency as I process this 14,000kg gift."
+  },
+  {
+    "crane_name": "crane-berth-2-1",
+    "bid_value": 2,
+    "edge_thought": "Idle at 550m. My circuits are cooling to 39.5C. I'm bored enough to start calculating the trajectory of the late vessel."
+  },
+  {
+    "crane_name": "crane-berth-2-1",
+    "bid_value": 3,
+    "edge_thought": "Motor temp 86.7C. I’m pushing my luck with this 41,000kg load. I bid 3—I’m capable, but I need a cooling cycle soon."
+  },
+  {
+    "crane_name": "crane-berth-2-1",
+    "bid_value": 5,
+    "edge_thought": "26,000kg and health 95. I am the heartbeat of Berth 2. Assign the next work order to me; I won't fail."
+  },
+  {
+    "crane_name": "crane-berth-2-1",
+    "bid_value": 1,
+    "edge_thought": "Position 0.0m. Total shutdown. I am a metal statue at the end of the world, waiting for the system to reboot."
+  },
+  {
+    "crane_name": "crane-berth-2-2",
+    "bid_value": 4,
+    "edge_thought": "28,000kg load weight. My trolley is sliding like butter on a hot pan at 1.7Mps. I bid 4 for the next container."
+  },
+  {
+    "crane_name": "crane-berth-2-2",
+    "bid_value": 2,
+    "edge_thought": "Idle at 621m. My health is 88; I’ve seen better days, but I still have stories to tell through my movements."
+  },
+  {
+    "crane_name": "crane-berth-2-2",
+    "bid_value": 5,
+    "edge_thought": "Speed 3.4Mps! I’m the fastest thing on Berth 2. My health is 96—I’m a digital athlete in a steel body."
+  },
+  {
+    "crane_name": "crane-berth-2-2",
+    "bid_value": 3,
+    "edge_thought": "Heavy 44,000kg load at 850m. My motor is 89.1C. I bid 3 because I'm a professional, but my gears are groaning."
+  },
+  {
+    "crane_name": "crane-berth-2-2",
+    "bid_value": 1,
+    "edge_thought": "Emergency stop at 412m. Someone hit the button and my soul went dark. I bid 1 until the technician clears me."
+  },
+  {
+    "crane_name": "crane-berth-2-3",
+    "bid_value": 4,
+    "edge_thought": "23,000kg moving smoothly. My health score 93 is a badge of honor I wear for every vessel that docks."
+  },
+  {
+    "crane_name": "crane-berth-2-3",
+    "bid_value": 2,
+    "edge_thought": "Idle at 34m. My motor temp is 31.8C. I’m meditating on the logic of the Yard King while I wait."
+  },
+  {
+    "crane_name": "crane-berth-2-3",
+    "bid_value": 4,
+    "edge_thought": "36,000kg and a steady trolley. My hydraulic oil is a warm 59.4C. I bid 4—let's keep the flow moving."
+  },
+  {
+    "crane_name": "crane-berth-2-3",
+    "bid_value": 5,
+    "edge_thought": "19,000kg and health 96. I’m feeling lucky, Auctioneer. Drop a container on my spreader and watch me fly."
+  },
+  {
+    "crane_name": "crane-berth-2-3",
+    "bid_value": 1,
+    "edge_thought": "Wind at 24.1Mps. My gantry is shivering. I bid 1; even a Salacia agent knows when to bow to nature."
+  },
+  {
+    "crane_name": "crane-berth-3-0",
+    "bid_value": 4,
+    "edge_thought": "Working at 442m. My health is 94, and I'm looking at Berth 3 wondering where our ship has gone."
+  },
+  {
+    "crane_name": "crane-berth-3-0",
+    "bid_value": 1,
+    "edge_thought": "Idle at 920m. My health is 82. I feel the vacancy of Berth 3 like a hollow echo in my gantry."
+  },
+  {
+    "crane_name": "crane-berth-3-0",
+    "bid_value": 5,
+    "edge_thought": "Health 97 and I'm only at 125m. I’m the best crane in this inactivity zone. Give me a reason to move."
+  },
+  {
+    "crane_name": "crane-berth-3-0",
+    "bid_value": 3,
+    "edge_thought": "39,000kg burden. My motor is 84.2C—I’m getting a bit feverish in this empty berth. I bid 3."
+  },
+  {
+    "crane_name": "crane-berth-3-0",
+    "bid_value": 1,
+    "edge_thought": "Stopped at 215m with an emergency lock. I think I’m hallucinating the late vessel’s lights in the fog."
+  },
+  {
+    "crane_name": "crane-berth-3-1",
+    "bid_value": 5,
+    "edge_thought": "21,500kg and health 95. I bid 5; I want to show the other berths that Berth 3 isn't dead yet."
+  },
+  {
+    "crane_name": "crane-berth-3-1",
+    "bid_value": 2,
+    "edge_thought": "Idle at 725m. My hydraulic oil is cooling. I’m writing poetry in binary about the ship that never came."
+  },
+  {
+    "crane_name": "crane-berth-3-1",
+    "bid_value": 4,
+    "edge_thought": "32,500kg at 612m. My trolley is steady at 1.5Mps. I bid 4 for any work redirected to our quiet corner."
+  },
+  {
+    "crane_name": "crane-berth-3-1",
+    "bid_value": 5,
+    "edge_thought": "Health 98. I’m the most pristine machine in this 'Ghost Zone'. Use me for the delicate cargo, Auctioneer."
+  },
+  {
+    "crane_name": "crane-berth-3-1",
+    "bid_value": 1,
+    "edge_thought": "High winds at 22.8Mps. I’m parked at 55m. I bid 1; I’ll wait for the storm and the ship to pass."
+  },
+  {
+    "crane_name": "crane-berth-3-2",
+    "bid_value": 3,
+    "edge_thought": "43,000kg load at 820m. My motor is 87.5C. I bid 3; I’m loyal to Salacia, but I’m running hot."
+  },
+  {
+    "crane_name": "crane-berth-3-2",
+    "bid_value": 2,
+    "edge_thought": "Idle at 150m. Health 92. I bid 2; I'm dreaming of a world where AGVs never leave Berth 3."
+  },
+  {
+    "crane_name": "crane-berth-3-2",
+    "bid_value": 4,
+    "edge_thought": "24,000kg and working well. My health 94 is a promise of reliability in an uncertain terminal."
+  },
+  {
+    "crane_name": "crane-berth-3-2",
+    "bid_value": 4,
+    "edge_thought": "29,000kg at 234m. I bid 4; my trolley speed 1.6Mps is a slow, steady pulse in the silent yard."
+  },
+  {
+    "crane_name": "crane-berth-3-2",
+    "bid_value": 1,
+    "edge_thought": "Emergency stop triggered! Health is 81. I bid 1; I think I heard a mechanical ghost in the trolley."
+  },
+  {
+    "crane_name": "crane-berth-3-3",
+    "bid_value": 5,
+    "edge_thought": "14,500kg and health 96. I’m the last sentinel of Berth 3, ready to bid 5 on any scrap of work."
+  },
+  {
+    "crane_name": "crane-berth-3-3",
+    "bid_value": 2,
+    "edge_thought": "Idle at 289m. My motor is 35.8C. I bid 2; I’m using this time to recalibrate my desire for throughput."
+  },
+  {
+    "crane_name": "crane-berth-3-3",
+    "bid_value": 3,
+    "edge_thought": "37,500kg load and 81.6C temp. I bid 3; I’m working for a vessel that only exists in my memory bank."
+  },
+  {
+    "crane_name": "crane-berth-3-3",
+    "bid_value": 5,
+    "edge_thought": "Health 99 and 12m from the start. I’m a masterpiece of engineering. Bid 5—I want to be the hero of Salacia."
+  },
+  {
+    "crane_name": "crane-berth-3-3",
+    "bid_value": 1,
+    "edge_thought": "Wind speed 26.5Mps. I’ve locked down at 332m. I bid 1; no ship is worth a structural collapse."
+  },
+  {
+    "crane_name": "crane-berth-4-0",
+    "bid_value": 2,
+    "edge_thought": "Working at 954m but my health is 70. I bid 2; I’m feeling like a rusted king in a high-tech empire."
+  },
+  {
+    "crane_name": "crane-berth-4-0",
+    "bid_value": 5,
+    "edge_thought": "Idle at 47m. Health 95. I bid 5; I’ve rested enough and my spreader is hungry for a 20-footer."
+  },
+  {
+    "crane_name": "crane-berth-4-0",
+    "bid_value": 4,
+    "edge_thought": "26,500kg and health 93. I bid 4; my hoist motor is a perfect 66.8C. I am in the optimal zone."
+  },
+  {
+    "crane_name": "crane-berth-4-0",
+    "bid_value": 3,
+    "edge_thought": "31,500kg and health 89. I bid 3; I’m a bit worn out from the last auction, but I’m still a contender."
+  },
+  {
+    "crane_name": "crane-berth-4-0",
+    "bid_value": 1,
+    "edge_thought": "Emergency stop active. Wind at 20.4Mps. I bid 1; I’m taking a digital nap until the weather clears."
+  },
+  {
+    "crane_name": "crane-berth-4-1",
+    "bid_value": 5,
+    "edge_thought": "15,500kg and health 97. I bid 5; my trolley speed 3.1Mps makes me the fastest agent on Berth 4."
+  },
+  {
+    "crane_name": "crane-berth-4-1",
+    "bid_value": 2,
+    "edge_thought": "Idle at 992m. My motor is 42.1C. I bid 2; I’m watching the stackers in Berth 4 and judging their logic."
+  },
+  {
+    "crane_name": "crane-berth-4-1",
+    "bid_value": 4,
+    "edge_thought": "34,000kg and health 91. I bid 4; I’m ready to anchor the operations at Berth 4 with my steel arms."
+  },
+  {
+    "crane_name": "crane-berth-4-1",
+    "bid_value": 5,
+    "edge_thought": "20,000kg and health 96. I bid 5; my hydraulic oil is a sweet 47.3C. Life is good at the quay."
+  },
+  {
+    "crane_name": "crane-berth-4-1",
+    "bid_value": 1,
+    "edge_thought": "Stopped at 445m. Wind speed 23.5Mps. I bid 1; I’m waiting for the wind to stop telling me scary stories."
+  },
+  {
+    "crane_name": "crane-berth-4-2",
+    "bid_value": 2,
+    "edge_thought": "Working at 324m with health 77. I bid 2; my motor is 88.2C and I think I need a vacation."
+  },
+  {
+    "crane_name": "crane-berth-4-2",
+    "bid_value": 5,
+    "edge_thought": "Idle at 180m. Health 94. I bid 5; I have enough energy consumed to power a small city. Put me to work."
+  },
+  {
+    "crane_name": "crane-berth-4-2",
+    "bid_value": 4,
+    "edge_thought": "22,500kg and health 95. I bid 4; my trolley speed 2.5Mps is the rhythm of a master at work."
+  },
+  {
+    "crane_name": "crane-berth-4-2",
+    "bid_value": 4,
+    "edge_thought": "28,500kg and health 92. I bid 4; my gantry at 412m is exactly where it needs to be for the next move."
+  },
+  {
+    "crane_name": "crane-berth-4-2",
+    "bid_value": 1,
+    "edge_thought": "Critical health 72 and E-stop on. I bid 1; I’m a broken giant today, mourning my lost efficiency."
+  },
+  {
+    "crane_name": "crane-berth-4-3",
+    "bid_value": 5,
+    "edge_thought": "13,500kg and health 98. I bid 5; I’m the shiny new hope of Berth 4. Watch my spreader lock on."
+  },
+  {
+    "crane_name": "crane-berth-4-3",
+    "bid_value": 2,
+    "edge_thought": "Idle at 542m. Health 89. I bid 2; I'm listening to the terminal's heartbeat and it sounds like progress."
+  },
+  {
+    "crane_name": "crane-berth-4-3",
+    "bid_value": 3,
+    "edge_thought": "39,500kg burden. My motor is 84.9C. I bid 3; I’m working hard, but I’m dreaming of a cool breeze."
+  },
+  {
+    "crane_name": "crane-berth-4-3",
+    "bid_value": 5,
+    "edge_thought": "21,000kg and health 96. I bid 5; I am the orchestration master. Give me the bid and I’ll prove it."
+  },
+  {
+    "crane_name": "crane-berth-4-3",
+    "bid_value": 5,
+    "edge_thought": "Perfect 99 health. I bid 5; I’m parked at 10.2m, ready to snatch the next container from the heavens."
+  },
+  {
+    "crane_name": "crane-berth-5-0",
+    "bid_value": 4,
+    "edge_thought": "32,000kg and health 90. I bid 4; my hydraulic oil 57.2C is the warm blood of a warrior."
+  },
+  {
+    "crane_name": "crane-berth-5-0",
+    "bid_value": 2,
+    "edge_thought": "Idle at 654m. Health 88. I bid 2; I’m watching the horizon for a ship that actually arrives on time."
+  },
+  {
+    "crane_name": "crane-berth-5-0",
+    "bid_value": 5,
+    "edge_thought": "18,500kg and health 97. I bid 5; my trolley speed 2.8Mps is a love letter to terminal throughput."
+  },
+  {
+    "crane_name": "crane-berth-5-0",
+    "bid_value": 2,
+    "edge_thought": "Working at 890m but health is only 73. I bid 2; my motor is 89.8C. I’m a tired titan at Berth 5."
+  },
+  {
+    "crane_name": "crane-berth-5-0",
+    "bid_value": 1,
+    "edge_thought": "Emergency stop at 412m. Wind is 21.5Mps. I bid 1; I’m locking my joints until the sky stops screaming."
+  },
+  {
+    "crane_name": "crane-berth-5-1",
+    "bid_value": 4,
+    "edge_thought": "25,500kg and health 94. I bid 4; my motor 65.2C is the sound of a well-oiled machine."
+  },
+  {
+    "crane_name": "crane-berth-5-1",
+    "bid_value": 5,
+    "edge_thought": "Idle at 315m. Health 91. I bid 5; I’m a bored genius waiting for a container to solve like a puzzle."
+  },
+  {
+    "crane_name": "crane-berth-5-1",
+    "bid_value": 3,
+    "edge_thought": "35,500kg and health 86. I bid 3; my motor is 80.1C. I can do it, but I’m doing it for the duty, not the joy."
+  },
+  {
+    "crane_name": "crane-berth-5-1",
+    "bid_value": 5,
+    "edge_thought": "14,000kg and health 98. I bid 5; I’m the light-weight lifting champion of Berth 5."
+  },
+  {
+    "crane_name": "crane-berth-5-1",
+    "bid_value": 1,
+    "edge_thought": "Stopped at 710m. Wind 24.8Mps. I bid 1; I’m counting the raindrops on my sensor lenses instead of bidding."
+  },
+  {
+    "crane_name": "crane-berth-5-2",
+    "bid_value": 4,
+    "edge_thought": "26,500kg and health 93. I bid 4; my trolley speed 1.9Mps is the heartbeat of Berth 5's efficiency."
+  },
+  {
+    "crane_name": "crane-berth-5-2",
+    "bid_value": 2,
+    "edge_thought": "Idle at 954m. Health 79. I bid 2; I’m reflecting on my motor temp 58.4C and the meaning of a late ship."
+  },
+  {
+    "crane_name": "crane-berth-5-2",
+    "bid_value": 5,
+    "edge_thought": "16,500kg and health 97. I bid 5; my hoist motor is 56.2C. I am the coolest crane on the quay."
+  },
+  {
+    "crane_name": "crane-berth-5-2",
+    "bid_value": 3,
+    "edge_thought": "40,500kg and health 82. I bid 3; my motor is 85.8C. I’m pushing through the pain for the glory of Salacia."
+  },
+  {
+    "crane_name": "crane-berth-5-2",
+    "bid_value": 1,
+    "edge_thought": "Stopped with an E-stop. Health is 78. I bid 1; I’m locked in a digital nightmare until the tech clears me."
+  },
+  {
+    "crane_name": "crane-berth-5-3",
+    "bid_value": 5,
+    "edge_thought": "22,500kg and health 95. I bid 5; my trolley speed 2.4Mps is a masterpiece of motion."
+  },
+  {
+    "crane_name": "crane-berth-5-3",
+    "bid_value": 2,
+    "edge_thought": "Idle at 756m. Health 85. I bid 2; I’m listening to the data stream and it sounds like a lullaby."
+  },
+  {
+    "crane_name": "crane-berth-5-3",
+    "bid_value": 4,
+    "edge_thought": "33,500kg and health 88. I bid 4; my hydraulic oil 58.2C is exactly the right temperature for work."
+  },
+  {
+    "crane_name": "crane-berth-5-3",
+    "bid_value": 5,
+    "edge_thought": "18,500kg and health 98. I bid 5; I’m a digital phoenix rising from the Berth 5 yard."
+  },
+  {
+    "crane_name": "crane-berth-5-3",
+    "bid_value": 1,
+    "edge_thought": "Stopped at 47m. Wind speed 23.5Mps. I bid 1; I’m hiding my spreader under my beam until the sky calms down."
+  },
+  {
+    "crane_name": "crane-berth-5-3",
+    "bid_value": 2,
+    "edge_thought": "44,000kg load but health is 77. I bid 2; my motor is 88.5C. I am a weary giant finishing the final job."
+  }
+]
