@@ -1,0 +1,46 @@
+[
+  {
+    "equipmentId": "stacker-yard-4-1",
+    "equipmentType": "Stacker",
+    "timestamp": "2026-04-27T10:40:12Z",
+    "location": [-45.3, 0.83, 486.2],
+    "engine": { "engineHours": 5634, "rpm": 1495, "engineTempC": 95, "oilPressureBar": 4.3 },
+    "fuel": { "dieselLevelPercent": 54, "fuelConsumptionRateLph": 14.2 },
+    "hydraulics": { "hydraulicOilTempC": 64, "hydraulicPressureBar": 232 },
+    "health": { "overallHealthScore": 96, "faultCode": "MAINT_ALERT", "maintenanceDueHours": 162 },
+    "motion": { "speedKph": 11.0, "headingDeg": 302, "loadHeightMeters": 0.9 }
+  },
+  {
+    "equipmentId": "stacker-yard-2-0",
+    "equipmentType": "Stacker",
+    "timestamp": "2026-04-27T10:40:59Z",
+    "location": [-40.8, 0.86, 232.4],
+    "engine": { "engineHours": 3499, "rpm": 1464, "engineTempC": 79, "oilPressureBar": 4.1 },
+    "fuel": { "dieselLevelPercent": 63, "fuelConsumptionRateLph": 17.2 },
+    "hydraulics": { "hydraulicOilTempC": 68, "hydraulicPressureBar": 259 },
+    "health": { "overallHealthScore": 83, "faultCode": null, "maintenanceDueHours": 259 },
+    "motion": { "speedKph": 7.6, "headingDeg": 355, "loadHeightMeters": 10.1 }
+  },
+  {
+    "equipmentId": "stacker-yard-1-0",
+    "equipmentType": "Stacker",
+    "timestamp": "2026-04-29T12:05:55Z",
+    "location": [-42.5, 0.82, -104.8],
+    "engine": { "engineHours": 8940, "rpm": 1600, "engineTempC": 88, "oilPressureBar": 4.5 },
+    "fuel": { "dieselLevelPercent": 94, "fuelConsumptionRateLph": 18.5 },
+    "hydraulics": { "hydraulicOilTempC": 72, "hydraulicPressureBar": 240 },
+    "health": { "overallHealthScore": 88, "faultCode": null, "maintenanceDueHours": 50 },
+    "motion": { "speedKph": 2.4, "headingDeg": 90, "loadHeightMeters": 11.5 }
+  },
+  {
+    "equipmentId": "stacker-yard-5-3",
+    "equipmentType": "Stacker",
+    "timestamp": "2026-04-29T14:22:10Z",
+    "location": [68.1, 0.84, 450.2],
+    "engine": { "engineHours": 2310, "rpm": 850, "engineTempC": 72, "oilPressureBar": 3.7 },
+    "fuel": { "dieselLevelPercent": 32, "fuelConsumptionRateLph": 12.1 },
+    "hydraulics": { "hydraulicOilTempC": 55, "hydraulicPressureBar": 268 },
+    "health": { "overallHealthScore": 71, "faultCode": "HYD_PRESS_LOW", "maintenanceDueHours": 180 },
+    "motion": { "speedKph": 0.0, "headingDeg": 120, "loadHeightMeters": 4.2 }
+  }
+]

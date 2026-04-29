@@ -102,6 +102,18 @@ export function Chat() {
       setYardMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
     })
 
+    const unsubAuctionDispatch = socketClient.on('fleetmarket-vessel-late', (msg) => {
+      const auctionResult = msg['auction-result'] as Array<{ agvName: string; stackerName: string }> | undefined
+      if (auctionResult && (window as any).trigger_late_vessel_animation) {
+        ;(window as any).trigger_late_vessel_animation(auctionResult)
+      }
+    })
+
+    const unsubAuctionLog = socketClient.on('fleet-market-auction-log', (msg) => {
+      const text = typeof msg.message === 'string' ? msg.message : JSON.stringify(msg)
+      setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
+    })
+
     // Fleet Market: randomly pick AGV/stacker conversations every 2s
     // const fleetTimer = setInterval(() => {
     //   const entry = agvStackerConversations[Math.floor(Math.random() * agvStackerConversations.length)]
@@ -126,6 +138,8 @@ export function Chat() {
       unsubFleetMarket()
       unsubCrane()
       unsubYard()
+      unsubAuctionDispatch()
+      unsubAuctionLog()
       clearInterval(craneTimer)
       clearInterval(yardTimer)
     }
@@ -144,6 +158,14 @@ export function Chat() {
       yard_king: setYardMessages,
     }
     setters[agentId]((prev) => [...prev, { role: 'user', text }])
+
+    // Frontend-only command: reset berth 3 animation
+    if (agentId === 'fleet_market' && text.toLowerCase() === 'berth 3 reset') {
+      ;(window as any).reset_late_vessel_animation?.()
+      setFleetMessages((prev) => [...prev, { role: 'agent', text: 'Berth 3 animation reset.', source: 'ws' }])
+      return
+    }
+
     socketClient.send({ type: agentTypeMap[agentId], message: text })
   }
 

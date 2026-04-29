@@ -13,7 +13,7 @@ const SYSTEM_PROMPT = readFileSync(join(__dirname, 'fleetmarket-chat-system-prom
 const credential = new DefaultAzureCredential()
 const azureADTokenProvider = getBearerTokenProvider(credential, 'https://cognitiveservices.azure.com/.default')
 
-export class FleetMarketAgentChat {
+export class FleetMarketChatAgent {
   private model: AzureChatOpenAI
   private history: BaseMessage[] = [new SystemMessage(SYSTEM_PROMPT)]
 

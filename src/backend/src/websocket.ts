@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import type { Server } from 'http';
-import { FleetMarketAgentChat } from './agents/fleet-market/FleetMarketAgentChat.js';
+import { FleetMarketChatAgent } from './agents/fleet-market/FleetMarketChatAgent.js';
 import { CraneAuctioneerAgentChat } from './agents/crane-auctioneer/CraneAuctioneerAgentChat.js';
 import { YardKingAgentChat } from './agents/yard-king/YardKingAgentChat.js';
 import { sendToTeams } from './bot.js';
@@ -15,7 +15,7 @@ export function setupWebSocket(server: Server): WebSocketServer {
     console.log(`[WS] Client connected (total: ${clients.size})`);
 
     // Per-connection agent instances (maintains conversation history)
-    const fleetMarketAgent = new FleetMarketAgentChat();
+    const fleetMarketAgent = new FleetMarketChatAgent();
     const craneAuctioneerAgent = new CraneAuctioneerAgentChat();
     const yardKingAgent = new YardKingAgentChat();
 
