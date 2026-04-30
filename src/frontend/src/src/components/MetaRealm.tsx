@@ -12,6 +12,12 @@ import { Berth2Animation } from './Berth2Animation'
 import { Berth4Animation } from './Berth4Animation'
 import { Berth1Animation } from './Berth1Animation'
 import { Berth3Animation } from './Berth3Animation'
+import { BerthSignBoard } from './BerthSignBoard'
+import { BerthUnloadSignBoard } from './BerthUnloadSignBoard'
+import { YardLoadSignBoard } from './YardLoadSignBoard'
+import { YardUnloadSignBoard } from './YardUnloadSignBoard'
+import { YardLabel } from './YardLabel'
+import { BerthLabel } from './BerthLabel'
 import { OperatorNPCYard_5_1_Route_Animation } from './OperatorNPCYard_5_1_Route_Animation'
 import { OperatorNPC } from './OperatorNPC'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
@@ -162,7 +168,7 @@ interface MetaRealmProps {
 
 export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps) {
   return (
-    <Canvas camera={{ position: [-300, 250, 70], fov: 60 }}>
+    <Canvas camera={{ position: [-300, 250, 70], fov: 60, far: 5000 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 20, 10]} intensity={1} />
       <Suspense fallback={null}>
@@ -179,6 +185,34 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             <Berth4Animation onVesselClick={onVesselClick} />
             <Berth1Animation onVesselClick={onVesselClick} />
             <Berth3Animation onVesselClick={onVesselClick} handleRef={vesselLateHandleRef} />
+            {/* Digital sign boards above Berth 1 and Berth 4 */}
+            <BerthSignBoard position={[-43, 60, 480]} />
+            <BerthSignBoard position={[-43, 60, -240]} />
+            {/* Digital unload sign boards above Berth 2 and Berth 5 */}
+            <BerthUnloadSignBoard position={[-43, 60, 240]} />
+            <BerthUnloadSignBoard position={[-43, 60, -480]} />
+            {/* Digital unload sign board for Berth 3 (static) */}
+            <BerthUnloadSignBoard position={[-43, 60, 0]} disableTimer />
+            {/* Digital yard load sign boards above Yard 1 and Yard 4 */}
+            <YardLoadSignBoard position={[70, 60, 480]} />
+            <YardLoadSignBoard position={[70, 60, -240]} />
+            {/* Digital yard unload sign boards above Yard 2 and Yard 5 */}
+            <YardUnloadSignBoard position={[70, 60, 240]} />
+            <YardUnloadSignBoard position={[70, 60, -480]} />
+            {/* Digital yard unload sign board for Yard 3 (static) */}
+            <YardUnloadSignBoard position={[70, 60, 0]} disableTimer zeroContainers />
+            {/* Yard labels above sign boards */}
+            <YardLabel position={[70, 105, 480]} label="Yard 1" />
+            <YardLabel position={[70, 105, 240]} label="Yard 2" />
+            <YardLabel position={[70, 105, 0]} label="Yard 3" />
+            <YardLabel position={[70, 105, -240]} label="Yard 4" />
+            <YardLabel position={[70, 105, -480]} label="Yard 5" />
+            {/* Berth labels above sign boards */}
+            <BerthLabel position={[-43, 105, 480]} label="Berth 1" />
+            <BerthLabel position={[-43, 105, 240]} label="Berth 2" />
+            <BerthLabel position={[-43, 105, 0]} label="Berth 3" />
+            <BerthLabel position={[-43, 105, -240]} label="Berth 4" />
+            <BerthLabel position={[-43, 105, -480]} label="Berth 5" />
           </group>
         </AgvOwnershipProvider>
       </Suspense>

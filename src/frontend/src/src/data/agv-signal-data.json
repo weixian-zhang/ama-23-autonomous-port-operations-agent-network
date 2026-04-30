@@ -1,0 +1,57 @@
+[
+  {
+    "equipmentId": "agv-berth-4-2",
+    "equipmentType": "AGV",
+    "timestamp": "2026-04-27T11:20:00Z",
+    "location": [10.0, 0.5, 20.0],
+    "engine": { "engineHours": 1200, "rpm": 1100, "engineTempC": 88, "oilPressureBar": 3.8 },
+    "fuel": { "dieselLevelPercent": 45, "fuelConsumptionRateLph": 5.5 },
+    "hydraulics": { "hydraulicOilTempC": 55, "hydraulicPressureBar": 180 },
+    "health": { "overallHealthScore": 98, "faultCode": null, "maintenanceDueHours": 300 },
+    "motion": { "speedKph": 15.0, "headingDeg": 90, "loadHeightMeters": 0.0 }
+  },
+  {
+    "equipmentId": "agv-berth-1-1",
+    "equipmentType": "AGV",
+    "timestamp": "2026-04-27T11:20:05Z",
+    "location": [15.2, 0.5, 22.4],
+    "engine": { "engineHours": 1450, "rpm": 1150, "engineTempC": 82, "oilPressureBar": 4.0 },
+    "fuel": { "dieselLevelPercent": 88, "fuelConsumptionRateLph": 6.2 },
+    "hydraulics": { "hydraulicOilTempC": 52, "hydraulicPressureBar": 190 },
+    "health": { "overallHealthScore": 94, "faultCode": null, "maintenanceDueHours": 150 },
+    "motion": { "speedKph": 18.5, "headingDeg": 180, "loadHeightMeters": 0.0 }
+  },
+  {
+    "equipmentId": "agv-berth-5-3",
+    "equipmentType": "AGV",
+    "timestamp": "2026-04-27T11:20:10Z",
+    "location": [12.0, 0.5, -45.0],
+    "engine": { "engineHours": 850, "rpm": 1200, "engineTempC": 80, "oilPressureBar": 4.1 },
+    "fuel": { "dieselLevelPercent": 15, "fuelConsumptionRateLph": 5.8 },
+    "hydraulics": { "hydraulicOilTempC": 50, "hydraulicPressureBar": 175 },
+    "health": { "overallHealthScore": 99, "faultCode": "FUEL_LOW", "maintenanceDueHours": 400 },
+    "motion": { "speedKph": 22.0, "headingDeg": 270, "loadHeightMeters": 0.0 }
+  },
+  {
+    "equipmentId": "agv-berth-1-0",
+    "equipmentType": "AGV",
+    "timestamp": "2026-04-29T14:10:22Z",
+    "location": [142.5, 0.5, -30.4],
+    "engine": { "engineHours": 4520, "rpm": 1450, "engineTempC": 78, "oilPressureBar": 4.2 },
+    "fuel": { "dieselLevelPercent": 72, "fuelConsumptionRateLph": 6.1 },
+    "hydraulics": { "hydraulicOilTempC": 48, "hydraulicPressureBar": 165 },
+    "health": { "overallHealthScore": 91, "faultCode": null, "maintenanceDueHours": 120 },
+    "motion": { "speedKph": 24.5, "headingDeg": 180, "loadHeightMeters": 0.0 }
+  },
+  {
+    "equipmentId": "agv-berth-2-1",
+    "equipmentType": "AGV",
+    "timestamp": "2026-04-29T13:45:12Z",
+    "location": [-88.4, 0.5, 212.1],
+    "engine": { "engineHours": 1102, "rpm": 980, "engineTempC": 102, "oilPressureBar": 3.9 },
+    "fuel": { "dieselLevelPercent": 12, "fuelConsumptionRateLph": 8.4 },
+    "hydraulics": { "hydraulicOilTempC": 74, "hydraulicPressureBar": 190 },
+    "health": { "overallHealthScore": 65, "faultCode": "ENG_TEMP_HIGH", "maintenanceDueHours": 45 },
+    "motion": { "speedKph": 5.2, "headingDeg": 45, "loadHeightMeters": 0.0 }
+  }
+]

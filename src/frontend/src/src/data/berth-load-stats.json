@@ -1,0 +1,302 @@
+[
+  {
+    "vesselName": "MV Pacific Horizon",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A1",
+    "arrivalTime": "06:30",
+    "startLoading": "07:15",
+    "endLoading": "15:45",
+    "loadingDurationHours": 8.5,
+    "totalContainersLoaded": 685
+  },
+  {
+    "vesselName": "MV Ocean Crest",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B1",
+    "arrivalTime": "07:20",
+    "startLoading": "08:00",
+    "endLoading": "16:10",
+    "loadingDurationHours": 8.2,
+    "totalContainersLoaded": 710
+  },
+  {
+    "vesselName": "MV Blue Mariner",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth C3",
+    "arrivalTime": "05:50",
+    "startLoading": "06:30",
+    "endLoading": "14:20",
+    "loadingDurationHours": 7.8,
+    "totalContainersLoaded": 640
+  },
+  {
+    "vesselName": "MV Golden Bay",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B3",
+    "arrivalTime": "09:10",
+    "startLoading": "09:50",
+    "endLoading": "18:40",
+    "loadingDurationHours": 8.8,
+    "totalContainersLoaded": 755
+  },
+  {
+    "vesselName": "MV Sea Aurora",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth D1",
+    "arrivalTime": "04:45",
+    "startLoading": "05:30",
+    "endLoading": "13:10",
+    "loadingDurationHours": 7.7,
+    "totalContainersLoaded": 618
+  },
+  {
+    "vesselName": "MV Eastern Wave",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A2",
+    "arrivalTime": "08:40",
+    "startLoading": "09:20",
+    "endLoading": "17:50",
+    "loadingDurationHours": 8.5,
+    "totalContainersLoaded": 730
+  },
+  {
+    "vesselName": "MV Coral Stream",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth C1",
+    "arrivalTime": "03:55",
+    "startLoading": "04:40",
+    "endLoading": "12:25",
+    "loadingDurationHours": 7.8,
+    "totalContainersLoaded": 605
+  },
+  {
+    "vesselName": "MV Silver Tide",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B4",
+    "arrivalTime": "10:00",
+    "startLoading": "10:40",
+    "endLoading": "19:35",
+    "loadingDurationHours": 8.9,
+    "totalContainersLoaded": 770
+  },
+  {
+    "vesselName": "MV North Star",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth D2",
+    "arrivalTime": "06:15",
+    "startLoading": "07:00",
+    "endLoading": "15:20",
+    "loadingDurationHours": 8.3,
+    "totalContainersLoaded": 690
+  },
+  {
+    "vesselName": "MV Emerald Link",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A3",
+    "arrivalTime": "07:45",
+    "startLoading": "08:30",
+    "endLoading": "16:55",
+    "loadingDurationHours": 8.4,
+    "totalContainersLoaded": 725
+  },
+  {
+    "vesselName": "MV Harbor Wind",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth C2",
+    "arrivalTime": "05:20",
+    "startLoading": "06:00",
+    "endLoading": "14:00",
+    "loadingDurationHours": 8.0,
+    "totalContainersLoaded": 650
+  },
+  {
+    "vesselName": "MV Ocean Lantern",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B2",
+    "arrivalTime": "11:00",
+    "startLoading": "11:45",
+    "endLoading": "20:30",
+    "loadingDurationHours": 8.8,
+    "totalContainersLoaded": 780
+  },
+  {
+    "vesselName": "MV Sunrise Pearl",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth D3",
+    "arrivalTime": "04:30",
+    "startLoading": "05:10",
+    "endLoading": "12:50",
+    "loadingDurationHours": 7.7,
+    "totalContainersLoaded": 610
+  },
+  {
+    "vesselName": "MV Atlas Voyager",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A4",
+    "arrivalTime": "08:10",
+    "startLoading": "08:50",
+    "endLoading": "17:15",
+    "loadingDurationHours": 8.4,
+    "totalContainersLoaded": 735
+  },
+  {
+    "vesselName": "MV Crimson Bay",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth C4",
+    "arrivalTime": "09:30",
+    "startLoading": "10:10",
+    "endLoading": "18:25",
+    "loadingDurationHours": 8.3,
+    "totalContainersLoaded": 705
+  },
+  {
+    "vesselName": "MV Neptune Glory",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B5",
+    "arrivalTime": "06:50",
+    "startLoading": "07:35",
+    "endLoading": "16:05",
+    "loadingDurationHours": 8.5,
+    "totalContainersLoaded": 745
+  },
+  {
+    "vesselName": "MV Sapphire Route",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth D4",
+    "arrivalTime": "03:40",
+    "startLoading": "04:20",
+    "endLoading": "11:55",
+    "loadingDurationHours": 7.6,
+    "totalContainersLoaded": 590
+  },
+  {
+    "vesselName": "MV Horizon Bridge",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A5",
+    "arrivalTime": "10:20",
+    "startLoading": "11:00",
+    "endLoading": "19:50",
+    "loadingDurationHours": 8.8,
+    "totalContainersLoaded": 765
+  },
+  {
+    "vesselName": "MV Sea Falcon",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth C5",
+    "arrivalTime": "05:10",
+    "startLoading": "05:55",
+    "endLoading": "13:45",
+    "loadingDurationHours": 7.8,
+    "totalContainersLoaded": 635
+  },
+  {
+    "vesselName": "MV Meridian Star",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B6",
+    "arrivalTime": "07:05",
+    "startLoading": "07:50",
+    "endLoading": "16:35",
+    "loadingDurationHours": 8.8,
+    "totalContainersLoaded": 760
+  },
+  {
+    "vesselName": "MV Azure Horizon",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth D5",
+    "arrivalTime": "06:00",
+    "startLoading": "06:45",
+    "endLoading": "14:40",
+    "loadingDurationHours": 7.9,
+    "totalContainersLoaded": 645
+  },
+  {
+    "vesselName": "MV Ocean Spirit",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A6",
+    "arrivalTime": "09:00",
+    "startLoading": "09:40",
+    "endLoading": "18:10",
+    "loadingDurationHours": 8.5,
+    "totalContainersLoaded": 728
+  },
+  {
+    "vesselName": "MV Coral Venture",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth C6",
+    "arrivalTime": "04:50",
+    "startLoading": "05:30",
+    "endLoading": "13:05",
+    "loadingDurationHours": 7.6,
+    "totalContainersLoaded": 600
+  },
+  {
+    "vesselName": "MV Stellar Coast",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B7",
+    "arrivalTime": "08:55",
+    "startLoading": "09:35",
+    "endLoading": "18:05",
+    "loadingDurationHours": 8.5,
+    "totalContainersLoaded": 740
+  },
+  {
+    "vesselName": "MV Liberty Tide",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth D6",
+    "arrivalTime": "05:35",
+    "startLoading": "06:20",
+    "endLoading": "14:15",
+    "loadingDurationHours": 7.9,
+    "totalContainersLoaded": 655
+  },
+  {
+    "vesselName": "MV Blue Orbit",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A7",
+    "arrivalTime": "11:20",
+    "startLoading": "12:00",
+    "endLoading": "20:50",
+    "loadingDurationHours": 8.8,
+    "totalContainersLoaded": 775
+  },
+  {
+    "vesselName": "MV Ocean Summit",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth C7",
+    "arrivalTime": "06:40",
+    "startLoading": "07:25",
+    "endLoading": "15:30",
+    "loadingDurationHours": 8.1,
+    "totalContainersLoaded": 680
+  },
+  {
+    "vesselName": "MV Jade Mariner",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth B8",
+    "arrivalTime": "07:30",
+    "startLoading": "08:15",
+    "endLoading": "16:45",
+    "loadingDurationHours": 8.5,
+    "totalContainersLoaded": 722
+  },
+  {
+    "vesselName": "MV Harbor Quest",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth D7",
+    "arrivalTime": "04:15",
+    "startLoading": "05:00",
+    "endLoading": "12:35",
+    "loadingDurationHours": 7.6,
+    "totalContainersLoaded": 595
+  },
+  {
+    "vesselName": "MV Eastern Crown",
+    "vesselType": "Container Vessel",
+    "berthAssigned": "Berth A8",
+    "arrivalTime": "09:40",
+    "startLoading": "10:20",
+    "endLoading": "18:55",
+    "loadingDurationHours": 8.6,
+    "totalContainersLoaded": 750
+  }
+]

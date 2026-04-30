@@ -2,6 +2,7 @@ import { useGLTF } from '@react-three/drei'
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
+import { AgvSignBoard } from './AgvSignBoard'
 
 const AGV_SCALE = 10
 const AGVS_PER_BERTH = 4
@@ -50,6 +51,7 @@ export function Agv() {
             name={name}
           >
             <primitive object={clone} scale={AGV_SCALE} />
+            <AgvSignBoard agvName={name} />
           </group>
         )
       })}
