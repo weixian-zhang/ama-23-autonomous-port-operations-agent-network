@@ -13,6 +13,16 @@ body {
   min-height: 100vh;
 }
 
+/* Ensure MUI Modal renders above drei Html signboards */
+.MuiModal-root {
+  z-index: 10000 !important;
+}
+
+/* Contain drei Html portals within the canvas stacking context */
+canvas + div {
+  z-index: 1 !important;
+}
+
 h1 {
   font-size: 2em;
   line-height: 1.1;

@@ -50,7 +50,7 @@ function AgentPanel({
               m.role === 'user'
                 ? 'self-end bg-cyan-400/15'
                 : 'self-start bg-white/5'
-            } ${m.source === 'json' ? 'text-[#ffffff]' : 'text-[#33ff33] font-mono'}`}
+            } ${m.source === 'json' ? 'text-[#ffffff] font-mono tracking-tight' : 'text-[#33ff33] font-mono'}`}
           >
             {m.text}
           </div>

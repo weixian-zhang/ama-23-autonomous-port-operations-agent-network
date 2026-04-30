@@ -2,13 +2,13 @@ import { Html } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import agvSignalData from '../data/agv-signal-data.json'
+import stackerSignalData from '../data/stacker-signal-data.json'
 
 function pickRandom() {
-  return agvSignalData[Math.floor(Math.random() * agvSignalData.length)]
+  return stackerSignalData[Math.floor(Math.random() * stackerSignalData.length)]
 }
 
-export function AgvSignBoard({ agvName }: { agvName: string }) {
+export function StackerSignBoard({ stackerName }: { stackerName: string }) {
   const [data, setData] = useState(pickRandom)
   const groupRef = useRef<THREE.Group>(null)
   const [pos, setPos] = useState<[number, number, number]>([0, 0, 0])
@@ -28,16 +28,20 @@ export function AgvSignBoard({ agvName }: { agvName: string }) {
     }
   })
 
-  // Randomize speed, RPM, and temperature every 4 seconds
+  // Randomize speed, RPM, temperature and load height every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setData((prev) => ({
         ...prev,
-        motion: { ...prev.motion, speedKph: Math.round((5 + Math.random() * 25) * 10) / 10 },
+        motion: {
+          ...prev.motion,
+          speedKph: Math.round((3 + Math.random() * 15) * 10) / 10,
+          loadHeightMeters: Math.round(Math.random() * 12 * 10) / 10,
+        },
         engine: {
           ...prev.engine,
-          rpm: Math.round(800 + Math.random() * 700),
-          engineTempC: Math.round(70 + Math.random() * 35),
+          rpm: Math.round(1000 + Math.random() * 600),
+          engineTempC: Math.round(75 + Math.random() * 30),
         },
       }))
     }, 4000)
@@ -68,43 +72,47 @@ export function AgvSignBoard({ agvName }: { agvName: string }) {
         <div
           style={{
             background: 'rgba(10, 22, 40, 0.45)',
-            border: '1px solid #40c4ff',
+            border: '1px solid #ff9100',
             borderRadius: 8,
             padding: '6px 10px',
-            color: '#e0f7fa',
+            color: '#fff3e0',
             fontFamily: "'Segoe UI', system-ui, sans-serif",
             minWidth: 140,
-            boxShadow: '0 0 10px rgba(64,196,255,0.3)',
+            boxShadow: '0 0 10px rgba(255,145,0,0.3)',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 900, color: '#00e5ff', marginBottom: 2, letterSpacing: 2, textTransform: 'uppercase', textAlign: 'center' }}>
-            AGV
+          <div style={{ fontSize: 11, fontWeight: 900, color: '#ffab40', marginBottom: 2, letterSpacing: 2, textTransform: 'uppercase', textAlign: 'center' }}>
+            STACKER
           </div>
-          <div style={{ fontSize: 9, fontWeight: 700, color: '#40c4ff', marginBottom: 4, letterSpacing: 1, textTransform: 'uppercase' }}>
-            {agvName}
+          <div style={{ fontSize: 9, fontWeight: 700, color: '#ff9100', marginBottom: 4, letterSpacing: 1, textTransform: 'uppercase' }}>
+            {stackerName}
           </div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 3 }}>
             <div>
-              <div style={{ fontSize: 7, color: '#80deea' }}>Speed</div>
+              <div style={{ fontSize: 7, color: '#ffcc80' }}>Speed</div>
               <div style={{ fontSize: 10, fontWeight: 600 }}>{data.motion.speedKph} km/h</div>
             </div>
             <div>
-              <div style={{ fontSize: 7, color: '#80deea' }}>Fuel</div>
+              <div style={{ fontSize: 7, color: '#ffcc80' }}>Fuel</div>
               <div style={{ fontSize: 10, fontWeight: 600, color: fuelColor }}>{data.fuel.dieselLevelPercent}%</div>
             </div>
             <div>
-              <div style={{ fontSize: 7, color: '#80deea' }}>Health</div>
+              <div style={{ fontSize: 7, color: '#ffcc80' }}>Health</div>
               <div style={{ fontSize: 10, fontWeight: 600, color: healthColor }}>{data.health.overallHealthScore}</div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <div>
-              <div style={{ fontSize: 7, color: '#80deea' }}>RPM</div>
+              <div style={{ fontSize: 7, color: '#ffcc80' }}>RPM</div>
               <div style={{ fontSize: 10, fontWeight: 600 }}>{data.engine.rpm}</div>
             </div>
             <div>
-              <div style={{ fontSize: 7, color: '#80deea' }}>Temp</div>
+              <div style={{ fontSize: 7, color: '#ffcc80' }}>Temp</div>
               <div style={{ fontSize: 10, fontWeight: 600 }}>{data.engine.engineTempC}°C</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 7, color: '#ffcc80' }}>Lift</div>
+              <div style={{ fontSize: 10, fontWeight: 600 }}>{data.motion.loadHeightMeters}m</div>
             </div>
             {data.health.faultCode && (
               <div>
@@ -115,7 +123,7 @@ export function AgvSignBoard({ agvName }: { agvName: string }) {
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 3 }}>
             <div>
-              <div style={{ fontSize: 7, color: '#80deea' }}>Location</div>
+              <div style={{ fontSize: 7, color: '#ffcc80' }}>Location</div>
               <div style={{ fontSize: 10, fontWeight: 600 }}>[{pos[0]}, {pos[1]}, {pos[2]}]</div>
             </div>
           </div>

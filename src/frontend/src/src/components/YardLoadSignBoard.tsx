@@ -8,28 +8,31 @@ function pickRandom() {
 
 export function YardLoadSignBoard({ position }: { position: [number, number, number] }) {
   const [data, setData] = useState(pickRandom)
-  const stagedRef = useRef(data.containersStaged)
+  const preparedRef = useRef(data.containersPrepared)
+
+  const originalPreparedRef = useRef(data.containersPrepared)
 
   useEffect(() => {
     const d = pickRandom()
     setData(d)
-    stagedRef.current = d.containersStaged
+    preparedRef.current = d.containersPrepared
+    originalPreparedRef.current = d.containersPrepared
   }, [])
 
-  // Decrement containersStaged by 4 every 5 seconds
+  // Decrement containersPrepared by 4 every 5 seconds, reset to original on 0
   useEffect(() => {
     const interval = setInterval(() => {
-      stagedRef.current = Math.max(0, stagedRef.current - 4)
+      preparedRef.current = preparedRef.current - 4
+      if (preparedRef.current <= 0) {
+        preparedRef.current = originalPreparedRef.current
+      }
       setData((prev) => ({
         ...prev,
-        containersStaged: stagedRef.current,
-        occupiedSlots: Math.max(0, prev.occupiedSlots - 4),
+        containersPrepared: preparedRef.current,
       }))
     }, 5000)
     return () => clearInterval(interval)
   }, [])
-
-  const utilizationPct = ((data.occupiedSlots / data.totalSlots) * 100).toFixed(1)
 
   return (
     <group position={position}>
@@ -51,27 +54,27 @@ export function YardLoadSignBoard({ position }: { position: [number, number, num
           }}
         >
           <div style={{ fontSize: 24, fontWeight: 700, color: '#76ff03', marginBottom: 8, letterSpacing: 1 }}>
-            {data.yardZone}
+            {data.vesselName}
           </div>
           <div style={{ fontSize: 18, color: '#aed581', marginBottom: 10 }}>
-            Top Destination: {data.topDestination}
+            Utilization: {data.yardUtilizationPercent}%
           </div>
           <div style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
             <div>
-              <div style={{ fontSize: 16, color: '#c5e1a5' }}>Utilization</div>
-              <div style={{ fontSize: 22, fontWeight: 600 }}>{utilizationPct}%</div>
+              <div style={{ fontSize: 16, color: '#c5e1a5' }}>Loaded</div>
+              <div style={{ fontSize: 22, fontWeight: 600 }}>{data.containersLoadedToVessel}</div>
             </div>
             <div>
-              <div style={{ fontSize: 16, color: '#c5e1a5' }}>Slots</div>
-              <div style={{ fontSize: 22, fontWeight: 600 }}>{data.occupiedSlots} / {data.totalSlots}</div>
+              <div style={{ fontSize: 16, color: '#c5e1a5' }}>Waiting</div>
+              <div style={{ fontSize: 22, fontWeight: 600 }}>{data.containersWaitingInYard}</div>
             </div>
             <div>
-              <div style={{ fontSize: 16, color: '#c5e1a5' }}>In Transit</div>
-              <div style={{ fontSize: 22, fontWeight: 600 }}>{data.containersInTransit}</div>
+              <div style={{ fontSize: 16, color: '#c5e1a5' }}>Reefer</div>
+              <div style={{ fontSize: 22, fontWeight: 600 }}>{data.reeferContainersStaged}</div>
             </div>
             <div>
-              <div style={{ fontSize: 16, color: '#c5e1a5' }}>Dwell</div>
-              <div style={{ fontSize: 22, fontWeight: 600 }}>{data.avgDwellTimeHours}h</div>
+              <div style={{ fontSize: 16, color: '#c5e1a5' }}>Handling</div>
+              <div style={{ fontSize: 22, fontWeight: 600 }}>{data.averageYardHandlingTimeMinutes}m</div>
             </div>
           </div>
           <div
@@ -87,7 +90,7 @@ export function YardLoadSignBoard({ position }: { position: [number, number, num
           >
             <span style={{ fontSize: 17, color: '#c5e1a5' }}>Containers Staged</span>
             <span style={{ fontSize: 34, fontWeight: 800, color: '#76ff03' }}>
-              {data.containersStaged}
+              {data.containersPrepared}
             </span>
           </div>
         </div>

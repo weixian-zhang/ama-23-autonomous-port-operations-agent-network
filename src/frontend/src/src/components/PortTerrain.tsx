@@ -32,10 +32,18 @@ export function PortTerrain() {
         }
       }
 
-      // Mountains
+      // Mountains – backdrop mesh needs double-sided rendering
       if (child.name.startsWith('Mountain')) {
         if (child.material) {
-          child.material.side = THREE.FrontSide
+          child.material.side = THREE.DoubleSide
+          // Debug: log what the material looks like
+          const mat = child.material as THREE.MeshStandardMaterial
+          console.log('[Mountain]', child.name, {
+            hasMap: !!mat.map,
+            mapImage: mat.map?.image?.src ?? mat.map?.image?.width,
+            color: mat.color?.getHexString(),
+            type: mat.type,
+          })
         }
       }
 

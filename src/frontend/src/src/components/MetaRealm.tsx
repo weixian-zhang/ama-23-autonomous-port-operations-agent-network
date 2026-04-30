@@ -18,8 +18,10 @@ import { YardLoadSignBoard } from './YardLoadSignBoard'
 import { YardUnloadSignBoard } from './YardUnloadSignBoard'
 import { YardLabel } from './YardLabel'
 import { BerthLabel } from './BerthLabel'
-import { OperatorNPCYard_5_1_Route_Animation } from './OperatorNPCYard_5_1_Route_Animation'
-import { OperatorNPC } from './OperatorNPC'
+import { YardBoundaries } from './YardBoundaries'
+import { YardContainerTooltips } from './YardContainerTooltips'
+import { PortLogo } from './PortLogo'
+import { QuayOperator } from './QuayOperator'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 
@@ -178,41 +180,45 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             <Agv />
             <BerthLocations />
             <YardLocations />
+            <YardBoundaries />
+            <YardContainerTooltips />
             <Cranes />
             <Stackers />
+            <QuayOperator />
             <Berth5Animation onVesselClick={onVesselClick} />
             <Berth2Animation onVesselClick={onVesselClick} />
             <Berth4Animation onVesselClick={onVesselClick} />
             <Berth1Animation onVesselClick={onVesselClick} />
             <Berth3Animation onVesselClick={onVesselClick} handleRef={vesselLateHandleRef} />
             {/* Digital sign boards above Berth 1 and Berth 4 */}
-            <BerthSignBoard position={[-43, 60, 480]} />
-            <BerthSignBoard position={[-43, 60, -240]} />
+            <BerthSignBoard position={[-43, 83, 480]} />
+            <BerthSignBoard position={[-43, 83, -240]} />
             {/* Digital unload sign boards above Berth 2 and Berth 5 */}
-            <BerthUnloadSignBoard position={[-43, 60, 240]} />
-            <BerthUnloadSignBoard position={[-43, 60, -480]} />
+            <BerthUnloadSignBoard position={[-43, 83, 240]} />
+            <BerthUnloadSignBoard position={[-43, 83, -480]} />
             {/* Digital unload sign board for Berth 3 (static) */}
-            <BerthUnloadSignBoard position={[-43, 60, 0]} disableTimer />
+            <BerthUnloadSignBoard position={[-43, 83, 0]} disableTimer />
             {/* Digital yard load sign boards above Yard 1 and Yard 4 */}
-            <YardLoadSignBoard position={[70, 60, 480]} />
-            <YardLoadSignBoard position={[70, 60, -240]} />
+            <YardLoadSignBoard position={[70, 72, 480]} />
+            <YardLoadSignBoard position={[70, 72, -240]} />
             {/* Digital yard unload sign boards above Yard 2 and Yard 5 */}
-            <YardUnloadSignBoard position={[70, 60, 240]} />
-            <YardUnloadSignBoard position={[70, 60, -480]} />
-            {/* Digital yard unload sign board for Yard 3 (static) */}
-            <YardUnloadSignBoard position={[70, 60, 0]} disableTimer zeroContainers />
+            <YardUnloadSignBoard position={[70, 72, 240]} />
+            <YardUnloadSignBoard position={[70, 72, -480]} />
             {/* Yard labels above sign boards */}
-            <YardLabel position={[70, 105, 480]} label="Yard 1" />
-            <YardLabel position={[70, 105, 240]} label="Yard 2" />
-            <YardLabel position={[70, 105, 0]} label="Yard 3" />
-            <YardLabel position={[70, 105, -240]} label="Yard 4" />
-            <YardLabel position={[70, 105, -480]} label="Yard 5" />
+            <YardLabel position={[70, 116, 480]} label="Yard 1" />
+            <YardLabel position={[70, 116, 240]} label="Yard 2" />
+            <YardLabel position={[70, 116, 0]} label="Yard 3" />
+            <YardLabel position={[70, 116, -240]} label="Yard 4" />
+            <YardLabel position={[70, 116, -480]} label="Yard 5" />
             {/* Berth labels above sign boards */}
-            <BerthLabel position={[-43, 105, 480]} label="Berth 1" />
-            <BerthLabel position={[-43, 105, 240]} label="Berth 2" />
-            <BerthLabel position={[-43, 105, 0]} label="Berth 3" />
-            <BerthLabel position={[-43, 105, -240]} label="Berth 4" />
-            <BerthLabel position={[-43, 105, -480]} label="Berth 5" />
+            <BerthLabel position={[-43, 128, 480]} label="Berth 1" />
+            <BerthLabel position={[-43, 128, 240]} label="Berth 2" />
+            <BerthLabel position={[-43, 128, 0]} label="Berth 3" />
+            <BerthLabel position={[-43, 128, -240]} label="Berth 4" />
+            <BerthLabel position={[-43, 128, -480]} label="Berth 5" />
+            {/* Logo high above port */}
+            <PortLogo position={[20, 200, 0]} />
+            <PortLogo position={[20, 270, 0]} src="/logo-word.png" width={120} height={40} />
           </group>
         </AgvOwnershipProvider>
       </Suspense>

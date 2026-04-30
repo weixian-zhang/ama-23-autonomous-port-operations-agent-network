@@ -16,10 +16,15 @@ export function BerthUnloadSignBoard({ position, disableTimer }: { position: [nu
     containersRef.current = d.totalContainersUnloaded
   }, [])
 
+  const originalRef = useRef(data.totalContainersUnloaded)
+
   useEffect(() => {
     if (disableTimer) return
     const interval = setInterval(() => {
-      containersRef.current = Math.max(0, containersRef.current - 4)
+      containersRef.current = containersRef.current - 4
+      if (containersRef.current <= 0) {
+        containersRef.current = originalRef.current
+      }
       setData((prev) => ({ ...prev, totalContainersUnloaded: containersRef.current }))
     }, 5000)
     return () => clearInterval(interval)

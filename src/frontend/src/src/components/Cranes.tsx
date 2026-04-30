@@ -2,6 +2,7 @@ import { useGLTF } from '@react-three/drei'
 import { useRef } from 'react'
 import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
+import { CraneSignBoard } from './CraneSignBoard'
 
 const CRANE_SCALE = 40
 
@@ -26,6 +27,7 @@ export function Cranes() {
               name={crane.name}
             >
               <primitive object={clone} scale={CRANE_SCALE} />
+              <CraneSignBoard craneName={crane.name} />
             </group>
           )
         })

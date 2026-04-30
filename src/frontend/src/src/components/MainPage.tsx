@@ -8,7 +8,7 @@ import { Chat } from './Chat'
 export function MainPage() {
   const [vesselInfo, setVesselInfo] = useState<VesselInspectInfo | null>(null)
   const vesselLateRef = useRef<VesselLateAnimationHandle | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [metaFullscreen, setMetaFullscreen] = useState(false)
 
   const menuItems = [
     'Berth Planning',
@@ -32,45 +32,66 @@ export function MainPage() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-black">
-      {/* ── Hamburger Button ── */}
-      <button
-        onClick={() => setSidebarOpen((v) => !v)}
-        className="absolute top-3 left-3 z-[200] flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-md border border-cyan-400 bg-black/70 text-[22px] leading-none text-cyan-400 shadow-[0_0_8px_rgba(0,255,255,0.4)]"
-      >
-        ☰
-      </button>
-
-      {/* ── Sidebar ── */}
-      <div
-        className={`flex h-full flex-col overflow-hidden transition-all duration-[250ms] ease-in-out ${
-          sidebarOpen
-            ? 'w-[220px] min-w-[220px] border-r border-cyan-400 shadow-[2px_0_16px_rgba(0,255,255,0.25)]'
-            : 'w-0 min-w-0'
-        } bg-black/95`}
-      >
-        {/* Logo area */}
-        <div className="border-b border-cyan-400/20 pt-3.5 pr-4 pb-2.5 pl-14">
-          <img src="/logo-icon.png" alt="logo" className="h-7" />
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-black">
+      {/* ── Slim Top Bar ── */}
+      <header className="flex h-9 w-full flex-shrink-0 items-center border-b border-cyan-400 bg-black/95 px-3 shadow-[0_2px_8px_rgba(0,255,255,0.25)]">
+        {/* Logo + brand */}
+        <div className="flex items-center gap-2">
+          <img src="/logo-icon.png" alt="logo" className="h-5" />
+          <span className="text-[13px] font-semibold tracking-wide text-cyan-400">
+            Hive
+          </span>
         </div>
 
         {/* Menu items */}
-        <nav className="flex-1 py-2">
+        <nav className="ml-6 flex items-center">
           {menuItems.map((item) => (
             <div
               key={item}
-              className="cursor-pointer whitespace-nowrap border-l-[3px] border-transparent px-5 py-2.5 text-[13px] font-medium tracking-wide text-cyan-400 transition-[background,border-color] duration-150 hover:border-l-cyan-400 hover:bg-cyan-400/[0.08]"
+              className="cursor-pointer whitespace-nowrap border-b-2 border-transparent px-3 py-1.5 text-[12px] font-medium tracking-wide text-cyan-400 transition-[background,border-color] duration-150 hover:border-b-cyan-400 hover:bg-cyan-400/[0.08]"
             >
               {item}
             </div>
           ))}
         </nav>
-      </div>
+      </header>
 
       {/* ── Main Panels ── */}
       <div className="flex h-full flex-1 overflow-hidden">
-        {/* Panel 1 – MetaRealm (80%) */}
-        <div className="relative m-2 w-4/5 overflow-hidden rounded-md border border-cyan-400 shadow-[0_0_8px_cyan,inset_0_0_8px_rgba(0,255,255,0.1)]">
+        {/* Panel 1 – MetaRealm (80% or fullscreen) */}
+        <div
+          className={
+            metaFullscreen
+              ? 'fixed inset-0 z-[300] overflow-hidden border border-cyan-400 bg-black shadow-[0_0_8px_cyan,inset_0_0_8px_rgba(0,255,255,0.1)]'
+              : 'relative m-2 w-4/5 overflow-hidden rounded-md border border-cyan-400 shadow-[0_0_8px_cyan,inset_0_0_8px_rgba(0,255,255,0.1)]'
+          }
+          style={{ zIndex: metaFullscreen ? 300 : 0, isolation: 'isolate' }}
+        >
+          {/* Expand / Minimize toggle */}
+          <button
+            onClick={() => setMetaFullscreen((v) => !v)}
+            title={metaFullscreen ? 'Minimize' : 'Expand'}
+            className="absolute top-2 left-2 z-[310] flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-cyan-400 bg-black/70 text-cyan-400 shadow-[0_0_8px_rgba(0,255,255,0.4)] transition-colors hover:bg-cyan-400/20"
+          >
+            {metaFullscreen ? (
+              // Minimize icon (inward arrows)
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 2v5h5" />
+                <path d="M14 2 9 7" />
+                <path d="M7 14V9H2" />
+                <path d="m2 14 5-5" />
+              </svg>
+            ) : (
+              // Expand icon (outward arrows)
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 2h5v5" />
+                <path d="M14 2 9 7" />
+                <path d="M7 14H2V9" />
+                <path d="m2 14 5-5" />
+              </svg>
+            )}
+          </button>
+
           <MetaRealm
             onVesselClick={(vesselGlb, berthId) => setVesselInfo({ vesselGlb, berthId })}
             vesselLateHandleRef={vesselLateRef}
@@ -78,9 +99,11 @@ export function MainPage() {
         </div>
 
         {/* Panel 2 – Chat (20%) */}
-        <div className="mt-2 mr-2 mb-2 w-1/5 overflow-hidden">
-          <Chat />
-        </div>
+        {!metaFullscreen && (
+          <div className="mt-2 mr-2 mb-2 w-1/5 overflow-hidden">
+            <Chat />
+          </div>
+        )}
       </div>
 
       <VesselInspectModal

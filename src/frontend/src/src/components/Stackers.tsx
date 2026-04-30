@@ -2,6 +2,7 @@ import { useGLTF } from '@react-three/drei'
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
+import { StackerSignBoard } from './StackerSignBoard'
 
 const STACKER_SCALE = 10
 const STACKERS_PER_YARD = 4
@@ -50,6 +51,7 @@ export function Stackers() {
             name={name}
           >
             <primitive object={clone} scale={STACKER_SCALE} />
+            <StackerSignBoard stackerName={name} />
           </group>
         )
       })}

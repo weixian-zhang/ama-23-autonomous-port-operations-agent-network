@@ -10,17 +10,23 @@ export function YardUnloadSignBoard({ position, disableTimer, zeroContainers }: 
   const [data, setData] = useState(pickRandom)
   const receivedRef = useRef(data.containersReceived)
 
+  const originalReceivedRef = useRef(data.containersReceived)
+
   useEffect(() => {
     const d = pickRandom()
     setData(zeroContainers ? { ...d, containersReceived: 0 } : d)
     receivedRef.current = zeroContainers ? 0 : d.containersReceived
+    originalReceivedRef.current = d.containersReceived
   }, [zeroContainers])
 
-  // Decrement containersReceived by 4 every 5 seconds
+  // Decrement containersReceived by 4 every 5 seconds, reset to original on 0
   useEffect(() => {
     if (disableTimer) return
     const interval = setInterval(() => {
-      receivedRef.current = Math.max(0, receivedRef.current - 4)
+      receivedRef.current = receivedRef.current - 4
+      if (receivedRef.current <= 0) {
+        receivedRef.current = originalReceivedRef.current
+      }
       setData((prev) => ({
         ...prev,
         containersReceived: receivedRef.current,

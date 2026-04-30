@@ -157,7 +157,7 @@ export function VesselInspectModal({ open, info, onClose }: VesselInspectModalPr
   if (!info) return null
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={onClose} sx={{ zIndex: 50000 }}>
       <Box
         sx={{
           position: 'absolute',

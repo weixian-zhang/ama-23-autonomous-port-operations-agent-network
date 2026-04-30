@@ -17,10 +17,15 @@ export function BerthSignBoard({ position }: { position: [number, number, number
     containersRef.current = d.totalContainersLoaded
   }, [])
 
-  // Decrement totalContainersLoaded by 4 every 5 seconds
+  // Decrement totalContainersLoaded by 4 every 5 seconds, reset to original on 0
+  const originalRef = useRef(data.totalContainersLoaded)
+
   useEffect(() => {
     const interval = setInterval(() => {
-      containersRef.current = Math.max(0, containersRef.current - 4)
+      containersRef.current = containersRef.current - 4
+      if (containersRef.current <= 0) {
+        containersRef.current = originalRef.current
+      }
       setData((prev) => ({ ...prev, totalContainersLoaded: containersRef.current }))
     }, 5000)
     return () => clearInterval(interval)
