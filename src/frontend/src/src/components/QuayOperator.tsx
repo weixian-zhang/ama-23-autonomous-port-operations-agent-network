@@ -33,7 +33,7 @@ function stripBonePositions(clip: THREE.AnimationClip): THREE.AnimationClip {
  * one of its built-in clips while patrolling between PATROL_Z_MIN/MAX.
  */
 export function QuayOperator() {
-  const { scene, animations } = useGLTF('/blender-asset/operator-female-1.glb')
+  const { scene, animations } = useGLTF('/blender-asset/operator-female-2.glb')
   const groupRef = useRef<THREE.Group>(null)
   const mixerRef = useRef<THREE.AnimationMixer | null>(null)
   const directionRef = useRef<1 | -1>(1) // +1 = walking +Z, -1 = walking -Z

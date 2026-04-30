@@ -22,6 +22,7 @@ import { YardBoundaries } from './YardBoundaries'
 import { YardContainerTooltips } from './YardContainerTooltips'
 import { PortLogo } from './PortLogo'
 import { QuayOperator } from './QuayOperator'
+import { StagnantVessels } from './StagnantVessels'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 
@@ -185,6 +186,15 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             <Cranes />
             <Stackers />
             <QuayOperator />
+            {/* Idle vessels scattered far out at sea */}
+            <StagnantVessels />
+            {/* Additional idle vessels slightly nearer to port */}
+            <StagnantVessels
+              count={10}
+              seed={4242}
+              bounds={{ xMin: -650, xMax: -300, zMin: -850, zMax: 850 }}
+              minDistance={170}
+            />
             <Berth5Animation onVesselClick={onVesselClick} />
             <Berth2Animation onVesselClick={onVesselClick} />
             <Berth4Animation onVesselClick={onVesselClick} />
