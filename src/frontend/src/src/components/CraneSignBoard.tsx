@@ -44,7 +44,7 @@ export function CraneSignBoard({ craneName }: { craneName: string }) {
     <group position={[12, 22, 0]}>
       <Html
         center
-        distanceFactor={90}
+        distanceFactor={108}
         style={{ pointerEvents: 'none' }}
       >
         <div

@@ -2,22 +2,33 @@ import { Html } from '@react-three/drei'
 import { useState, useEffect } from 'react'
 import vesselSignalData from '../data/vessel-signal.json'
 
-function pickRandom() {
+export type VesselSignalRecord = (typeof vesselSignalData)[number]
+
+function pickRandom(): VesselSignalRecord {
   return vesselSignalData[Math.floor(Math.random() * vesselSignalData.length)]
 }
 
-export function VesselSignBoard() {
-  const [data, setData] = useState(pickRandom)
+interface VesselSignBoardProps {
+  /** When provided, uses this record instead of picking randomly. */
+  data?: VesselSignalRecord
+}
+
+export function VesselSignBoard({ data: dataProp }: VesselSignBoardProps = {}) {
+  const [data, setData] = useState<VesselSignalRecord>(() => dataProp ?? pickRandom())
 
   useEffect(() => {
-    setData(pickRandom())
-  }, [])
+    if (dataProp) {
+      setData(dataProp)
+    } else {
+      setData(pickRandom())
+    }
+  }, [dataProp])
 
   return (
     <group position={[0, 4, 0]}>
       <Html
         center
-        distanceFactor={120}
+        distanceFactor={160}
         style={{ pointerEvents: 'none' }}
       >
         <div
@@ -35,13 +46,24 @@ export function VesselSignBoard() {
           <div style={{ fontSize: 11, fontWeight: 900, color: '#b388ff', marginBottom: 2, letterSpacing: 2, textTransform: 'uppercase', textAlign: 'center' }}>
             VESSEL
           </div>
-          <div style={{ fontSize: 9, fontWeight: 700, color: '#b388ff', marginBottom: 4, letterSpacing: 1 }}>
+          <div style={{ fontSize: 9, fontWeight: 700, color: '#b388ff', marginBottom: 1, letterSpacing: 1 }}>
             {data.vesselName}
           </div>
-          <div style={{ fontSize: 7, color: '#ce93d8', marginBottom: 4 }}>
-            {data.captainName} &middot; {data.voyageNumber}
+          <div style={{ fontSize: 7, color: '#ce93d8', marginBottom: 3, fontStyle: 'italic' }}>
+            {data.vesselType}
           </div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 3 }}>
+          <div style={{ fontSize: 7, color: '#ce93d8', marginBottom: 4 }}>
+            {data.captainName}
+          </div>
+          <div style={{ fontSize: 7, marginBottom: 2 }}>
+            <span style={{ color: '#ce93d8' }}>From:&nbsp;</span>
+            <span style={{ color: '#ede7f6', fontWeight: 600 }}>{data.originPort}, {data.originCountry}</span>
+          </div>
+          <div style={{ fontSize: 7, marginBottom: 4 }}>
+            <span style={{ color: '#ce93d8' }}>To:&nbsp;</span>
+            <span style={{ color: '#ede7f6', fontWeight: 600 }}>{data.destinationPort}, {data.destinationCountry}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
             <div>
               <div style={{ fontSize: 7, color: '#ce93d8' }}>Loaded</div>
               <div style={{ fontSize: 10, fontWeight: 600 }}>{data.containersLoaded}</div>
@@ -53,20 +75,6 @@ export function VesselSignBoard() {
             <div>
               <div style={{ fontSize: 7, color: '#ce93d8' }}>Stay</div>
               <div style={{ fontSize: 10, fontWeight: 600 }}>{data.portStayHours}h</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div>
-              <div style={{ fontSize: 7, color: '#ce93d8' }}>Arr Draft</div>
-              <div style={{ fontSize: 10, fontWeight: 600 }}>{data.arrivalDraftMeters}m</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 7, color: '#ce93d8' }}>Dep Draft</div>
-              <div style={{ fontSize: 10, fontWeight: 600 }}>{data.departureDraftMeters}m</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 7, color: '#ce93d8' }}>Berth %</div>
-              <div style={{ fontSize: 10, fontWeight: 600 }}>{data.berthUtilizationPercent}%</div>
             </div>
           </div>
         </div>

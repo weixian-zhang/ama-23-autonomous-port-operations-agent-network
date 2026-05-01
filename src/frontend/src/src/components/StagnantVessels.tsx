@@ -1,6 +1,9 @@
 import { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
+import vesselSignalData from '../data/vessel-signal.json'
+import { type VesselSignalRecord } from './VesselSignBoard'
+import { StagnantVesselSignBoard } from './StagnantVesselSignBoard'
 
 const VESSEL_GLBS = [
   '/blender-asset/vessel-1.glb',
@@ -25,6 +28,7 @@ interface StagnantVesselSpec {
   position: [number, number, number]
   rotationY: number
   scale: number
+  signal: VesselSignalRecord
 }
 
 interface ScatterBounds {
@@ -39,6 +43,7 @@ function generateStagnantVessels(
   seed: number,
   bounds: ScatterBounds,
   minDistance: number,
+  seaY: number,
 ): StagnantVesselSpec[] {
   const rand = mulberry32(seed)
   const placed: StagnantVesselSpec[] = []
@@ -64,9 +69,12 @@ function generateStagnantVessels(
 
     placed.push({
       glb: VESSEL_GLBS[Math.floor(rand() * VESSEL_GLBS.length)],
-      position: [x, 0, z],
+      position: [x, seaY, z],
       rotationY: rand() * Math.PI * 2,
-      scale: 50 + rand() * 25, // mild size variation 50–75
+      // Match docking vessel scale (60) with only mild variation so hulls
+      // stay seated on the waterline instead of being lifted into the air.
+      scale: 56 + rand() * 8, // 56–64
+      signal: vesselSignalData[Math.floor(rand() * vesselSignalData.length)],
     })
   }
 
@@ -80,6 +88,10 @@ function StagnantVessel({ spec }: { spec: StagnantVesselSpec }) {
   return (
     <group position={spec.position} rotation={[0, spec.rotationY, 0]}>
       <primitive object={scene as THREE.Object3D} scale={spec.scale} />
+      {/* Counter-rotate the sign board so it always reads the same orientation as docked vessels */}
+      <group rotation={[0, -spec.rotationY, 0]}>
+        <StagnantVesselSignBoard data={spec.signal} />
+      </group>
     </group>
   )
 }
@@ -89,13 +101,15 @@ interface StagnantVesselsProps {
   seed?: number
   bounds?: ScatterBounds
   minDistance?: number
+  /** Y position of the sea surface — keep at 0 to match docking vessels */
+  seaY?: number
 }
 
 const DEFAULT_BOUNDS: ScatterBounds = {
-  xMin: -1700,
-  xMax: -700,
-  zMin: -900,
-  zMax: 900,
+  xMin: -1100,
+  xMax: -600,
+  zMin: -800,
+  zMax: 800,
 }
 
 /**
@@ -108,10 +122,11 @@ export function StagnantVessels({
   seed = 1337,
   bounds = DEFAULT_BOUNDS,
   minDistance = 220,
+  seaY = 0,
 }: StagnantVesselsProps) {
   const vessels = useMemo(
-    () => generateStagnantVessels(count, seed, bounds, minDistance),
-    [count, seed, bounds, minDistance],
+    () => generateStagnantVessels(count, seed, bounds, minDistance, seaY),
+    [count, seed, bounds, minDistance, seaY],
   )
 
   return (

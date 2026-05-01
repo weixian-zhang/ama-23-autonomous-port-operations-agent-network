@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
 import { AgvSignBoard } from './AgvSignBoard'
 
-const AGV_SCALE = 10
+const AGV_SCALE = 18.876
 const AGVS_PER_BERTH = 4
 const BERTH_Z_HALF_RANGE = 100
 const AGV_X_MIN = -25

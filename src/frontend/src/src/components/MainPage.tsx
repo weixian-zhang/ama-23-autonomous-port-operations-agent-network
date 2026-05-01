@@ -39,7 +39,7 @@ export function MainPage() {
         <div className="flex items-center gap-2">
           <img src="/logo-icon.png" alt="logo" className="h-5" />
           <span className="text-[13px] font-semibold tracking-wide text-cyan-400">
-            Hive
+            Salacia Hive
           </span>
         </div>
 

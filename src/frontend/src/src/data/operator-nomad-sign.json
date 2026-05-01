@@ -1,0 +1,552 @@
+[
+    {
+        "role": "yard checker",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.256875,
+            "lon": 103.622616
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Cooling fan and panel indicators were inspected and appeared normal."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "23:00",
+        "shiftEnd": "07:00",
+        "gpsLocation": {
+            "lat": 1.276659,
+            "lon": 103.666968
+        },
+        "safetyHazardReport": "Damaged safety barrier seen near the work zone and flagged.",
+        "equipmentChecklist": "Cooling fan and panel indicators were inspected and appeared normal."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "23:00",
+        "shiftEnd": "07:00",
+        "gpsLocation": {
+            "lat": 1.27208,
+            "lon": 103.649007
+        },
+        "safetyHazardReport": "Debris near container stack detected and housekeeping was requested.",
+        "equipmentChecklist": "Brakes, steering, and alarms were inspected and working properly."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "23:00",
+        "shiftEnd": "07:00",
+        "gpsLocation": {
+            "lat": 1.274547,
+            "lon": 103.648532
+        },
+        "safetyHazardReport": "Obstructed yard lane observed and cones were placed immediately.",
+        "equipmentChecklist": "Fuel level and engine status were checked and both were normal."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "15:00",
+        "shiftEnd": "23:00",
+        "gpsLocation": {
+            "lat": 1.267577,
+            "lon": 103.646317
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Tyres, lights, and horn were checked and no issue was found."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.278737,
+            "lon": 103.666519
+        },
+        "safetyHazardReport": "Loose twistlock found near the lane and cleared for safety.",
+        "equipmentChecklist": "Spreader lock indicator and controls were checked and responsive."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "16:00",
+        "shiftEnd": "00:00",
+        "gpsLocation": {
+            "lat": 1.26726,
+            "lon": 103.643647
+        },
+        "safetyHazardReport": "Loose cable cover found near the cabin access path and secured.",
+        "equipmentChecklist": "Cabin condition and mirrors were inspected and found acceptable."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.264729,
+            "lon": 103.640639
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Tyres, lights, and horn were checked and no issue was found."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.27789,
+            "lon": 103.669678
+        },
+        "safetyHazardReport": "Puddle on the walkway identified and the area was marked.",
+        "equipmentChecklist": "Hydraulic lines and warning lights were checked and looked normal."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "15:00",
+        "shiftEnd": "23:00",
+        "gpsLocation": {
+            "lat": 1.271851,
+            "lon": 103.649009
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Daily pre-start check was completed and the equipment was ready."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "23:00",
+        "shiftEnd": "07:00",
+        "gpsLocation": {
+            "lat": 1.256724,
+            "lon": 103.623811
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Cooling fan and panel indicators were inspected and appeared normal."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.278714,
+            "lon": 103.66738
+        },
+        "safetyHazardReport": "Damaged safety barrier seen near the work zone and flagged.",
+        "equipmentChecklist": "Equipment checked and all basic items were in normal condition."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "16:00",
+        "shiftEnd": "00:00",
+        "gpsLocation": {
+            "lat": 1.270831,
+            "lon": 103.653066
+        },
+        "safetyHazardReport": "Loose cable cover found near the cabin access path and secured.",
+        "equipmentChecklist": "Cabin condition and mirrors were inspected and found acceptable."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.280478,
+            "lon": 103.674073
+        },
+        "safetyHazardReport": "Uneven ground surface observed near the transfer point and reported.",
+        "equipmentChecklist": "Hydraulic lines and warning lights were checked and looked normal."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.272225,
+            "lon": 103.648195
+        },
+        "safetyHazardReport": "Loose cable cover found near the cabin access path and secured.",
+        "equipmentChecklist": "Fuel level and engine status were checked and both were normal."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "15:00",
+        "shiftEnd": "23:00",
+        "gpsLocation": {
+            "lat": 1.273487,
+            "lon": 103.646192
+        },
+        "safetyHazardReport": "Uneven ground surface observed near the transfer point and reported.",
+        "equipmentChecklist": "Tyres, lights, and horn were checked and no issue was found."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.269637,
+            "lon": 103.64646
+        },
+        "safetyHazardReport": "Debris near container stack detected and housekeeping was requested.",
+        "equipmentChecklist": "Daily pre-start check was completed and the equipment was ready."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "16:00",
+        "shiftEnd": "00:00",
+        "gpsLocation": {
+            "lat": 1.279479,
+            "lon": 103.66884
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Cooling fan and panel indicators were inspected and appeared normal."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.256073,
+            "lon": 103.625924
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Cabin condition and mirrors were inspected and found acceptable."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "15:00",
+        "shiftEnd": "23:00",
+        "gpsLocation": {
+            "lat": 1.277291,
+            "lon": 103.666516
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Cooling fan and panel indicators were inspected and appeared normal."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "23:00",
+        "shiftEnd": "07:00",
+        "gpsLocation": {
+            "lat": 1.288032,
+            "lon": 103.786627
+        },
+        "safetyHazardReport": "Faded lane marking noticed in the operating area and logged.",
+        "equipmentChecklist": "Daily pre-start check was completed and the equipment was ready."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.278313,
+            "lon": 103.666197
+        },
+        "safetyHazardReport": "Faded lane marking noticed in the operating area and logged.",
+        "equipmentChecklist": "Equipment checked and all basic items were in normal condition."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "16:00",
+        "shiftEnd": "00:00",
+        "gpsLocation": {
+            "lat": 1.263059,
+            "lon": 103.639315
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Brakes, steering, and alarms were inspected and working properly."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.290337,
+            "lon": 103.783894
+        },
+        "safetyHazardReport": "Uneven ground surface observed near the transfer point and reported.",
+        "equipmentChecklist": "Tyres, lights, and horn were checked and no issue was found."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.254876,
+            "lon": 103.620249
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Cooling fan and panel indicators were inspected and appeared normal."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.290196,
+            "lon": 103.78715
+        },
+        "safetyHazardReport": "Damaged safety barrier seen near the work zone and flagged.",
+        "equipmentChecklist": "Battery, display panel, and emergency stop were checked and okay."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.254367,
+            "lon": 103.621998
+        },
+        "safetyHazardReport": "Uneven ground surface observed near the transfer point and reported.",
+        "equipmentChecklist": "Tyres, lights, and horn were checked and no issue was found."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.26619,
+            "lon": 103.642442
+        },
+        "safetyHazardReport": "Damaged safety barrier seen near the work zone and flagged.",
+        "equipmentChecklist": "Daily pre-start check was completed and the equipment was ready."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.268039,
+            "lon": 103.639794
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Equipment checked and all basic items were in normal condition."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.28169,
+            "lon": 103.675845
+        },
+        "safetyHazardReport": "Damaged safety barrier seen near the work zone and flagged.",
+        "equipmentChecklist": "Cooling fan and panel indicators were inspected and appeared normal."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.291912,
+            "lon": 103.786381
+        },
+        "safetyHazardReport": "Damaged safety barrier seen near the work zone and flagged.",
+        "equipmentChecklist": "Spreader lock indicator and controls were checked and responsive."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.264985,
+            "lon": 103.641655
+        },
+        "safetyHazardReport": "Debris near container stack detected and housekeeping was requested.",
+        "equipmentChecklist": "Fuel level and engine status were checked and both were normal."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.265867,
+            "lon": 103.642421
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Equipment checked and all basic items were in normal condition."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.278503,
+            "lon": 103.664046
+        },
+        "safetyHazardReport": "Damaged safety barrier seen near the work zone and flagged.",
+        "equipmentChecklist": "Brakes, steering, and alarms were inspected and working properly."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.277417,
+            "lon": 103.668813
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Spreader lock indicator and controls were checked and responsive."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.257496,
+            "lon": 103.62168
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Brakes, steering, and alarms were inspected and working properly."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "16:00",
+        "shiftEnd": "00:00",
+        "gpsLocation": {
+            "lat": 1.280907,
+            "lon": 103.673823
+        },
+        "safetyHazardReport": "Loose twistlock found near the lane and cleared for safety.",
+        "equipmentChecklist": "Hydraulic lines and warning lights were checked and looked normal."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.277826,
+            "lon": 103.67042
+        },
+        "safetyHazardReport": "Uneven ground surface observed near the transfer point and reported.",
+        "equipmentChecklist": "Battery, display panel, and emergency stop were checked and okay."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.260477,
+            "lon": 103.624279
+        },
+        "safetyHazardReport": "Uneven ground surface observed near the transfer point and reported.",
+        "equipmentChecklist": "Hydraulic lines and warning lights were checked and looked normal."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "15:00",
+        "shiftEnd": "23:00",
+        "gpsLocation": {
+            "lat": 1.273344,
+            "lon": 103.648396
+        },
+        "safetyHazardReport": "Faded lane marking noticed in the operating area and logged.",
+        "equipmentChecklist": "Equipment checked and all basic items were in normal condition."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.265421,
+            "lon": 103.640014
+        },
+        "safetyHazardReport": "Faded lane marking noticed in the operating area and logged.",
+        "equipmentChecklist": "Hydraulic lines and warning lights were checked and looked normal."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "23:00",
+        "shiftEnd": "07:00",
+        "gpsLocation": {
+            "lat": 1.268757,
+            "lon": 103.639843
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Brakes, steering, and alarms were inspected and working properly."
+    },
+    {
+        "role": "equipment technician",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.290348,
+            "lon": 103.786395
+        },
+        "safetyHazardReport": "Loose twistlock found near the lane and cleared for safety.",
+        "equipmentChecklist": "Daily pre-start check was completed and the equipment was ready."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "16:00",
+        "shiftEnd": "00:00",
+        "gpsLocation": {
+            "lat": 1.255418,
+            "lon": 103.620114
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Brakes, steering, and alarms were inspected and working properly."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "08:00",
+        "shiftEnd": "17:00",
+        "gpsLocation": {
+            "lat": 1.272479,
+            "lon": 103.651858
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Spreader lock indicator and controls were checked and responsive."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.264791,
+            "lon": 103.642492
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Tyres, lights, and horn were checked and no issue was found."
+    },
+    {
+        "role": "quay supervisor",
+        "shiftStart": "23:00",
+        "shiftEnd": "07:00",
+        "gpsLocation": {
+            "lat": 1.271162,
+            "lon": 103.650245
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Brakes, steering, and alarms were inspected and working properly."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "15:00",
+        "shiftEnd": "23:00",
+        "gpsLocation": {
+            "lat": 1.268691,
+            "lon": 103.645216
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Daily pre-start check was completed and the equipment was ready."
+    },
+    {
+        "role": "yard checker",
+        "shiftStart": "00:00",
+        "shiftEnd": "08:00",
+        "gpsLocation": {
+            "lat": 1.287273,
+            "lon": 103.784159
+        },
+        "safetyHazardReport": "Small oil spill spotted beside the equipment bay and reported.",
+        "equipmentChecklist": "Hydraulic lines and warning lights were checked and looked normal."
+    },
+    {
+        "role": "foreman",
+        "shiftStart": "07:00",
+        "shiftEnd": "15:00",
+        "gpsLocation": {
+            "lat": 1.288035,
+            "lon": 103.786266
+        },
+        "safetyHazardReport": "Poor lighting noticed at the corner of the block and reported.",
+        "equipmentChecklist": "Battery, display panel, and emergency stop were checked and okay."
+    }
+]

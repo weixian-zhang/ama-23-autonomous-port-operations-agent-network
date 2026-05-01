@@ -30,7 +30,7 @@ interface ContainerProps {
 }
 
 export const Container = forwardRef<ContainerHandle, ContainerProps>(
-  function Container({ craneCount = 4, scale = 8, seed = 100 }, ref) {
+  function Container({ craneCount = 4, scale = 11.52, seed = 100 }, ref) {
     const containerGltfs = [
       useGLTF(CONTAINER_GLBS[0]),
       useGLTF(CONTAINER_GLBS[1]),
