@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
 import { CraneSignBoard } from './CraneSignBoard'
 
-const CRANE_SCALE = 40
+const CRANE_SCALE = 52.8
 
 export function Cranes() {
   const { scene } = useGLTF('/blender-asset/crane.glb')

@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { PORT_ZONES } from '../data/portZoneData'
 import { StackerSignBoard } from './StackerSignBoard'
 
-const STACKER_SCALE = 18.876
+const STACKER_SCALE = 20.7636
 const STACKERS_PER_YARD = 4
 const YARD_Z_HALF_RANGE = 100
 const YARD_X_MIN = 30

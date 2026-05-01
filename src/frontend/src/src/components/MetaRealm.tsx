@@ -221,6 +221,13 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
               bounds={{ xMin: -476, xMax: -392, zMin: -1200, zMax: 1200 }}
               minDistance={360}
             />
+            {/* Idle vessels — extra 10 sprinkled across the full line of vessels with small spacing */}
+            <StagnantVessels
+              count={10}
+              seed={5723}
+              bounds={{ xMin: -476, xMax: -136, zMin: -1100, zMax: 1100 }}
+              minDistance={180}
+            />
             <Berth5Animation onVesselClick={onVesselClick} />
             <Berth2Animation onVesselClick={onVesselClick} />
             <Berth4Animation onVesselClick={onVesselClick} />
@@ -254,7 +261,7 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             <BerthLabel position={[-43, 128, -480]} label="Berth 5" />
             {/* Logo high above port */}
             <PortLogo position={[20, 240, 0]} />
-            <PortLogo position={[20, 180, 0]} src="/logo-word.png" width={120} height={40} />
+            <PortLogo position={[20, 180, 0]} src="/blender-asset/salacia-logo-metarealm.png" width={120} height={40} />
           </group>
         </AgvOwnershipProvider>
       </Suspense>

@@ -238,7 +238,7 @@ function Npc({ spec }: { spec: NpcSpec }) {
   const directionRef = useRef<1 | -1>(spec.direction)
   // Local-space y of the NPC's head (after foot-fit). Used to position the
   // floating sign board just above. Updated once during the fit pass.
-  const [signYOffset, setSignYOffset] = useState(14)
+  const [signYOffset, setSignYOffset] = useState(1.26)
 
   // Per-instance skinned-mesh clone so each NPC has its own skeleton.
   const clonedScene = useMemo(() => cloneSkeleton(gltf.scene) as THREE.Object3D, [gltf.scene])
@@ -322,9 +322,9 @@ function Npc({ spec }: { spec: NpcSpec }) {
       // Compute the head height in the group's LOCAL space so the sign
       // board floats just above each NPC regardless of rig origin
       // differences. (maxWorldY - minWorldY) = total deformed height.
-      // ~58% extra clearance so the sign sits a little higher above the head.
+      // Multiplier bumped 5% so the sign floats a touch higher above the head.
       if (Number.isFinite(minWorldY) && Number.isFinite(maxWorldY)) {
-        setSignYOffset((maxWorldY - minWorldY + 4) * 1.584)
+        setSignYOffset((maxWorldY - minWorldY + 4) * 1.05)
       }
 
       // Restore the action's playhead to a sensible starting frame.

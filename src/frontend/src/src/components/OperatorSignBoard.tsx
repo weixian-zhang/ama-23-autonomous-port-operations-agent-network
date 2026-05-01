@@ -65,7 +65,7 @@ export function OperatorSignBoard({ yOffset = 14, operatorId }: OperatorSignBoar
               textAlign: 'center',
             }}
           >
-            Salacia Hive
+            Salacia Nomad
           </div>
           {operatorId && (
             <div
