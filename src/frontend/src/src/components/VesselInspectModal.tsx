@@ -46,7 +46,9 @@ function VesselScene({ vesselGlb }: { vesselGlb: string }) {
   const vesselGltf = useGLTF(vesselGlb)
   const vesselScene = useMemo(() => vesselGltf.scene.clone(true), [vesselGltf.scene])
 
-  const containerGltf = useGLTF('/blender-asset/inspect-vessel-container-info.glb')
+  // Bump ?v=... whenever inspect-vessel-container-info.glb is re-exported
+  // from Blender to bypass the browser HTTP cache and drei's per-URL useGLTF cache.
+  const containerGltf = useGLTF('/blender-asset/inspect-vessel-container-info.glb?v=2026-05-02-randtex')
   const containerScene = useMemo(() => {
     const s = containerGltf.scene.clone(true)
     console.log('[container-glb] dumping all mesh names:')
