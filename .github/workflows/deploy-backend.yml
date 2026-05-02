@@ -71,6 +71,23 @@ jobs:
           imageToDeploy: ${{ env.image }}
           targetPort: 3978
           ingress: external
+          # Environment variables mirror src/backend/.env.
+          # Non-secret defaults are inlined; secrets are pulled from
+          # GitHub Actions secrets (configure them in repo Settings →
+          # Secrets and variables → Actions). Empty values are valid;
+          # the container will start but auth-dependent features will
+          # fail until the secrets are populated.
+          environmentVariables: >-
+            PORT=3978
+            AZURE_OPENAI_BASE_PATH=https://foundry-ama-dev.services.ai.azure.com/openai/deployments
+            AZURE_OPENAI_DEPLOYMENT_NAME=gpt-5.4-mini
+            AZURE_OPENAI_API_VERSION=2024-12-01-preview
+            MICROSOFT_APP_ID=${{ secrets.MICROSOFT_APP_ID }}
+            MICROSOFT_APP_PASSWORD=${{ secrets.MICROSOFT_APP_PASSWORD }}
+            MICROSOFT_APP_TENANT_ID=${{ secrets.MICROSOFT_APP_TENANT_ID }}
+            AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}
+            AZURE_CLIENT_ID=f552feab-c584-4c47-813a-64a0d1198f54
+            AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: Azure logout
         if: always()
