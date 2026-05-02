@@ -28,7 +28,6 @@ jobs:
   build-and-deploy:
     name: Build & deploy frontend
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
       - name: Checkout
