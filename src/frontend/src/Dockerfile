@@ -5,10 +5,13 @@ FROM node:24-alpine AS build
 
 WORKDIR /app
 
-# Vite inlines VITE_* env vars at build time, so they must be passed as
-# build args (NOT as runtime env vars on the container).
+# Vite inlines VITE_* env vars at build time, so the production value
+# must be available during `npm run build` (NOT as a runtime container
+# env var). The CI workflow passes it via:
+#     docker build --build-arg VITE_WS_URL=wss://...
+# Re-exporting the ARG as ENV makes Vite pick it up.
 ARG VITE_WS_URL
-ENV VITE_WS_URL=ws://localhost:3978/ws
+ENV VITE_WS_URL=${VITE_WS_URL}
 
 # Install dependencies first to leverage Docker layer caching
 COPY package.json package-lock.json* ./

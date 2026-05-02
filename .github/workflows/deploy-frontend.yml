@@ -28,6 +28,7 @@ jobs:
   build-and-deploy:
     name: Build & deploy frontend
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Checkout
@@ -49,7 +50,12 @@ jobs:
 
       - name: Build & push image to ACR
         env:
-          VITE_WS_URL: ws://localhost:3978/ws
+          # Production value comes from a GitHub Actions repo variable
+          # (Settings → Secrets and variables → Actions → Variables).
+          # Falls back to localhost so the workflow still builds if the
+          # variable is missing — the deployed app would just point at
+          # the user's machine, which is obviously wrong in prod.
+          VITE_WS_URL: ${{ vars.VITE_WS_URL || 'ws://localhost:3978/ws' }}
         run: |
           set -euo pipefail
           REGISTRY="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io"
