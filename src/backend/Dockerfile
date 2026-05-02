@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------- Build stage ----------
-FROM node:20-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -20,14 +20,14 @@ RUN cd src && find . -type f \( -name '*.md' -o -name '*.json' \) -print0 \
     | xargs -0 -I {} sh -c 'mkdir -p "../dist/$(dirname "{}")" && cp "{}" "../dist/{}"'
 
 # ---------- Production deps stage ----------
-FROM node:20-alpine AS prod-deps
+FROM node:24-alpine AS prod-deps
 
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 # ---------- Runtime stage ----------
-FROM node:20-alpine AS runtime
+FROM node:24-alpine AS runtime
 
 WORKDIR /app
 
@@ -44,7 +44,7 @@ USER node
 
 EXPOSE 3978
 
-# Lightweight HTTP healthcheck against /api/health (no curl needed)
+# Lightweight HTTP healthcheck against /api/health (uses Node's built-in fetch)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||3978)+'/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
 

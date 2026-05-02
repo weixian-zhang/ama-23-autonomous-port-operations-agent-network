@@ -21,6 +21,7 @@ env:
   IMAGE_NAME: salacia-backend
   CONTEXT_PATH: src/backend
   AZURE_CONTAINER_REGISTRY: acramadev
+  AZURE_CONTAINER_APP_NAME: aca-ama-salacia-backend
 
 jobs:
   build-and-deploy:
@@ -66,7 +67,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
-          containerAppName: ${{ vars.AZURE_CONTAINER_APP_BACKEND }}
+          containerAppName: ${{ env.AZURE_CONTAINER_APP_NAME }}
           imageToDeploy: ${{ env.image }}
           targetPort: 3978
           ingress: external
