@@ -22,7 +22,7 @@ env:
   IMAGE_NAME: salacia-backend
   CONTEXT_PATH: src/backend
   AZURE_CONTAINER_REGISTRY: acramadev
-  AZURE_CONTAINER_APP_NAME: aca-ama-salacia-backend
+  AZURE_CONTAINER_APP_NAME: aca-ama-backend
 
 jobs:
   build-and-deploy:
