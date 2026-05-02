@@ -27,7 +27,7 @@ import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 
 // --- First-person camera constants ---
-const WALK_SPEED = 40
+const WALK_SPEED = 80
 const LOOK_SPEED_X = 4
 const LOOK_SPEED_Y = 3
 const HEAD_BOB_SPEED = 14
