@@ -1,0 +1,77 @@
+name: Deploy Backend to Azure Container Apps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+# Required for Azure login via OIDC federated identity
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-backend-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: salacia-backend
+  CONTEXT_PATH: src/backend
+  AZURE_CONTAINER_REGISTRY: acramadev
+
+jobs:
+  build-and-deploy:
+    name: Build & deploy backend
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC federated identity)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set image tag
+        id: vars
+        run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to Azure Container Registry
+        run: az acr login --name "${{ env.AZURE_CONTAINER_REGISTRY }}"
+
+      - name: Build & push image to ACR
+        run: |
+          set -euo pipefail
+          REGISTRY="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io"
+          IMAGE="$REGISTRY/${IMAGE_NAME}"
+          TAG="${{ steps.vars.outputs.tag }}"
+
+          docker build \
+            --tag "$IMAGE:$TAG" \
+            --tag "$IMAGE:latest" \
+            "$CONTEXT_PATH"
+
+          docker push "$IMAGE:$TAG"
+          docker push "$IMAGE:latest"
+
+          echo "image=$IMAGE:$TAG" >> "$GITHUB_ENV"
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
+          containerAppName: ${{ vars.AZURE_CONTAINER_APP_BACKEND }}
+          imageToDeploy: ${{ env.image }}
+          targetPort: 3978
+          ingress: external
+
+      - name: Azure logout
+        if: always()
+        run: az logout
