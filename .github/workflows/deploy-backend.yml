@@ -18,6 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  AZURE_RESOURCE_GROUP: rg-master-architect-dev
   IMAGE_NAME: salacia-backend
   CONTEXT_PATH: src/backend
   AZURE_CONTAINER_REGISTRY: acramadev
