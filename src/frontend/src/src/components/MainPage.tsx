@@ -12,7 +12,7 @@ export function MainPage() {
 
   const menuItems = [
     'Berth Planning',
-    'Yacht Allocation',
+    'Yard Allocation',
     'Gate Management',
     'Cargo Tracking',
     'Billing',

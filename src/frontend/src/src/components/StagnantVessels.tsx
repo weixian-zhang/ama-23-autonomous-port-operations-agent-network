@@ -44,6 +44,7 @@ function generateStagnantVessels(
   bounds: ScatterBounds,
   minDistance: number,
   seaY: number,
+  existing: StagnantVesselSpec[] = [],
 ): StagnantVesselSpec[] {
   const rand = mulberry32(seed)
   const placed: StagnantVesselSpec[] = []
@@ -63,6 +64,16 @@ function generateStagnantVessels(
       if (dx * dx + dz * dz < minDistSq) {
         tooClose = true
         break
+      }
+    }
+    if (!tooClose) {
+      for (const p of existing) {
+        const dx = p.position[0] - x
+        const dz = p.position[2] - z
+        if (dx * dx + dz * dz < minDistSq) {
+          tooClose = true
+          break
+        }
       }
     }
     if (tooClose) continue
@@ -128,6 +139,57 @@ export function StagnantVessels({
     () => generateStagnantVessels(count, seed, bounds, minDistance, seaY),
     [count, seed, bounds, minDistance, seaY],
   )
+
+  return (
+    <>
+      {vessels.map((spec, i) => (
+        <StagnantVessel key={i} spec={spec} />
+      ))}
+    </>
+  )
+}
+
+export interface StagnantVesselBandSpec {
+  count: number
+  seed: number
+  bounds: ScatterBounds
+  minDistance: number
+}
+
+interface StagnantVesselBandsProps {
+  bands: StagnantVesselBandSpec[]
+  /** Minimum distance enforced between vessels of *different* bands. */
+  globalMinDistance?: number
+  seaY?: number
+}
+
+/**
+ * Renders multiple bands of stagnant vessels with cross-band collision
+ * avoidance, so vessels from different bands cannot cluster together.
+ */
+export function StagnantVesselBands({
+  bands,
+  globalMinDistance = 240,
+  seaY = 0,
+}: StagnantVesselBandsProps) {
+  const vessels = useMemo(() => {
+    const all: StagnantVesselSpec[] = []
+    for (const band of bands) {
+      // Use the stricter of the band's own minDistance and the global one
+      // so that cross-band spacing is always enforced.
+      const effectiveMin = Math.max(band.minDistance, globalMinDistance)
+      const placed = generateStagnantVessels(
+        band.count,
+        band.seed,
+        band.bounds,
+        effectiveMin,
+        seaY,
+        all,
+      )
+      all.push(...placed)
+    }
+    return all
+  }, [bands, globalMinDistance, seaY])
 
   return (
     <>

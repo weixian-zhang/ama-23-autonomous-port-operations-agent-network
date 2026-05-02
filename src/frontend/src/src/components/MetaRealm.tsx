@@ -22,7 +22,7 @@ import { YardBoundaries } from './YardBoundaries'
 import { YardContainerTooltips } from './YardContainerTooltips'
 import { PortLogo } from './PortLogo'
 import { PortNpcs } from './PortNpcs'
-import { StagnantVessels } from './StagnantVessels'
+import { StagnantVesselBands } from './StagnantVessels'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 
@@ -186,47 +186,18 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             <Cranes />
             <Stackers />
             <PortNpcs />
-            {/* Idle vessels — closest band to port, kept clear of the docking lane (moved 30% closer to port) */}
-            <StagnantVessels
-              count={10}
-              seed={4242}
-              bounds={{ xMin: -207.9, xMax: -163.8, zMin: -850, zMax: 850 }}
-              minDistance={240}
-            />
-            {/* Idle vessels — middle band (moved 30% closer to port) */}
-            <StagnantVessels
-              count={15}
-              seed={1337}
-              bounds={{ xMin: -204.12, xMax: -136.08, zMin: -900, zMax: 900 }}
-              minDistance={260}
-            />
-            {/* Idle vessels — furthest band, still visibly close to port (moved 30% closer to port) */}
-            <StagnantVessels
-              count={10}
-              seed={9911}
-              bounds={{ xMin: -294.84, xMax: -215.46, zMin: -1000, zMax: 1000 }}
-              minDistance={300}
-            />
-            {/* Idle vessels — outermost band of 5, filling the open sea behind the other bands (moved 30% closer to port) */}
-            <StagnantVessels
-              count={5}
-              seed={2718}
-              bounds={{ xMin: -378, xMax: -308, zMin: -1100, zMax: 1100 }}
-              minDistance={340}
-            />
-            {/* Idle vessels — far horizon band of 5, fills the remaining empty sea (moved 30% closer to port) */}
-            <StagnantVessels
-              count={5}
-              seed={3141}
-              bounds={{ xMin: -476, xMax: -392, zMin: -1200, zMax: 1200 }}
-              minDistance={360}
-            />
-            {/* Idle vessels — extra 10 sprinkled across the full line of vessels with small spacing */}
-            <StagnantVessels
-              count={10}
-              seed={5723}
-              bounds={{ xMin: -476, xMax: -136, zMin: -1100, zMax: 1100 }}
-              minDistance={180}
+            {/* Idle vessels — scattered messily across the sea, with a small
+                minimum distance between each so they never overlap. */}
+            <StagnantVesselBands
+              globalMinDistance={180}
+              bands={[
+                {
+                  count: 63,
+                  seed: 4242,
+                  bounds: { xMin: -380.8, xMax: -108.8, zMin: -1100, zMax: 1100 },
+                  minDistance: 180,
+                },
+              ]}
             />
             <Berth5Animation onVesselClick={onVesselClick} />
             <Berth2Animation onVesselClick={onVesselClick} />
@@ -256,7 +227,7 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             {/* Berth labels above sign boards */}
             <BerthLabel position={[-43, 128, 480]} label="Berth 1" />
             <BerthLabel position={[-43, 128, 240]} label="Berth 2" />
-            <BerthLabel position={[-43, 128, 0]} label="Berth 3" />
+            <BerthLabel position={[-43, 134.4, 0]} label="Berth 3" />
             <BerthLabel position={[-43, 128, -240]} label="Berth 4" />
             <BerthLabel position={[-43, 128, -480]} label="Berth 5" />
             {/* Logo high above port */}
