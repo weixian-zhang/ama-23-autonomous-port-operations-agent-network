@@ -5,6 +5,11 @@ FROM node:24-alpine AS build
 
 WORKDIR /app
 
+# Vite inlines VITE_* env vars at build time, so they must be passed as
+# build args (NOT as runtime env vars on the container).
+ARG VITE_WS_URL
+ENV VITE_WS_URL=ws://localhost:3978/ws
+
 # Install dependencies first to leverage Docker layer caching
 COPY package.json package-lock.json* ./
 RUN npm ci

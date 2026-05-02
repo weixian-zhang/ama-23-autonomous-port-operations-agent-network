@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
 import { Html } from '@react-three/drei'
-import * as THREE from 'three'
 import { PORT_ZONES, getYardCellPosition } from '../data/portZoneData'
 import containerData from '../data/vessel-container-info.json'
 

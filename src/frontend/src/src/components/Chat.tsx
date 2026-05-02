@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { socketClient } from '../SocketClient'
-import agvStackerConversations from '../data/agv-stacker-conversations.json'
 import craneEdgeConversations from '../data/crane-edge-agent-conversation.json'
 import yardKingConversations from '../data/fleetmarket-to-yardking-conversations.json'
 

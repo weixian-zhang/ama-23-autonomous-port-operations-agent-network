@@ -47,6 +47,8 @@ jobs:
         run: az acr login --name "${{ env.AZURE_CONTAINER_REGISTRY }}"
 
       - name: Build & push image to ACR
+        env:
+          VITE_WS_URL: ws://localhost:3978/ws
         run: |
           set -euo pipefail
           REGISTRY="${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io"
@@ -54,6 +56,7 @@ jobs:
           TAG="${{ steps.vars.outputs.tag }}"
 
           docker build \
+            --build-arg "VITE_WS_URL=${VITE_WS_URL}" \
             --tag "$IMAGE:$TAG" \
             --tag "$IMAGE:latest" \
             "$CONTEXT_PATH"
