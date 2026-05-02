@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { Modal, Box, Typography, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { Canvas, useThree } from '@react-three/fiber'
@@ -42,6 +42,7 @@ function VesselScene({ vesselGlb }: { vesselGlb: string }) {
   const { camera, gl, scene } = useThree()
   const raycaster = useMemo(() => new THREE.Raycaster(), [])
   const mouse = useMemo(() => new THREE.Vector2(), [])
+  const groupRef = useRef<THREE.Group>(null)
 
   const vesselGltf = useGLTF(vesselGlb)
   const vesselScene = useMemo(() => vesselGltf.scene.clone(true), [vesselGltf.scene])
@@ -59,6 +60,21 @@ function VesselScene({ vesselGlb }: { vesselGlb: string }) {
     })
     return s
   }, [containerGltf.scene])
+
+  // After geometry is mounted, recenter the group so the combined
+  // vessel+containers bounding box centers on the origin (which OrbitControls targets).
+  useEffect(() => {
+    const g = groupRef.current
+    if (!g) return
+    // Reset any previous offset so we measure the true natural bounds
+    g.position.set(0, 0, 0)
+    g.updateMatrixWorld(true)
+    const box = new THREE.Box3().setFromObject(g)
+    if (box.isEmpty()) return
+    const center = box.getCenter(new THREE.Vector3())
+    g.position.sub(center)
+  }, [vesselScene, containerScene])
+
 
   useEffect(() => {
     const canvas = gl.domElement
@@ -102,9 +118,11 @@ function VesselScene({ vesselGlb }: { vesselGlb: string }) {
   }, [camera, gl, scene, raycaster, mouse])
 
   return (
-    <group>
-      <primitive object={vesselScene} scale={30} />
-      <primitive object={containerScene} scale={30} />
+    <>
+      <group ref={groupRef}>
+        <primitive object={vesselScene} scale={30} />
+        <primitive object={containerScene} scale={30} />
+      </group>
       {hovered && (
         <Html
           position={[hovered.position.x, hovered.position.y + 2, hovered.position.z]}
@@ -140,7 +158,7 @@ function VesselScene({ vesselGlb }: { vesselGlb: string }) {
           </div>
         </Html>
       )}
-    </group>
+    </>
   )
 }
 
@@ -178,20 +196,20 @@ export function VesselInspectModal({ open, info, onClose }: VesselInspectModalPr
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            px: 2,
-            py: 1,
+            px: 1.5,
+            height: 32,
             bgcolor: '#2a2a2a',
           }}
         >
-          <Typography variant="h6" sx={{ color: '#fff' }}>
+          <Typography sx={{ color: '#fff', fontSize: 13, fontWeight: 500, lineHeight: 1 }}>
             Vessel at Berth {info.berthId}
           </Typography>
-          <IconButton onClick={onClose} sx={{ color: '#fff' }}>
-            <CloseIcon />
+          <IconButton onClick={onClose} size="small" sx={{ color: '#fff', p: 0.25 }}>
+            <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
-        <Box sx={{ width: '100%', height: 'calc(100% - 48px)' }}>
-          <Canvas camera={{ position: [0, 30, 40], fov: 50 }} style={{ background: '#ffffff' }}>
+        <Box sx={{ width: '100%', height: 'calc(100% - 32px)' }}>
+          <Canvas camera={{ position: [33, 35, 0], fov: 50 }} style={{ background: '#ffffff' }}>
             <ambientLight intensity={0.6} />
             <directionalLight position={[10, 30, 15]} intensity={1} />
             <Suspense fallback={null}>
