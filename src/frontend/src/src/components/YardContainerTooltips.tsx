@@ -90,7 +90,7 @@ export function YardContainerTooltips() {
           <Html center distanceFactor={120} style={{ pointerEvents: 'none' }}>
             <div
               style={{
-                background: 'transparent',
+                background: 'rgba(10, 22, 40, 0.55)',
                 border: '2px solid #ff1744',
                 borderRadius: 10,
                 padding: '14px 20px',

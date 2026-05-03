@@ -89,6 +89,7 @@ jobs:
             AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}
             AZURE_CLIENT_ID=f552feab-c584-4c47-813a-64a0d1198f54
             AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}
+            APPLICATIONINSIGHTS_CONNECTION_STRING=${{ vars.APPLICATIONINSIGHTS_CONNECTION_STRING || 'REPLACE_ME_IN_GH_ACTIONS_VARS' }}
 
       - name: Azure logout
         if: always()

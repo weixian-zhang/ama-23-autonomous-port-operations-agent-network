@@ -171,9 +171,21 @@ interface MetaRealmProps {
 
 export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps) {
   return (
-    <Canvas camera={{ position: [-300, 250, 70], fov: 60, far: 5000 }}>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 20, 10]} intensity={1} />
+    <Canvas
+      camera={{ position: [-300, 250, 70], fov: 60, far: 5000 }}
+      gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.25 }}
+    >
+      {/* --- Strong afternoon sunlight --- */}
+      {/* Warm sky fill from above, cool bounce from the ground */}
+      <hemisphereLight args={['#fff5e0', '#b08a5a', 1.2]} />
+      {/* Soft ambient so shadowed areas don't go pitch black */}
+      <ambientLight intensity={0.6} />
+      {/* The sun: high, strong, slightly warm */}
+      <directionalLight
+        position={[200, 400, 150]}
+        intensity={3.5}
+        color="#fff1d6"
+      />
       <Suspense fallback={null}>
         <AgvOwnershipProvider>
           <group>

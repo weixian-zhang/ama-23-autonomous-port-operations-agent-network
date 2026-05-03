@@ -1,3 +1,7 @@
+// IMPORTANT: tracing must be imported before any other module so that
+// OpenTelemetry instrumentation can patch them at load time.
+import './tracing.js';
+
 import express from 'express';
 import { createServer } from 'http';
 import { setupWebSocket } from './websocket.js';

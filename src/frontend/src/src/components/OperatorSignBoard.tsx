@@ -43,7 +43,7 @@ export function OperatorSignBoard({ yOffset = 14, operatorId }: OperatorSignBoar
       <Html center distanceFactor={70} style={{ pointerEvents: 'none' }}>
         <div
           style={{
-            background: 'transparent',
+            background: 'rgba(10, 22, 40, 0.45)',
             border: '1px solid #800000',
             borderRadius: 8,
             padding: '5px 8px',
