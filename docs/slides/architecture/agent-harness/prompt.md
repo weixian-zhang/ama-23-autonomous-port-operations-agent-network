@@ -77,10 +77,7 @@ agent harness - the software infrastructure surrounding an LLM that enables it t
 
 
 * Memory
-    * location - /.salacia/memory/
-    * Memory.md - long-term memory. Durable facts and decisions.
-    * memory/dd-mm-yyyy.md - daily logs of activities
-    * session/user-id.md - chat logs, agent should remember conversations 30 mins ago
+    * mem0 with AI Searc has vector store to manage short-term memory N-conversations and long-term user facts, preferences and etc.
 
 * Actions
     - filesystem - has access to local filesystem
