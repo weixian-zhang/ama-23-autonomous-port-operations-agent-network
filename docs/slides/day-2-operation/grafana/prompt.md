@@ -9,11 +9,11 @@ Crane Auctioneer Agent
 Fleet Market Agent
 Yard King Agent
 
-## dashbaord 1
+## Token usage dashbaord
 
 Generate another fake Grafana dashboard that shows agents LLM token usages and inference latency
 
 
-## dashboard 2
+## Trace trajectory dashboard
 
 Generate a fake Grafana dashboard that shows AI agent conversation tool use and multi-agent open telemetry traces

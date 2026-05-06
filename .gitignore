@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+The_City_Generator_2.6
+
 # Distribution / packaging
 .Python
 build/

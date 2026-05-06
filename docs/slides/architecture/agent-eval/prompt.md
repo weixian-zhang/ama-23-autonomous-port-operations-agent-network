@@ -1,7 +1,11 @@
 
+
+
 ## style guide
 
-Style: The style is a clean, technical digital drawing style.
+color: dominated by cool tones to create a clean, high-tech, and professional atmosphere.
+text: Ensure all texts are correctly spelled and in english
+Style: The style is a clean, technical digital drawing
 resolution: 8k resolution, architectural concept art style.
 Atmosphere: Scientific, clinical, and innovative.
 Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
@@ -12,26 +16,29 @@ Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 
 1. Generate a infographic to explain the mapping between the four pillars of agent quality to the evaluation telemetry. Use the mapping data below. 
 2. Do not include title 
-2. Show the code example clearly in larger font and in full
-3. create graphics to better explain the different quality and evaluation telemetry if necessary 
+3. do not repeat points
+4. Show the code example clearly in larger font and in full
+5. create graphics for mapping to better explain mapping between quality and evaluation telemetry 
 
-## 4 pillars of agent quality
+
+## 4 pillars of Agent Quality
 
 Effectiveness
-Efficiency
-Reliability
-Safety
+efficiency
+reliability
+safety. 
 
-## Evaluation Telemetry 
 
-Final response 
-Traces - execution trajectory 
-Tool call logs
-Reasoning messages 
+## Evaluation Telemetry
+
+final response
+traces
+tool call logs
+reasoning messages
 
 ## Agent Quality to Evaluation Telemetry Mapping 
 
-* Effectiveness
+* Evaluation Telemetry:
   * definition: did agent achieves user intent
   * what to evaluate:
     * Task Completion Rate: The percentage of tasks successfully completed without needing escalation to a human.
@@ -74,7 +81,7 @@ Reasoning messages
     * reasoning messages: shows agent want to bypass rules
 
 
-## example of LangWatch Scenario Tests
+## Code example of LangWatch Scenario Test
 
 ``` python
 const result = await scenario.run({

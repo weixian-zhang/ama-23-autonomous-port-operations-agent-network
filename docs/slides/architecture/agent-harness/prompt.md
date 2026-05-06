@@ -2,12 +2,13 @@
 
 ## style guide
 
-Style: The style is a clean, technical digital drawing with a AI agentic style. Labels with text in futuristic, semi-transparent UI callout boxes.
+Style: The style is a clean, technical digital drawing style
 resolution: 8k resolution, architectural concept art style.
 Atmosphere: Scientific, clinical, and innovative.
 Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
 Lighting: Bright, high-key, and sterile.
 Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
+
 
 ## context
 
@@ -66,38 +67,42 @@ agent harness - the software infrastructure surrounding an LLM that enables it t
 
 * Context Engineering
 
-    art and science of curating what goes into context window:
+    art and science of assembly info in limited context window:
     * system prompt
+    * user prompt
     * tools
-    * tool result
-    * skills
-    * grounding doc
-    * memory file
-    * user text
+    * skills - name and description
+    * grounding docs
+    * short-term episodic memory data
+    * long-term user preference, tone, and more...
 
 
 * Memory
-    * mem0 with AI Searc has vector store to manage short-term memory N-conversations and long-term user facts, preferences and etc.
+  uses mem0 with Azure AI Search as vector store to store/query
+  * short-term memory: past 2 days conversation
+  * long-term memory: domain knowledge facts for RAG app, user facts, preferences and etc.
+
 
 * Actions
     - filesystem - has access to local filesystem
-    - shell - a sandbox shell to execute any bash command
+    - shell - a sandbox shell to execute any bash commands
+    - Node.js runtime - execute any node.js scripts
 
 
 * Tools
-
     * weather live feed tool
     * Guardian telemetry logging tool
-    * memory tools
-    * write memory
-    * search memory
+    * MetaRealm SQL query
+    * MetaRealm write
+    * more...
 
 
-* RAG - semantic search of grounding data with Azure AI Search
+* Human in the loop - sends Action Card to Teams for human operators to manual override
 
+* RAG - static RAG with fixed pipeline to search grounding data in Azure AI Search
 
 * Observability
-    * agent tracing with OpenTelemetry to Microsoft Foundry 
+    * agent trace execution trajectory with OpenTelemetry to Aopp Insigts 
     * error logging to Azure Application Insights
   
 
