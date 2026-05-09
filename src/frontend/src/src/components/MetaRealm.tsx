@@ -1,5 +1,6 @@
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { Suspense, useEffect, useRef } from 'react'
+import { Cloud, Clouds, Sky } from '@react-three/drei'
+import { Suspense, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { PortTerrain } from './PortTerrain'
 import { Agv } from './Agv'
@@ -26,8 +27,38 @@ import { StagnantVesselBands } from './StagnantVessels'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 
+// --- Sky / sun constants ---
+// Sunny afternoon: sun ~40° above horizon, slightly behind/over the city (WSW).
+// Same vector drives the procedural sky and the directional sun light so the
+// scene's highlights line up with the visible sun in the sky.
+const SUN_ELEVATION_DEG = 40
+const SUN_AZIMUTH_DEG = 135
+const SUN_DISTANCE = 600 // how far away the directional light source sits
+// Procedural sky radius. Must be inside the camera's far plane (8000), and
+// comfortably outside the cloud field (CLOUD_SPREAD ~1.8k, height ~520).
+const SKY_DISTANCE = 6000
+
+// --- Cloud field constants ---
+// Scattered fair-weather cumulus high above the port. Deterministic seed so
+// they don't rearrange between renders.
+const CLOUD_COUNT = 36
+const CLOUD_HEIGHT = 520
+const CLOUD_SPREAD_X = 1800
+const CLOUD_SPREAD_Z = 1800
+
+// Tiny seeded RNG so the cloud layout is stable across reloads.
+function mulberry32(seed: number) {
+  let t = seed >>> 0
+  return () => {
+    t = (t + 0x6d2b79f5) >>> 0
+    let r = Math.imul(t ^ (t >>> 15), 1 | t)
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296
+  }
+}
+
 // --- First-person camera constants ---
-const WALK_SPEED = 60
+const WALK_SPEED = 40
 const LOOK_SPEED_X = 4
 const LOOK_SPEED_Y = 3
 const HEAD_BOB_SPEED = 12
@@ -170,20 +201,88 @@ interface MetaRealmProps {
 }
 
 export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps) {
+  // Compute the sun position once. Spherical -> cartesian: y is up.
+  const sunPosition = useMemo(() => {
+    const phi = THREE.MathUtils.degToRad(90 - SUN_ELEVATION_DEG)
+    const theta = THREE.MathUtils.degToRad(SUN_AZIMUTH_DEG)
+    return new THREE.Vector3().setFromSphericalCoords(1, phi, theta)
+  }, [])
+
+  // Place the directional light along the sun vector, far enough out to read as "sunlight".
+  const sunLightPos = useMemo(
+    () => sunPosition.clone().multiplyScalar(SUN_DISTANCE).toArray() as [number, number, number],
+    [sunPosition],
+  )
+
+  // Pre-compute a stable cloud layout (seeded). Each cloud gets its own jittered
+  // position, scale, rotation, and density so the field reads as natural.
+  const cloudInstances = useMemo(() => {
+    const rand = mulberry32(8675309)
+    return Array.from({ length: CLOUD_COUNT }, (_, i) => ({
+      key: i,
+      position: [
+        (rand() - 0.5) * CLOUD_SPREAD_X,
+        CLOUD_HEIGHT + (rand() - 0.5) * 60,
+        (rand() - 0.5) * CLOUD_SPREAD_Z,
+      ] as [number, number, number],
+      scale: 1 + rand() * 1.5,
+      rotationY: rand() * Math.PI * 2,
+      seed: Math.floor(rand() * 1000),
+      bounds: [80 + rand() * 40, 12 + rand() * 8, 80 + rand() * 40] as [number, number, number],
+      volume: 50 + rand() * 30,
+      opacity: 0.7 + rand() * 0.25,
+    }))
+  }, [])
+
   return (
     <Canvas
-      camera={{ position: [-300, 250, 70], fov: 60, far: 5000 }}
-      gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.25 }}
+      // The baked SkyDome mesh has been removed from the GLB; the sky is now
+      // a procedural Drei <Sky> at SKY_DISTANCE units from the camera. far is
+      // set just past that so the sky is never clipped, and near=1 keeps the
+      // depth buffer well-balanced for the rest of the scene.
+      camera={{ position: [-300, 250, 70], fov: 60, near: 1, far: 8000 }}
+      gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.85 }}
     >
-      {/* --- Strong afternoon sunlight --- */}
+      {/* --- Bright sunny-afternoon sky ---
+          Drei <Sky> wraps three's atmospheric scattering shader. The sun is
+          placed at the same direction as the directionalLight below so the
+          highlights on cranes/containers line up with the visible sun. */}
+      <Sky
+        distance={SKY_DISTANCE}
+        sunPosition={sunPosition.toArray()}
+        turbidity={6}            /* haze: 1 = ultra clear, 10 = hazy. 6 = sunny afternoon */
+        rayleigh={2.4}           /* atmospheric scattering: higher = more vivid blue */
+        mieCoefficient={0.005}   /* particles in the air */
+        mieDirectionalG={0.8}    /* sun glow / forward scattering */
+      />
+      {/* --- Fair-weather cumulus clouds ---
+          Drei <Clouds> batches all <Cloud> instances into one mesh for cheap render. */}
+      <Clouds material={THREE.MeshBasicMaterial} limit={400} range={400}>
+        {cloudInstances.map((c) => (
+          <Cloud
+            key={c.key}
+            seed={c.seed}
+            position={c.position}
+            rotation={[0, c.rotationY, 0]}
+            scale={c.scale}
+            bounds={c.bounds}
+            volume={c.volume}
+            opacity={c.opacity}
+            growth={4}
+            speed={0.06}
+            color="#ffffff"
+          />
+        ))}
+      </Clouds>
+      {/* --- Lighting matched to the visible sun --- */}
       {/* Warm sky fill from above, cool bounce from the ground */}
-      <hemisphereLight args={['#fff5e0', '#b08a5a', 1.2]} />
+      <hemisphereLight args={['#cfe5ff', '#b08a5a', 0.9]} />
       {/* Soft ambient so shadowed areas don't go pitch black */}
-      <ambientLight intensity={0.6} />
-      {/* The sun: high, strong, slightly warm */}
+      <ambientLight intensity={0.4} />
+      {/* The sun: positioned along the same vector as the visible sun */}
       <directionalLight
-        position={[200, 400, 150]}
-        intensity={3.5}
+        position={sunLightPos}
+        intensity={3.2}
         color="#fff1d6"
       />
       <Suspense fallback={null}>

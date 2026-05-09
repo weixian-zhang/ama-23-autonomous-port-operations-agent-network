@@ -5,7 +5,7 @@ import * as THREE from 'three'
 
 // Bump this whenever terrain-port.glb is re-exported from Blender to bypass
 // the browser HTTP cache and drei's per-URL useGLTF cache.
-const TERRAIN_GLB = '/blender-asset/terrain-port.glb?v=2026-05-03-gapnarrow'
+const TERRAIN_GLB = '/blender-asset/terrain-port.glb?v=2026-05-09-skydome'
 
 // Names of the shape keys baked into the Sea mesh in Blender.
 // Order doesn't matter — we look them up via `morphTargetDictionary`.
@@ -70,14 +70,11 @@ export function PortTerrain() {
     scene.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return
 
-      // Sky dome: render from inside (double-sided) + unlit
+      // SkyDome: removed from the GLB (no baked HDRI material).
+      // Defensive: if an old cached GLB still ships the dome, hide it so it
+      // doesn't fill the view with a black mesh.
       if (child.name === 'SkyDome') {
-        const mat = child.material as THREE.Material | undefined
-        if (mat) {
-          mat.side = THREE.DoubleSide
-          mat.depthWrite = false
-          child.renderOrder = -1
-        }
+        child.visible = false
       }
 
       // Mountains – backdrop mesh needs double-sided rendering

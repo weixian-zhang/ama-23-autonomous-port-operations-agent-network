@@ -97,12 +97,15 @@ interface NpcSpec {
 }
 
 /**
- * Build the NPC roster. 25 total:
+ * Build the NPC roster. 25 total before pruning:
  *   - 8 lane walkers patrolling Berth 1 ↔ Berth 5 along fixed road / yard
  *     lanes, 2 per lane (opposite directions, staggered z).
  *   - 7 fixed-position idlers spread by berth row across road / yard lanes.
  *   - 6 extra walkers + 4 extra idlers scattered randomly across the full
  *     road and yard area (deterministic PRNG → stable across reloads).
+ *
+ * After build, 5 walking (animated) NPCs are deterministically dropped to
+ * lighten the animation load — final roster is 20 (9 walkers + 11 idlers).
  *
  * No NPCs sit on the quay deck — that area is reserved for cranes and
  * vessels.
@@ -216,12 +219,16 @@ function buildRoster(): NpcSpec[] {
 
   const fullRoster = [...walkers, ...idlers, ...extraWalkers, ...extraIdlers]
 
-  // Deterministically drop 5 NPCs from the roster (same PRNG → stable
-  // selection across reloads). Pick distinct indices, then filter.
-  const REMOVE_COUNT = 5
+  // Deterministically drop 5 *walking* (animated) NPCs from the roster
+  // (same PRNG → stable selection across reloads). Idle NPCs are kept
+  // intact so the static crowd density stays the same.
+  const REMOVE_WALKERS = 5
+  const walkerIndices = fullRoster
+    .map((spec, i) => (spec.mode === 'walk' ? i : -1))
+    .filter((i) => i >= 0)
   const dropIdx = new Set<number>()
-  while (dropIdx.size < REMOVE_COUNT && dropIdx.size < fullRoster.length) {
-    dropIdx.add(Math.floor(rand() * fullRoster.length))
+  while (dropIdx.size < REMOVE_WALKERS && dropIdx.size < walkerIndices.length) {
+    dropIdx.add(walkerIndices[Math.floor(rand() * walkerIndices.length)])
   }
   return fullRoster.filter((_, i) => !dropIdx.has(i))
 }
