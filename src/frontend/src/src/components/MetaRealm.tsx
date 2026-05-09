@@ -357,7 +357,12 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             <BerthLabel position={[-43, 128, -240]} label="Berth 4" />
             <BerthLabel position={[-43, 128, -480]} label="Berth 5" />
             {/* Logo high above port */}
-            <PortLogo position={[20, 260, 0]} width={180} height={180} />
+            <PortLogo
+              position={[20, 260, 0]}
+              src="/salacia-goddess.png?v=2026-05-09"
+              width={180}
+              height={180}
+            />
             <PortLogo position={[20, 160, 0]} src="/blender-asset/salacia-logo-metarealm.png" width={120} height={40} />
           </group>
         </AgvOwnershipProvider>
