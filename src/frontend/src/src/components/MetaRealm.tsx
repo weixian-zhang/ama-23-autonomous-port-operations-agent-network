@@ -26,6 +26,7 @@ import { PortNpcs } from './PortNpcs'
 import { StagnantVesselBands } from './StagnantVessels'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
+import { isInputLocked, subscribeInputLock } from '../state/inputLock'
 
 // --- Sky / sun constants ---
 // Sunny afternoon: sun ~40° above horizon, slightly behind/over the city (WSW).
@@ -95,8 +96,21 @@ function FirstPersonController() {
 
   // Input listeners
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = true }
-    const onKeyUp   = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (isInputLocked()) return
+      keys.current[e.key.toLowerCase()] = true
+    }
+    const onKeyUp   = (e: KeyboardEvent) => {
+      if (isInputLocked()) return
+      keys.current[e.key.toLowerCase()] = false
+    }
+
+    // Whenever a foreground consumer (e.g. an inspect modal) takes the lock,
+    // immediately release any keys we still believe to be held so the camera
+    // doesn't keep coasting in the background.
+    const unsubscribeLock = subscribeInputLock(() => {
+      if (isInputLocked()) keys.current = {}
+    })
 
     const onMouseDown = (e: MouseEvent) => {
       if (e.button === 2) {
@@ -141,6 +155,7 @@ function FirstPersonController() {
       window.removeEventListener('mousemove', onMouseMove)
       el.removeEventListener('wheel', onWheel)
       el.removeEventListener('contextmenu', onCtx)
+      unsubscribeLock()
     }
   }, [gl])
 

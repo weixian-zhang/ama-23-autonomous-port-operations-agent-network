@@ -1,13 +1,21 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { Modal, Box, Typography, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls, useGLTF, Html } from '@react-three/drei'
 import { Suspense } from 'react'
 import * as THREE from 'three'
 import containerInfoData from '../data/vessel-container-info.json'
+import { acquireInputLock } from '../state/inputLock'
+
+type OrbitControlsImpl = React.ComponentRef<typeof OrbitControls>
 
 const CONTAINER_NAME = /^container_(\d+)_(\d+)_(\d+)$/
+
+// Tuning for the modal's first-person WSAD pan. The vessel scene is
+// rendered with a uniform group scale of 30, so movement units are large.
+const WALK_SPEED = 10        // units / second
+const MIN_TARGET_DISTANCE = 2 // never push the orbit pivot through the camera
 
 interface ContainerInfo {
   vesselName: string
@@ -35,6 +43,104 @@ interface HoveredContainer {
   tier: number
   position: THREE.Vector3
   info: ContainerInfo
+}
+
+/**
+ * First-person WSAD pan that cooperates with OrbitControls: moves both the
+ * camera and the orbit target along the camera's forward / right vectors
+ * (projected to the horizontal plane) so rotation continues to feel natural.
+ *
+ * Listens on `window` for keydown/keyup so a key release is never missed
+ * when focus shifts away from the canvas (e.g. clicking the modal title bar
+ * or close button). Previously we only listened on the canvas itself, which
+ * caused the keydown to fire but the keyup to be lost when MUI's focus trap
+ * moved focus elsewhere — leaving the camera marching forward forever.
+ *
+ * Safe to listen on `window` because the modal calls `acquireInputLock()`
+ * while open, and MetaRealm's own controller bails on `isInputLocked()`.
+ */
+function VesselWasdController({
+  controlsRef,
+}: {
+  controlsRef: React.RefObject<OrbitControlsImpl | null>
+}) {
+  const { camera } = useThree()
+  const keys = useRef<Record<string, boolean>>({})
+
+  useEffect(() => {
+    const isWasd = (k: string) => k === 'w' || k === 'a' || k === 's' || k === 'd'
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase()
+      if (!isWasd(k)) return
+      keys.current[k] = true
+    }
+    const onKeyUp = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase()
+      if (!isWasd(k)) return
+      keys.current[k] = false
+    }
+    // If the tab/window loses focus mid-press, releases will never arrive —
+    // clear the held set so the camera doesn't keep coasting on return.
+    const clearKeys = () => {
+      keys.current = {}
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('blur', clearKeys)
+    document.addEventListener('visibilitychange', clearKeys)
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('blur', clearKeys)
+      document.removeEventListener('visibilitychange', clearKeys)
+      keys.current = {}
+    }
+  }, [])
+
+  // Pre-allocated math objects to avoid GC churn in the render loop.
+  const _forward = useMemo(() => new THREE.Vector3(), [])
+  const _right = useMemo(() => new THREE.Vector3(), [])
+  const _up = useMemo(() => new THREE.Vector3(0, 1, 0), [])
+  const _move = useMemo(() => new THREE.Vector3(), [])
+
+  useFrame((_, delta) => {
+    const fwd = (keys.current['w'] ? 1 : 0) + (keys.current['s'] ? -1 : 0)
+    const strafe = (keys.current['d'] ? 1 : 0) + (keys.current['a'] ? -1 : 0)
+    if (fwd === 0 && strafe === 0) return
+
+    // Forward = direction the camera looks, flattened to XZ for FPS feel.
+    camera.getWorldDirection(_forward)
+    _forward.y = 0
+    if (_forward.lengthSq() < 1e-6) return
+    _forward.normalize()
+
+    // Right = forward × up
+    _right.crossVectors(_forward, _up).normalize()
+
+    const step = WALK_SPEED * delta
+    _move.set(0, 0, 0)
+      .addScaledVector(_forward, fwd * step)
+      .addScaledVector(_right, strafe * step)
+
+    camera.position.add(_move)
+
+    // Keep OrbitControls' pivot moving with the camera so rotation stays
+    // anchored to whatever is in front of the viewer.
+    const ctl = controlsRef.current
+    if (ctl) {
+      ctl.target.add(_move)
+      // Guard against degenerate state where camera and target collapse.
+      if (camera.position.distanceTo(ctl.target) < MIN_TARGET_DISTANCE) {
+        ctl.target.copy(camera.position).addScaledVector(_forward, MIN_TARGET_DISTANCE)
+      }
+      ctl.update()
+    }
+  })
+
+  return null
 }
 
 function VesselScene({ vesselGlb }: { vesselGlb: string }) {
@@ -174,6 +280,16 @@ interface VesselInspectModalProps {
 }
 
 export function VesselInspectModal({ open, info, onClose }: VesselInspectModalProps) {
+  const controlsRef = useRef<OrbitControlsImpl | null>(null)
+
+  // Take the input lock for as long as the modal is open so MetaRealm's
+  // window-level WSAD listener stops moving the background camera.
+  useEffect(() => {
+    if (!open) return
+    const release = acquireInputLock()
+    return release
+  }, [open])
+
   if (!info) return null
 
   return (
@@ -202,7 +318,10 @@ export function VesselInspectModal({ open, info, onClose }: VesselInspectModalPr
           }}
         >
           <Typography sx={{ color: '#fff', fontSize: 13, fontWeight: 500, lineHeight: 1 }}>
-            Vessel at Berth {info.berthId}
+            Vessel at Berth {info.berthId} &nbsp;·&nbsp;
+            <span style={{ opacity: 0.6, fontWeight: 400 }}>
+              WASD to move · drag to orbit · scroll to zoom
+            </span>
           </Typography>
           <IconButton onClick={onClose} size="small" sx={{ color: '#fff', p: 0.25 }}>
             <CloseIcon fontSize="small" />
@@ -215,7 +334,8 @@ export function VesselInspectModal({ open, info, onClose }: VesselInspectModalPr
             <Suspense fallback={null}>
               <VesselScene vesselGlb={info.vesselGlb} />
             </Suspense>
-            <OrbitControls />
+            <OrbitControls ref={controlsRef} />
+            <VesselWasdController controlsRef={controlsRef} />
           </Canvas>
         </Box>
       </Box>
