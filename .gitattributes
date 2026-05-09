@@ -3,3 +3,5 @@
 .squad/agents/*/history.md merge=union
 .squad/log/** merge=union
 .squad/orchestration-log/** merge=union
+src/frontend/src/public/blender-asset/terrain-port.glb filter=lfs diff=lfs merge=lfs -text
+docs/slides/ama-presentation.pptx filter=lfs diff=lfs merge=lfs -text

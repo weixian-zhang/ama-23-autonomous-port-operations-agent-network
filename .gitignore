@@ -6,7 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+src/frontend/blender/
 The_City_Generator_2.6
+The_City_Generator_2.7.1.zip
 
 # Distribution / packaging
 .Python

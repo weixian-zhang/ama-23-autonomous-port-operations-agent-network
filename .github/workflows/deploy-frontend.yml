@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Azure login (OIDC federated identity)
         uses: azure/login@v2
