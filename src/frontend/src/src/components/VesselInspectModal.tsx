@@ -2,20 +2,24 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { Modal, Box, Typography, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, useGLTF, Html } from '@react-three/drei'
+import { useGLTF, Html } from '@react-three/drei'
 import { Suspense } from 'react'
 import * as THREE from 'three'
 import containerInfoData from '../data/vessel-container-info.json'
 import { acquireInputLock } from '../state/inputLock'
 
-type OrbitControlsImpl = React.ComponentRef<typeof OrbitControls>
-
 const CONTAINER_NAME = /^container_(\d+)_(\d+)_(\d+)$/
 
-// Tuning for the modal's first-person WSAD pan. The vessel scene is
-// rendered with a uniform group scale of 30, so movement units are large.
-const WALK_SPEED = 10        // units / second
-const MIN_TARGET_DISTANCE = 2 // never push the orbit pivot through the camera
+// First-person camera tuning. These values are copied verbatim from
+// MetaRealm's FirstPersonController so the inspect modal's navigation has
+// the exact same feel (look speed, walk speed, smoothing, head bob).
+const WALK_SPEED = 4
+const LOOK_SPEED_X = 7  // yaw — bumped for snappier left/right turning
+const LOOK_SPEED_Y = 8
+const HEAD_BOB_SPEED = 6
+const HEAD_BOB_HEIGHT = 0.3
+const ROTATION_SLERP_FACTOR = 5
+const POSITION_LERP_FACTOR = 8
 
 interface ContainerInfo {
   vesselName: string
@@ -46,97 +50,146 @@ interface HoveredContainer {
 }
 
 /**
- * First-person WSAD pan that cooperates with OrbitControls: moves both the
- * camera and the orbit target along the camera's forward / right vectors
- * (projected to the horizontal plane) so rotation continues to feel natural.
+ * First-person controller for the vessel-inspect modal. Behaviour mirrors
+ * MetaRealm's FirstPersonController exactly:
+ *   - right-mouse drag rotates yaw/pitch (pitch clamped to ±π/3)
+ *   - WASD walks; W/S follow the full camera direction (incl. pitch),
+ *     A/D strafe on the XZ plane (yaw-only)
+ *   - scroll wheel adjusts target height (floor at y=3)
+ *   - rotation is slerp-smoothed, position is lerp-smoothed, plus head bob
  *
- * Listens on `window` for keydown/keyup so a key release is never missed
- * when focus shifts away from the canvas (e.g. clicking the modal title bar
- * or close button). Previously we only listened on the canvas itself, which
- * caused the keydown to fire but the keyup to be lost when MUI's focus trap
- * moved focus elsewhere — leaving the camera marching forward forever.
- *
- * Safe to listen on `window` because the modal calls `acquireInputLock()`
- * while open, and MetaRealm's own controller bails on `isInputLocked()`.
+ * Mouse and wheel listeners attach to the canvas (so they don't fight
+ * MetaRealm's canvas behind the modal). Key listeners attach to `window`
+ * so a key release is never missed; MetaRealm's own key listener bails on
+ * `isInputLocked()`, which is held by the modal while open.
  */
-function VesselWasdController({
-  controlsRef,
-}: {
-  controlsRef: React.RefObject<OrbitControlsImpl | null>
-}) {
-  const { camera } = useThree()
+function VesselFpsController() {
+  const { camera, gl } = useThree()
+
   const keys = useRef<Record<string, boolean>>({})
+  const phi = useRef(0)            // yaw (around Y)
+  const theta = useRef(0)          // pitch (around X)
+  const targetPos = useRef(new THREE.Vector3())
+  const headBobTimer = useRef(0)
+  const headBobActive = useRef(false)
+  const rightMouseDown = useRef(false)
+  const prevMouse = useRef({ x: 0, y: 0 })
 
+  // Derive initial yaw/pitch from the camera's starting position so the
+  // first frame doesn't snap. The vessel scene is recentered on the origin,
+  // so use that as the implicit lookAt target.
   useEffect(() => {
-    const isWasd = (k: string) => k === 'w' || k === 'a' || k === 's' || k === 'd'
+    targetPos.current.copy(camera.position)
+    const dir = new THREE.Vector3(0, 0, 0).sub(camera.position).normalize()
+    phi.current = Math.atan2(-dir.x, -dir.z)
+    const xzLen = Math.sqrt(dir.x * dir.x + dir.z * dir.z)
+    theta.current = THREE.MathUtils.clamp(
+      Math.atan2(dir.y, xzLen), -Math.PI / 3, Math.PI / 3,
+    )
+  }, [camera])
 
-    const onKeyDown = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase()
-      if (!isWasd(k)) return
-      keys.current[k] = true
-    }
-    const onKeyUp = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase()
-      if (!isWasd(k)) return
-      keys.current[k] = false
-    }
-    // If the tab/window loses focus mid-press, releases will never arrive —
-    // clear the held set so the camera doesn't keep coasting on return.
-    const clearKeys = () => {
-      keys.current = {}
-    }
+  // Input listeners
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = true }
+    const onKeyUp   = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false }
+    const clearKeys = () => { keys.current = {} }
 
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button === 2) {
+        rightMouseDown.current = true
+        prevMouse.current = { x: e.clientX, y: e.clientY }
+      }
+    }
+    const onMouseUp = (e: MouseEvent) => {
+      if (e.button === 2) rightMouseDown.current = false
+    }
+    const onMouseMove = (e: MouseEvent) => {
+      if (!rightMouseDown.current) return
+      const dx = e.clientX - prevMouse.current.x
+      const dy = e.clientY - prevMouse.current.y
+      prevMouse.current = { x: e.clientX, y: e.clientY }
+      phi.current   -= (dx / window.innerWidth)  * LOOK_SPEED_X
+      theta.current  = THREE.MathUtils.clamp(
+        theta.current - (dy / window.innerHeight) * LOOK_SPEED_Y,
+        -Math.PI / 3, Math.PI / 3,
+      )
+    }
+    const onWheel = (e: WheelEvent) => {
+      targetPos.current.y -= e.deltaY * 0.1
+      if (targetPos.current.y < 3) targetPos.current.y = 3
+    }
+    const onCtx = (e: Event) => e.preventDefault()
+
+    const el = gl.domElement
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
     window.addEventListener('blur', clearKeys)
     document.addEventListener('visibilitychange', clearKeys)
+    el.addEventListener('mousedown', onMouseDown)
+    window.addEventListener('mouseup', onMouseUp)
+    window.addEventListener('mousemove', onMouseMove)
+    el.addEventListener('wheel', onWheel, { passive: true })
+    el.addEventListener('contextmenu', onCtx)
 
     return () => {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
       window.removeEventListener('blur', clearKeys)
       document.removeEventListener('visibilitychange', clearKeys)
+      el.removeEventListener('mousedown', onMouseDown)
+      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('mousemove', onMouseMove)
+      el.removeEventListener('wheel', onWheel)
+      el.removeEventListener('contextmenu', onCtx)
       keys.current = {}
     }
-  }, [])
+  }, [gl])
 
-  // Pre-allocated math objects to avoid GC churn in the render loop.
-  const _forward = useMemo(() => new THREE.Vector3(), [])
-  const _right = useMemo(() => new THREE.Vector3(), [])
-  const _up = useMemo(() => new THREE.Vector3(0, 1, 0), [])
-  const _move = useMemo(() => new THREE.Vector3(), [])
+  // Pre-allocated math objects (avoids GC in the render loop)
+  const _fwd     = useMemo(() => new THREE.Vector3(), [])
+  const _left    = useMemo(() => new THREE.Vector3(), [])
+  const _qYaw    = useMemo(() => new THREE.Quaternion(), [])
+  const _qPitch  = useMemo(() => new THREE.Quaternion(), [])
+  const _qTarget = useMemo(() => new THREE.Quaternion(), [])
+  const _qCamYaw = useMemo(() => new THREE.Quaternion(), [])
+  const _euler   = useMemo(() => new THREE.Euler(), [])
+  const _yAxis   = useMemo(() => new THREE.Vector3(0, 1, 0), [])
+  const _xAxis   = useMemo(() => new THREE.Vector3(1, 0, 0), [])
 
   useFrame((_, delta) => {
-    const fwd = (keys.current['w'] ? 1 : 0) + (keys.current['s'] ? -1 : 0)
-    const strafe = (keys.current['d'] ? 1 : 0) + (keys.current['a'] ? -1 : 0)
-    if (fwd === 0 && strafe === 0) return
+    // --- Slerp-smoothed rotation ---
+    _qYaw.setFromAxisAngle(_yAxis, phi.current)
+    _qPitch.setFromAxisAngle(_xAxis, theta.current)
+    _qTarget.copy(_qYaw).multiply(_qPitch)
+    const rt = 1.0 - Math.pow(0.01, ROTATION_SLERP_FACTOR * delta)
+    camera.quaternion.slerp(_qTarget, rt)
 
-    // Forward = direction the camera looks, flattened to XZ for FPS feel.
-    camera.getWorldDirection(_forward)
-    _forward.y = 0
-    if (_forward.lengthSq() < 1e-6) return
-    _forward.normalize()
+    // --- WASD translation: derive direction from camera's actual quaternion ---
+    const fwd    = (keys.current['w'] ? 1 : 0) + (keys.current['s'] ? -1 : 0)
+    const strafe = (keys.current['a'] ? 1 : 0) + (keys.current['d'] ? -1 : 0)
 
-    // Right = forward × up
-    _right.crossVectors(_forward, _up).normalize()
+    // Forward/back follows the full camera direction (including pitch)
+    _fwd.set(0, 0, -1).applyQuaternion(camera.quaternion).normalize().multiplyScalar(fwd * delta * WALK_SPEED)
 
-    const step = WALK_SPEED * delta
-    _move.set(0, 0, 0)
-      .addScaledVector(_forward, fwd * step)
-      .addScaledVector(_right, strafe * step)
+    // Strafe stays on XZ plane (yaw-only)
+    _euler.setFromQuaternion(camera.quaternion, 'YXZ')
+    _qCamYaw.setFromAxisAngle(_yAxis, _euler.y)
+    _left.set(-1, 0, 0).applyQuaternion(_qCamYaw).multiplyScalar(strafe * delta * WALK_SPEED)
+    targetPos.current.add(_fwd).add(_left)
 
-    camera.position.add(_move)
+    // --- Lerp-smoothed position ---
+    const pt = 1.0 - Math.pow(0.01, POSITION_LERP_FACTOR * delta)
+    camera.position.lerp(targetPos.current, pt)
 
-    // Keep OrbitControls' pivot moving with the camera so rotation stays
-    // anchored to whatever is in front of the viewer.
-    const ctl = controlsRef.current
-    if (ctl) {
-      ctl.target.add(_move)
-      // Guard against degenerate state where camera and target collapse.
-      if (camera.position.distanceTo(ctl.target) < MIN_TARGET_DISTANCE) {
-        ctl.target.copy(camera.position).addScaledVector(_forward, MIN_TARGET_DISTANCE)
-      }
-      ctl.update()
+    // --- Head bob ---
+    const isMoving = fwd !== 0 || strafe !== 0
+    if (isMoving) {
+      headBobActive.current = true
+      headBobTimer.current += delta
+      camera.position.y += Math.sin(headBobTimer.current * HEAD_BOB_SPEED) * HEAD_BOB_HEIGHT
+    } else if (headBobActive.current) {
+      headBobTimer.current = 0
+      headBobActive.current = false
     }
   })
 
@@ -280,8 +333,6 @@ interface VesselInspectModalProps {
 }
 
 export function VesselInspectModal({ open, info, onClose }: VesselInspectModalProps) {
-  const controlsRef = useRef<OrbitControlsImpl | null>(null)
-
   // Take the input lock for as long as the modal is open so MetaRealm's
   // window-level WSAD listener stops moving the background camera.
   useEffect(() => {
@@ -320,7 +371,7 @@ export function VesselInspectModal({ open, info, onClose }: VesselInspectModalPr
           <Typography sx={{ color: '#fff', fontSize: 13, fontWeight: 500, lineHeight: 1 }}>
             Vessel at Berth {info.berthId} &nbsp;·&nbsp;
             <span style={{ opacity: 0.6, fontWeight: 400 }}>
-              WASD to move · drag to orbit · scroll to zoom
+              right-click drag to look · WASD to move · scroll to adjust height
             </span>
           </Typography>
           <IconButton onClick={onClose} size="small" sx={{ color: '#fff', p: 0.25 }}>
@@ -334,8 +385,7 @@ export function VesselInspectModal({ open, info, onClose }: VesselInspectModalPr
             <Suspense fallback={null}>
               <VesselScene vesselGlb={info.vesselGlb} />
             </Suspense>
-            <OrbitControls ref={controlsRef} />
-            <VesselWasdController controlsRef={controlsRef} />
+            <VesselFpsController />
           </Canvas>
         </Box>
       </Box>
