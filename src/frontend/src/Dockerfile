@@ -22,29 +22,23 @@ COPY . .
 RUN npm run build
 
 # ---------- Runtime stage ----------
-FROM nginx:1.27-alpine AS runtime
+# Use the unprivileged nginx image: runs as UID 101, listens on 8080 by default,
+# pid file in /tmp — avoids permission/exit-code-1 issues on Azure Container Apps.
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
 
-# SPA-friendly nginx config (fallback to index.html for client-side routes)
-RUN printf '%s\n' \
-  'server {' \
-  '  listen 8080;' \
-  '  server_name _;' \
-  '  root /usr/share/nginx/html;' \
-  '  index index.html;' \
-  '  location / {' \
-  '    try_files $uri $uri/ /index.html;' \
-  '  }' \
-  '  location ~* \.(?:js|css|woff2?|ttf|eot|otf|svg|png|jpg|jpeg|gif|webp|ico|glb|gltf|hdr|bin)$ {' \
-  '    expires 7d;' \
-  '    access_log off;' \
-  '    add_header Cache-Control "public, max-age=604800, immutable";' \
-  '  }' \
-  '}' > /etc/nginx/conf.d/default.conf
+USER root
 
-# Copy built assets
-COPY --from=build /app/dist /usr/share/nginx/html
+# SPA-friendly nginx config (fallback to index.html for client-side routes).
+# Using a real file (not inline printf) so the config is reproducible and easy
+# to validate locally with `nginx -t`.
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Use non-privileged port so the image can run as non-root in containers/k8s
+# Copy built assets and make sure the unprivileged nginx user can read them
+COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
+
+USER nginx
+
+# Non-privileged port so the image runs rootless on ACA / Kubernetes
 EXPOSE 8080
 
 # Run nginx in the foreground
