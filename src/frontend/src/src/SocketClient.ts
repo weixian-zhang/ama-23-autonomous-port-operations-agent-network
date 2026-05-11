@@ -28,6 +28,11 @@ export class SocketClient {
     this.ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data as string) as Record<string, unknown>
+        // Always log inbound type so you can see in DevTools whether the message
+        // actually arrived (and which type-specific handler should pick it up).
+        const t = typeof msg.type === 'string' ? msg.type : '<no-type>'
+        const subscribers = this.handlers.get(t)?.size ?? 0
+        console.debug(`[SocketClient] ← type=${t} subscribers=${subscribers}`)
         // Notify global handlers
         for (const handler of this.globalHandlers) {
           handler(msg)

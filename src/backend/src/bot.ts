@@ -207,6 +207,10 @@ class TeamsBot extends ActivityHandler {
     const approved = submitValue.approved === 'yes';
     const pending = pendingAuctions.get(auctionId);
 
+    console.log(
+      `[Bot][HITL] Submit received auctionId=${auctionId} approved=${approved} hasPending=${!!pending}`,
+    );
+
     if (!pending) {
       await context.sendActivity(
         MessageFactory.text('⚠️ Auction session expired or not found.'),
@@ -214,21 +218,42 @@ class TeamsBot extends ActivityHandler {
       return;
     }
 
-    pendingAuctions.delete(auctionId);
-    const dispatchResult = await pending.auction.resumeWithApproval(
-      pending.threadId,
-      approved,
-      async (log) => {
-        await context.sendActivity(MessageFactory.text(log));
-        broadcast({ type: 'fleet-market-auction-log', message: log });
-      },
-    );
+    // Snapshot the auction result NOW — we already produced it pre-interrupt and
+    // stored it in pendingAuctions. Don't depend on the LangGraph state round-trip
+    // (resumeWithApproval -> getState -> .values.auctionResult) to return it back,
+    // because any glitch there silently swallows the broadcast and the frontend
+    // animation never fires.
+    const auctionResultForBroadcast = pending.auctionResult;
 
-    // Teams Action Card Approve or Cancel
-    if (approved && dispatchResult) {
-      broadcast({ ...dispatchResult });
+    pendingAuctions.delete(auctionId);
+
+    // Resume the LangGraph workflow so dispatchNode runs and the operator sees
+    // the audit log lines. We intentionally ignore its return value for the
+    // broadcast decision — it's diagnostic only.
+    try {
+      await pending.auction.resumeWithApproval(
+        pending.threadId,
+        approved,
+        async (log) => {
+          await context.sendActivity(MessageFactory.text(log));
+          broadcast({ type: 'fleet-market-auction-log', message: log });
+        },
+      );
+    } catch (err) {
+      console.error('[Bot][HITL] resumeWithApproval threw:', err);
+    }
+
+    if (approved && auctionResultForBroadcast) {
+      const payload = { ...auctionResultForBroadcast };
+      console.log('[Bot][HITL] broadcasting vessel-late payload:', JSON.stringify(payload));
+      broadcast(payload);
       await context.sendActivity(
         MessageFactory.text('✅ Dispatch confirmed. Fleet is mobilising!'),
+      );
+    } else if (approved && !auctionResultForBroadcast) {
+      console.warn('[Bot][HITL] approved but no auctionResult was stored — cannot broadcast');
+      await context.sendActivity(
+        MessageFactory.text('⚠️ Approved, but no auction result was available to dispatch.'),
       );
     } else {
       await context.sendActivity(

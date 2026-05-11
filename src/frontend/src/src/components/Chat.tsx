@@ -101,13 +101,6 @@ export function Chat() {
       setYardMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
     })
 
-    const unsubAuctionDispatch = socketClient.on('fleetmarket-vessel-late', (msg) => {
-      const auctionResult = msg['auction-result'] as Array<{ agvName: string; stackerName: string }> | undefined
-      if (auctionResult && (window as any).trigger_late_vessel_animation) {
-        ;(window as any).trigger_late_vessel_animation(auctionResult)
-      }
-    })
-
     const unsubAuctionLog = socketClient.on('fleet-market-auction-log', (msg) => {
       const text = typeof msg.message === 'string' ? msg.message : JSON.stringify(msg)
       setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
@@ -137,7 +130,6 @@ export function Chat() {
       unsubFleetMarket()
       unsubCrane()
       unsubYard()
-      unsubAuctionDispatch()
       unsubAuctionLog()
       clearInterval(craneTimer)
       clearInterval(yardTimer)

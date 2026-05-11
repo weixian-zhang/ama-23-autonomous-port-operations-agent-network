@@ -156,17 +156,19 @@ function buildRoster(): NpcSpec[] {
     })
   })
 
-  // 7 stationary NPCs: spread across road and yard lanes near each berth's
-  // z-row. Alternate lanes (road / yard handover / yard centre / yard far)
-  // so the crowd looks naturally distributed instead of lined up.
+  // 7 stationary NPCs: spread across road and yard lanes near berths 1, 2,
+  // 4 and 5 only. Berth 3 / Yard 3 (z ≈ 0, |z| ≤ 120) is intentionally kept
+  // empty of stationary NPCs so it reads as the "active / contested" berth.
+  // Alternate lanes (road / yard handover / yard centre / yard far) so the
+  // crowd looks naturally distributed instead of lined up.
   const idlePositions: [number, number, number][] = [
     [ -25, NPC_Y,  450],   // road, near Berth 1
     [  70, NPC_Y,  210],   // yard centre, near Berth 2
-    [  22, NPC_Y,  -30],   // yard handover, near Berth 3
+    [  22, NPC_Y,  300],   // yard handover, near Berth 2 (relocated from Berth 3)
     [ 110, NPC_Y, -270],   // yard far edge, near Berth 4
     [ -25, NPC_Y, -510],   // road, near Berth 5
-    [  70, NPC_Y,  120],   // yard centre, between yards 2 & 3
-    [  22, NPC_Y, -120],   // yard handover, between yards 3 & 4
+    [ 110, NPC_Y,  390],   // yard far edge, near Berth 1 (relocated from yards 2/3 edge)
+    [  70, NPC_Y, -420],   // yard centre, near Berth 5 (relocated from yards 3/4 edge)
   ]
   const idlers: NpcSpec[] = idlePositions.map((pos, i) => ({
     id: `npc-idle-${i}`,
@@ -203,9 +205,24 @@ function buildRoster(): NpcSpec[] {
     }
   })
 
+  // Berth 3 / Yard 3 keep-out band on the z-axis. Anything stationary that
+  // would land inside this strip gets resampled so the berth stays empty of
+  // idle operators (walkers may still pass through).
+  const BERTH3_Z_HALF = 120
   const extraIdlers: NpcSpec[] = Array.from({ length: 4 }, (_, i) => {
     const x = SCATTER_X_MIN + rand() * (SCATTER_X_MAX - SCATTER_X_MIN)
-    const z = SCATTER_Z_MIN + rand() * (SCATTER_Z_MAX - SCATTER_Z_MIN)
+    let z = SCATTER_Z_MIN + rand() * (SCATTER_Z_MAX - SCATTER_Z_MIN)
+    // Reject samples that fall inside the Berth 3 / Yard 3 band. Bounded
+    // attempts so a pathological PRNG run can’t loop forever; on the final
+    // fallback, push the NPC to the nearest neighboring berth row.
+    let attempts = 0
+    while (Math.abs(z) <= BERTH3_Z_HALF && attempts < 8) {
+      z = SCATTER_Z_MIN + rand() * (SCATTER_Z_MAX - SCATTER_Z_MIN)
+      attempts++
+    }
+    if (Math.abs(z) <= BERTH3_Z_HALF) {
+      z = z >= 0 ? BERTH3_Z_HALF + 60 : -(BERTH3_Z_HALF + 60)
+    }
     return {
       id: `npc-idle-extra-${i}`,
       glb: pickGlb(),

@@ -75,9 +75,22 @@ export function setupWebSocket(server: Server): WebSocketServer {
  */
 export function broadcast(payload: Record<string, unknown>): void {
   const data = JSON.stringify(payload);
+  let sent = 0;
   for (const client of clients) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(data);
+      sent += 1;
     }
+  }
+  // Loud diagnostic so it's obvious when a broadcast goes nowhere because no
+  // frontend tab is connected (the most common cause of "backend broadcasts
+  // but frontend never receives").
+  const type = typeof payload.type === 'string' ? payload.type : '<no-type>';
+  console.log(`[WS] broadcast type=${type} sent=${sent}/${clients.size}`);
+  if (sent === 0) {
+    console.warn(
+      `[WS] broadcast had ZERO recipients (clients.size=${clients.size}). ` +
+        `Is a frontend tab connected to ws://localhost:${process.env.PORT ?? '3978'}/ws?`,
+    );
   }
 }

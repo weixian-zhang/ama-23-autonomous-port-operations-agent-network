@@ -4,6 +4,7 @@ import { VesselInspectModal } from './VesselInspectModal'
 import type { VesselInspectInfo } from './VesselInspectModal'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 import { Chat } from './Chat'
+import { socketClient } from '../SocketClient'
 
 export function MainPage() {
   const [vesselInfo, setVesselInfo] = useState<VesselInspectInfo | null>(null)
@@ -56,6 +57,37 @@ export function MainPage() {
     return () => {
       delete w.trigger_late_vessel_animation
       delete w.reset_late_vessel_animation
+    }
+  }, [])
+
+  // Subscribe to the vessel-late dispatch event at the MainPage level so the
+  // listener is alive for the entire app lifetime — NOT scoped to <Chat />,
+  // which is unmounted when MetaRealm goes fullscreen and would otherwise
+  // silently drop the WS message coming back from the Teams approval.
+  useEffect(() => {
+    socketClient.connect()
+    const unsubAuctionDispatch = socketClient.on('fleetmarket-vessel-late', (msg) => {
+      console.info('[MainPage] received fleetmarket-vessel-late', msg)
+      const auctionResult = msg['auction-result'] as
+        | Array<{ agvName: string; stackerName: string }>
+        | undefined
+      if (!auctionResult) {
+        console.warn('[MainPage] fleetmarket-vessel-late missing "auction-result" field; ignoring')
+        return
+      }
+      const trigger = (window as unknown as Record<string, unknown>).trigger_late_vessel_animation as
+        | ((u: Array<{ agvName: string; stackerName: string }>) => void)
+        | undefined
+      if (typeof trigger !== 'function') {
+        console.warn(
+          '[MainPage] fleetmarket-vessel-late received but window.trigger_late_vessel_animation is not ready yet — the 3D scene may still be loading',
+        )
+        return
+      }
+      trigger(auctionResult)
+    })
+    return () => {
+      unsubAuctionDispatch()
     }
   }, [])
 
