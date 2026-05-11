@@ -22,24 +22,27 @@ COPY . .
 RUN npm run build
 
 # ---------- Runtime stage ----------
-# Use the unprivileged nginx image: runs as UID 101, listens on 8080 by default,
-# pid file in /tmp — avoids permission/exit-code-1 issues on Azure Container Apps.
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+# Serve the built SPA with Vite's built-in preview server (Node).
+# Same Node version as the build stage to keep the runtime predictable.
+FROM node:24-alpine AS runtime
 
-USER root
+WORKDIR /app
 
-# SPA-friendly nginx config (fallback to index.html for client-side routes).
-# Using a real file (not inline printf) so the config is reproducible and easy
-# to validate locally with `nginx -t`.
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Bring in only what `vite preview` needs at runtime:
+#   - dist/ (the built assets it serves)
+#   - node_modules/ (vite itself + its deps)
+#   - package.json + vite.config.ts (vite reads these on startup)
+COPY --from=build --chown=node:node /app/dist ./dist
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/package.json ./package.json
+COPY --from=build --chown=node:node /app/vite.config.ts ./vite.config.ts
 
-# Copy built assets and make sure the unprivileged nginx user can read them
-COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
+# Drop privileges
+USER node
 
-USER nginx
-
-# Non-privileged port so the image runs rootless on ACA / Kubernetes
+# Non-privileged port — must match Container Apps ingress targetPort
 EXPOSE 8080
 
-# Run nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+# `--host 0.0.0.0` is required so the server binds outside the container's loopback,
+# otherwise ACA's startup probe (and ingress) cannot reach it.
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "8080"]
