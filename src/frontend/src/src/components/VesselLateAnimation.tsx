@@ -146,18 +146,28 @@ export function VesselLateAnimation({
     const capped = units.slice(0, 4)
 
     // Save original positions and claim ownership
+    const resolved: { name: string; found: boolean }[] = []
     for (const unit of capped) {
       const agv = rootScene.getObjectByName(unit.agvName)
+      resolved.push({ name: unit.agvName, found: !!agv })
       if (agv) {
         saveOriginalPosition(unit.agvName, [agv.position.x, agv.position.y, agv.position.z])
         claim(unit.agvName, 'vesselLate')
       }
       const stacker = rootScene.getObjectByName(unit.stackerName)
+      resolved.push({ name: unit.stackerName, found: !!stacker })
       if (stacker) {
         saveOriginalPosition(unit.stackerName, [stacker.position.x, stacker.position.y, stacker.position.z])
         claim(unit.stackerName, 'vesselLate')
       }
     }
+    // Loud diagnostic so missing/typo'd object names are immediately obvious
+    // when calling window.trigger_late_vessel_animation from the console.
+    const missing = resolved.filter((r) => !r.found).map((r) => r.name)
+    if (missing.length > 0) {
+      console.warn('[VesselLateAnimation] could not resolve scene objects:', missing)
+    }
+    console.info('[VesselLateAnimation] borrow_AGV_Stackers resolved:', resolved)
 
     borrowedUnits.current = capped
     // Resolve refs
@@ -182,6 +192,10 @@ export function VesselLateAnimation({
 
   const resetAnimation = useCallback(() => {
     if (!active.current) return
+    // Restart the travel-progress counter so the return lerp actually animates.
+    // Without this, after arrival completes travelProgress is already [1,1,1,1]
+    // and the return phase finishes in a single frame (units teleport back).
+    travelProgress.current = [0, 0, 0, 0]
     travelPhase.current = 'returning'
   }, [])
 

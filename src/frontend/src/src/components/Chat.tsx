@@ -159,7 +159,7 @@ export function Chat() {
     setters[agentId]((prev) => [...prev, { role: 'user', text }])
 
     // Frontend-only command: reset berth 3 animation
-    if (agentId === 'fleet_market' && text.toLowerCase() === 'berth 3 reset') {
+    if (agentId === 'fleet_market' && text.toLowerCase().trim() === 'reset') {
       ;(window as any).reset_late_vessel_animation?.()
       setFleetMessages((prev) => [...prev, { role: 'agent', text: 'Berth 3 animation reset.', source: 'ws' }])
       return

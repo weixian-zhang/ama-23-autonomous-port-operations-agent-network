@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { MetaRealm } from './MetaRealm'
 import { VesselInspectModal } from './VesselInspectModal'
 import type { VesselInspectInfo } from './VesselInspectModal'
@@ -19,17 +19,45 @@ export function MainPage() {
     'Reporting and Analytics',
   ]
 
-  // Expose to window for manual function calling
-  ;(window as any).trigger_late_vessel_animation = (units?: { agvName: string; stackerName: string }[]) => {
-    const defaultUnits = [
-      { agvName: 'agv-berth-5-0', stackerName: 'stacker-yard-5-0' },
-      { agvName: 'agv-berth-2-0', stackerName: 'stacker-yard-2-0' },
-    ]
-    vesselLateRef.current?.borrow_AGV_Stackers(units ?? defaultUnits)
-  }
-  ;(window as any).reset_late_vessel_animation = () => {
-    vesselLateRef.current?.resetAnimation()
-  }
+  // Expose console-callable triggers AFTER mount so they can never be invoked
+  // before VesselLateAnimation has wired its imperative handle. The console.warn
+  // makes it obvious if the user calls the function before the 3D scene
+  // (mounted inside <Suspense>) has finished loading.
+  useEffect(() => {
+    const w = window as unknown as Record<string, unknown>
+
+    w.trigger_late_vessel_animation = (units?: { agvName: string; stackerName: string }[]) => {
+      const defaultUnits = [
+        { agvName: 'agv-berth-5-0', stackerName: 'stacker-yard-5-0' },
+        { agvName: 'agv-berth-2-0', stackerName: 'stacker-yard-2-0' },
+      ]
+      const handle = vesselLateRef.current
+      if (!handle) {
+        console.warn(
+          '[trigger_late_vessel_animation] VesselLateAnimation handle not ready yet. ' +
+            'The 3D scene is still loading inside <Suspense>; wait for the canvas to render and try again.',
+        )
+        return
+      }
+      console.info('[trigger_late_vessel_animation] borrowing units:', units ?? defaultUnits)
+      handle.borrow_AGV_Stackers(units ?? defaultUnits)
+    }
+
+    w.reset_late_vessel_animation = () => {
+      const handle = vesselLateRef.current
+      if (!handle) {
+        console.warn('[reset_late_vessel_animation] VesselLateAnimation handle not ready.')
+        return
+      }
+      console.info('[reset_late_vessel_animation] resetting')
+      handle.resetAnimation()
+    }
+
+    return () => {
+      delete w.trigger_late_vessel_animation
+      delete w.reset_late_vessel_animation
+    }
+  }, [])
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-black">
