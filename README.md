@@ -1,8 +1,12 @@
 # Salacia
 
-> **Salacia** is a next-generation **Agentic Terminal Operating System (TOS)** for shipping ports — a fictional, AI-first reimagining of the software that runs container terminals.
+<img width="500" height="400" alt="image" src="https://github.com/user-attachments/assets/f80b0f09-7396-43b1-afec-fb146f6bef04" />
 
-Named after the Roman goddess of the sea, Salacia replaces the static rule‑engines and spreadsheets of mainstream TOS platforms with a **swarm of cooperating AI agents** that plan, bid, and react in real time across berths, cranes, yards, and fleets.
+<br />
+
+**Salacia** is a next-generation **Agentic Terminal Operating System (TOS)** for shipping ports
+
+Named after the Roman goddess of the sea, Salacia replaces the static rule‑engines of mainstream TOS platforms with a **swarm of cooperating AI agents** that plan, bid, and react in real time across berths, cranes, yards, and fleets.
 
 ---
 
