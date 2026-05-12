@@ -10,12 +10,12 @@
     "termsOfUseUrl": "https://salacia.com/terms"
   },
   "name": {
-    "short": "Salacia",
+    "short": "Salacia - Fleet Market Agent",
     "full": "Salacia Agents"
   },
   "description": {
     "short": "Port operations management in MS Teams.",
-    "full": "Salacia is AI-powered next generation Terminal OS for managing port operations through AI-Agent coordination."
+    "full": "Salacia is next-gen Agentic Terminal OS for managing port operations through multi-agent coordination."
   },
   "icons": {
     "outline": "outline.png",

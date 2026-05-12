@@ -27,6 +27,7 @@ import { StagnantVesselBands } from './StagnantVessels'
 import { AgvOwnershipProvider } from '../context/AgvOwnershipContext'
 import type { VesselLateAnimationHandle } from './VesselLateAnimation'
 import { isInputLocked, subscribeInputLock } from '../state/inputLock'
+import { setLookActive } from '../state/lookMode'
 
 // --- Sky / sun constants ---
 // Sunny afternoon: sun ~40° above horizon, slightly behind/over the city (WSW).
@@ -62,13 +63,24 @@ function mulberry32(seed: number) {
 }
 
 // --- First-person camera constants ---
-const WALK_SPEED = 40
+const WALK_SPEED = 70
 const LOOK_SPEED_X = 4
 const LOOK_SPEED_Y = 3
 const HEAD_BOB_SPEED = 12
 const HEAD_BOB_HEIGHT = 0.3
-const ROTATION_SLERP_FACTOR = 5
-const POSITION_LERP_FACTOR = 8
+// Higher = camera follows input more directly. The previous values (5/8) were
+// low enough that during inconsistent frame times the smoothing lag itself
+// looked like jitter. 18/14 still smooths, but the camera tracks input
+// closely enough that variance in frame time is no longer interpreted as
+// stutter by the eye.
+const ROTATION_SLERP_FACTOR = 18
+const POSITION_LERP_FACTOR = 14
+// Hard cap on per-frame delta. After a stutter (GC, asset decode, tab
+// regaining focus) `delta` can spike to 100ms+. Without a cap, the next
+// useFrame catches up with one giant lerp step that reads as a teleport.
+// 1/30 s = a single missed vsync at 30 fps, which is the worst we ever
+// want to integrate over.
+const MAX_FRAME_DELTA = 1 / 30
 
 /**
  * FPS-style controller: right-click drag to look, WASD to move,
@@ -85,6 +97,12 @@ function FirstPersonController() {
   const headBobActive = useRef(false)
   const rightMouseDown = useRef(false)
   const prevMouse = useRef({ x: 0, y: 0 })
+  // Mouse-look deltas accumulate here in the event listener and are drained
+  // inside useFrame. This keeps look input perfectly synchronised with the
+  // render frame (no rAF mismatch, no extra layer of latency) while still
+  // handling high-poll-rate mice that fire many mousemoves per frame.
+  const pendingDx = useRef(0)
+  const pendingDy = useRef(0)
 
   // Derive initial yaw/pitch so the camera keeps its lookAt(0,0,0) direction
   useEffect(() => {
@@ -119,39 +137,29 @@ function FirstPersonController() {
       if (e.button === 2) {
         rightMouseDown.current = true
         prevMouse.current = { x: e.clientX, y: e.clientY }
+        // Tell the rest of the scene we're in look-mode so they can
+        // suspend expensive pointer-event raycasts (yard tooltips, etc.).
+        setLookActive(true)
       }
     }
     const onMouseUp = (e: MouseEvent) => {
-      if (e.button === 2) rightMouseDown.current = false
+      if (e.button === 2) {
+        rightMouseDown.current = false
+        setLookActive(false)
+      }
     }
 
-    // Coalesce mouse-look deltas into a single per-frame update via rAF.
-    // High-poll mice on macOS can fire mousemove far more often than the
-    // render rate; without coalescing, every event would trigger trig +
-    // clamp work even though only the latest delta matters per frame.
-    let pendingDx = 0
-    let pendingDy = 0
-    let rafScheduled = false
-    const flushLook = () => {
-      rafScheduled = false
-      if (pendingDx === 0 && pendingDy === 0) return
-      phi.current   -= (pendingDx / window.innerWidth)  * LOOK_SPEED_X
-      theta.current  = THREE.MathUtils.clamp(
-        theta.current - (pendingDy / window.innerHeight) * LOOK_SPEED_Y,
-        -Math.PI / 3, Math.PI / 3,
-      )
-      pendingDx = 0
-      pendingDy = 0
-    }
+    // Accumulate mouse deltas; useFrame drains them once per render frame.
+    // We deliberately do NOT use requestAnimationFrame for coalescing here:
+    // R3F also uses rAF internally and the ordering between two rAF
+    // callbacks is not guaranteed, which adds a frame of input latency.
+    // Reading the accumulator directly in useFrame keeps look 1:1 with
+    // the rendered frame.
     const onMouseMove = (e: MouseEvent) => {
       if (!rightMouseDown.current) return
-      pendingDx += e.clientX - prevMouse.current.x
-      pendingDy += e.clientY - prevMouse.current.y
+      pendingDx.current += e.clientX - prevMouse.current.x
+      pendingDy.current += e.clientY - prevMouse.current.y
       prevMouse.current = { x: e.clientX, y: e.clientY }
-      if (!rafScheduled) {
-        rafScheduled = true
-        requestAnimationFrame(flushLook)
-      }
     }
     const onWheel = (e: WheelEvent) => {
       targetPos.current.y -= e.deltaY * 0.1
@@ -191,7 +199,23 @@ function FirstPersonController() {
   const _yAxis  = new THREE.Vector3(0, 1, 0)
   const _xAxis  = new THREE.Vector3(1, 0, 0)
 
-  useFrame((_, delta) => {
+  useFrame((_, deltaRaw) => {
+    // Hard-cap delta. Without this, a single dropped frame causes the next
+    // frame to over-integrate and the camera "snaps" forward, which the
+    // eye reads as a hitch. Capping spreads the recovery across frames.
+    const delta = Math.min(deltaRaw, MAX_FRAME_DELTA)
+
+    // --- Drain accumulated mouse-look deltas (synced to render frame) ---
+    if (pendingDx.current !== 0 || pendingDy.current !== 0) {
+      phi.current   -= (pendingDx.current / window.innerWidth)  * LOOK_SPEED_X
+      theta.current  = THREE.MathUtils.clamp(
+        theta.current - (pendingDy.current / window.innerHeight) * LOOK_SPEED_Y,
+        -Math.PI / 3, Math.PI / 3,
+      )
+      pendingDx.current = 0
+      pendingDy.current = 0
+    }
+
     // --- Slerp-smoothed rotation ---
     _qYaw.setFromAxisAngle(_yAxis, phi.current)
     _qPitch.setFromAxisAngle(_xAxis, theta.current)
@@ -272,6 +296,22 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
       opacity: 0.7 + rand() * 0.25,
     }))
   }, [])
+
+  // Memoize the stagnant-vessel bands. Without this, every parent re-render
+  // would create a new array literal and force the Poisson-disk sampler
+  // inside StagnantVesselBands (up to 5000 attempts per band) to recompute
+  // the entire fleet layout. With memoization the layout is generated once.
+  const stagnantVesselBands = useMemo(
+    () => [
+      {
+        count: 63,
+        seed: 4242,
+        bounds: { xMin: -380.8, xMax: -108.8, zMin: -1100, zMax: 1100 },
+        minDistance: 180,
+      },
+    ],
+    [],
+  )
 
   return (
     <Canvas
@@ -362,14 +402,7 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
                 minimum distance between each so they never overlap. */}
             <StagnantVesselBands
               globalMinDistance={180}
-              bands={[
-                {
-                  count: 63,
-                  seed: 4242,
-                  bounds: { xMin: -380.8, xMax: -108.8, zMin: -1100, zMax: 1100 },
-                  minDistance: 180,
-                },
-              ]}
+              bands={stagnantVesselBands}
             />
             <Berth5Animation onVesselClick={onVesselClick} />
             <Berth2Animation onVesselClick={onVesselClick} />

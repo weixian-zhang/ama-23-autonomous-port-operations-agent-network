@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react'
 import { Html } from '@react-three/drei'
+import * as THREE from 'three'
 import { PORT_ZONES, getYardCellPosition } from '../data/portZoneData'
 import containerData from '../data/vessel-container-info.json'
+import { isLookActive } from '../state/lookMode'
 
 const CONTAINER_COUNT = 50 // matches INITIAL_CONTAINERS in LoadAnimation
 const CELL_SIZE: [number, number, number] = [13, 3, 12] // hit-box per cell
@@ -9,6 +11,21 @@ const YARD_ROTATION = Math.PI / 2
 
 function pickRandom() {
   return containerData[Math.floor(Math.random() * containerData.length)]
+}
+
+// Custom raycast that bails out when the user is panning the camera
+// (right-mouse drag). With ~200 invisible hitboxes per scene, raycasting
+// every one of them on every mousemove during look-drag is one of the
+// biggest sources of input lag. The user can't usefully hover during a
+// look-drag anyway, so short-circuiting is safe.
+function skipRaycastDuringLook(
+  this: THREE.Mesh,
+  raycaster: THREE.Raycaster,
+  intersects: THREE.Intersection[],
+) {
+  if (isLookActive()) return
+  // Fall back to the default mesh raycast.
+  THREE.Mesh.prototype.raycast.call(this, raycaster, intersects)
 }
 
 function ContainerHitbox({
@@ -26,6 +43,7 @@ function ContainerHitbox({
     <mesh
       position={position}
       rotation={[0, YARD_ROTATION, 0]}
+      raycast={skipRaycastDuringLook}
       onPointerEnter={(e) => {
         e.stopPropagation()
         onHover(id, position)

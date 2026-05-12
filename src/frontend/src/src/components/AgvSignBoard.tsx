@@ -1,6 +1,5 @@
 import { Html } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import agvSignalData from '../data/agv-signal-data.json'
 
@@ -12,21 +11,26 @@ export function AgvSignBoard({ agvName }: { agvName: string }) {
   const [data, setData] = useState(pickRandom)
   const groupRef = useRef<THREE.Group>(null)
   const [pos, setPos] = useState<[number, number, number]>([0, 0, 0])
-  const _worldPos = useRef(new THREE.Vector3())
 
   useEffect(() => {
     setData(pickRandom())
   }, [])
 
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.getWorldPosition(_worldPos.current)
-      const x = Math.round(_worldPos.current.x * 10) / 10
-      const y = Math.round(_worldPos.current.y * 10) / 10
-      const z = Math.round(_worldPos.current.z * 10) / 10
-      setPos((prev) => (prev[0] === x && prev[1] === y && prev[2] === z ? prev : [x, y, z]))
-    }
-  })
+  // AGVs are stationary in this scene — read the world position once after
+  // mount for the location readout instead of every frame. Previously this
+  // ran inside useFrame for all 16 AGVs, costing 16 getWorldPosition() calls
+  // (each of which walks parent matrices) per render frame for no benefit.
+  useEffect(() => {
+    const g = groupRef.current
+    if (!g) return
+    const wp = new THREE.Vector3()
+    g.getWorldPosition(wp)
+    setPos([
+      Math.round(wp.x * 10) / 10,
+      Math.round(wp.y * 10) / 10,
+      Math.round(wp.z * 10) / 10,
+    ])
+  }, [])
 
   // Randomize speed, RPM, and temperature every 4 seconds
   useEffect(() => {

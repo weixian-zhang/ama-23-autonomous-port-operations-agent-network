@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { socketClient } from '../SocketClient'
 import craneEdgeConversations from '../data/crane-edge-agent-conversation.json'
 import yardKingConversations from '../data/fleetmarket-to-yardking-conversations.json'
@@ -80,30 +80,51 @@ export function Chat() {
   const [fleetMessages, setFleetMessages] = useState<ChatMessage[]>([])
   const [yardMessages, setYardMessages] = useState<ChatMessage[]>([])
 
+  // Cap each panel's message history. A new message is pushed roughly every
+  // 10s per panel (plus inbound websocket messages). Without a cap, after a
+  // long demo session the DOM grows unboundedly and React re-reconciles a
+  // very long virtualised-then-not-virtualised list, which competes with
+  // the canvas for main-thread time and shows up as input lag in the 3D view.
+  const MAX_CHAT_MESSAGES = 200
+  const append = useCallback(
+    (
+      setter: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
+      msg: ChatMessage,
+    ) => {
+      setter((prev) => {
+        const next = [...prev, msg]
+        return next.length > MAX_CHAT_MESSAGES
+          ? next.slice(next.length - MAX_CHAT_MESSAGES)
+          : next
+      })
+    },
+    [],
+  )
+
   useEffect(() => {
     socketClient.connect()
     const unsubFleet1 = socketClient.on('fleet-market', (msg) => {
       const text = typeof msg.message === 'string' ? msg.message : JSON.stringify(msg)
-      setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
+      append(setFleetMessages, { role: 'agent', text, source: 'ws' })
     })
     const unsubFleet2 = socketClient.on('teams-message', (msg) => {
       const from = typeof msg.from === 'string' ? msg.from : 'Teams'
       const text = typeof msg.text === 'string' ? `[${from}]: ${msg.text}` : JSON.stringify(msg)
-      setFleetMessages((prev) => [...prev, { role: 'user', text, source: 'ws' }])
+      append(setFleetMessages, { role: 'user', text, source: 'ws' })
     })
     const unsubFleetMarket = () => { unsubFleet1(); unsubFleet2() }
     const unsubCrane = socketClient.on('crane_auctioneer', (msg) => {
       const text = typeof msg.text === 'string' ? msg.text : JSON.stringify(msg)
-      setCraneMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
+      append(setCraneMessages, { role: 'agent', text, source: 'ws' })
     })
     const unsubYard = socketClient.on('yard_king', (msg) => {
       const text = typeof msg.text === 'string' ? msg.text : JSON.stringify(msg)
-      setYardMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
+      append(setYardMessages, { role: 'agent', text, source: 'ws' })
     })
 
     const unsubAuctionLog = socketClient.on('fleet-market-auction-log', (msg) => {
       const text = typeof msg.message === 'string' ? msg.message : JSON.stringify(msg)
-      setFleetMessages((prev) => [...prev, { role: 'agent', text, source: 'ws' }])
+      append(setFleetMessages, { role: 'agent', text, source: 'ws' })
     })
 
     // Fleet Market: randomly pick AGV/stacker conversations every 2s
@@ -117,13 +138,13 @@ export function Chat() {
     const craneTimer = setInterval(() => {
       const entry = craneEdgeConversations[Math.floor(Math.random() * craneEdgeConversations.length)]
       const text = `${entry.crane_name} [bid:${entry.bid_value}]: ${entry.edge_thought}`
-      setCraneMessages((prev) => [...prev, { role: 'agent', text, source: 'json' }])
+      append(setCraneMessages, { role: 'agent', text, source: 'json' })
     }, 10000)
 
     // Yard King: randomly pick fleet-to-yard conversations every 10s
     const yardTimer = setInterval(() => {
       const entry = yardKingConversations[Math.floor(Math.random() * yardKingConversations.length)]
-      setYardMessages((prev) => [...prev, { role: 'agent', text: entry.message, source: 'json' }])
+      append(setYardMessages, { role: 'agent', text: entry.message, source: 'json' })
     }, 10000)
 
     return () => {
@@ -134,7 +155,7 @@ export function Chat() {
       clearInterval(craneTimer)
       clearInterval(yardTimer)
     }
-  }, [])
+  }, [append])
 
   const agentTypeMap: Record<AgentId, string> = {
     fleet_market: 'hive-fleet-market',
@@ -148,12 +169,12 @@ export function Chat() {
       fleet_market: setFleetMessages,
       yard_king: setYardMessages,
     }
-    setters[agentId]((prev) => [...prev, { role: 'user', text }])
+    append(setters[agentId], { role: 'user', text })
 
     // Frontend-only command: reset berth 3 animation
     if (agentId === 'fleet_market' && text.toLowerCase().trim() === 'reset') {
       ;(window as any).reset_late_vessel_animation?.()
-      setFleetMessages((prev) => [...prev, { role: 'agent', text: 'Berth 3 animation reset.', source: 'ws' }])
+      append(setFleetMessages, { role: 'agent', text: 'Berth 3 animation reset.', source: 'ws' })
       return
     }
 

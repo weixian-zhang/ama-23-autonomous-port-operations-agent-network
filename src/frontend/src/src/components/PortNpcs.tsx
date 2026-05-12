@@ -306,13 +306,13 @@ function Npc({ spec }: { spec: NpcSpec }) {
     }
 
     // Skinned meshes can disappear when their (static) bounding sphere is
-    // wrong after bone deformation — keep them always-rendered.
-    clonedScene.traverse((child) => {
-      const mesh = child as THREE.Mesh | THREE.SkinnedMesh
-      if ((mesh as THREE.Mesh).isMesh || (mesh as THREE.SkinnedMesh).isSkinnedMesh) {
-        mesh.frustumCulled = false
-      }
-    })
+    // wrong after bone deformation. Rather than disabling frustum culling
+    // entirely (which forces every NPC's bones to be uploaded and shaded
+    // every frame, even those behind the camera), we compute a generously
+    // inflated bounding sphere from the deformed-pose bbox below and
+    // assign it back to each SkinnedMesh so culling works correctly.
+    // We leave plain Meshes (props/clothing without bones) alone — three's
+    // default geometry-bounds culling works fine for them.
 
     // --- Foot-offset auto-fit ---
     // Each rig has a different armature origin AND its rendered pose
@@ -363,6 +363,45 @@ function Npc({ spec }: { spec: NpcSpec }) {
       // Multiplier bumped 5% so the sign floats a touch higher above the head.
       if (Number.isFinite(minWorldY) && Number.isFinite(maxWorldY)) {
         setSignYOffset((maxWorldY - minWorldY + 4) * 1.05)
+
+        // --- Per-mesh bounding sphere for accurate frustum culling ---
+        // We have the world-space bbox of the deformed character (bbox is
+        // currently the LAST sample's box, but min/maxWorldY span all
+        // samples; in practice the horizontal extent of a humanoid varies
+        // little across a walk cycle, so the last sample is representative).
+        // Inflate generously (×1.5 on radius) to absorb any pose we didn't
+        // sample — arm swings, idle micro-motions, etc.
+        group.updateMatrixWorld(true)
+        const worldCenter = new THREE.Vector3(
+          (bbox.min.x + bbox.max.x) * 0.5,
+          (minWorldY + maxWorldY) * 0.5,
+          (bbox.min.z + bbox.max.z) * 0.5,
+        )
+        const worldDiag = Math.hypot(
+          bbox.max.x - bbox.min.x,
+          maxWorldY - minWorldY,
+          bbox.max.z - bbox.min.z,
+        )
+        const worldRadius = (worldDiag * 0.5) * 1.5
+        clonedScene.traverse((child) => {
+          const mesh = child as THREE.SkinnedMesh
+          if (!mesh.isSkinnedMesh) return
+          // Convert the world sphere into the mesh's local space so three.js
+          // can transform it back to world coords each frame via matrixWorld.
+          const localCenter = mesh.worldToLocal(worldCenter.clone())
+          // Account for the mesh's world scale when scaling the radius back
+          // to local space. Most rigs use uniform scale so this is a single
+          // factor; we take the max axis to be safe with anisotropic scales.
+          const ws = mesh.getWorldScale(new THREE.Vector3())
+          const maxScale = Math.max(ws.x, ws.y, ws.z) || 1
+          const localRadius = worldRadius / maxScale
+          if (!mesh.geometry.boundingSphere) {
+            mesh.geometry.boundingSphere = new THREE.Sphere()
+          }
+          mesh.geometry.boundingSphere.center.copy(localCenter)
+          mesh.geometry.boundingSphere.radius = localRadius
+          mesh.frustumCulled = true
+        })
       }
 
       // Restore the action's playhead to a sensible starting frame.
