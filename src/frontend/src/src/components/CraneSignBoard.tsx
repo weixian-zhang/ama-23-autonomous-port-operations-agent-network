@@ -35,20 +35,9 @@ export function CraneSignBoard({ craneName }: { craneName: string }) {
     setData(pickByName(craneName))
   }, [craneName])
 
-  // Randomize live telemetry every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setData((prev) => ({
-        ...prev,
-        hoistMotorTempC: Math.round(35 + Math.random() * 40),
-        trolleyPositionM: Math.round(Math.random() * 45 * 10) / 10,
-        hoistHeightM: Math.round((20 + Math.random() * 25) * 10) / 10,
-        windSpeedMps: Math.round((3 + Math.random() * 8) * 10) / 10,
-        powerLoadKw: Math.round(50 + Math.random() * 1250),
-      }))
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+  // Telemetry is picked once on mount and never refreshed. The previous
+  // periodic randomization triggered ~20 React re-renders + drei <Html>
+  // DOM transforms per cycle, which is unnecessary for a demo display.
 
   const tempColor =
     data.hoistMotorTempC < 55 ? '#76ff03' : data.hoistMotorTempC < 70 ? '#ffea00' : '#ff1744'

@@ -1,6 +1,13 @@
 import { Html } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 import berthUnloadStats from '../data/berth-unload-stats.json'
+import { useStaggeredInterval } from '../hooks/useStaggeredInterval'
+import { DistanceCullGate } from './DistanceCullGate'
+
+// Past ~850 units the sign's distanceFactor=200 makes it tiny on screen, and
+// its drei <Html> still pays per-frame DOM transform cost while mounted.
+// Cull when far so the DOM node is removed entirely.
+const BERTH_SIGN_CULL_DISTANCE = 850
 
 function pickRandom() {
   return berthUnloadStats[Math.floor(Math.random() * berthUnloadStats.length)]
@@ -18,20 +25,18 @@ export function BerthUnloadSignBoard({ position, disableTimer }: { position: [nu
 
   const originalRef = useRef(data.totalContainersUnloaded)
 
-  useEffect(() => {
+  useStaggeredInterval(() => {
     if (disableTimer) return
-    const interval = setInterval(() => {
-      containersRef.current = containersRef.current - 4
-      if (containersRef.current <= 0) {
-        containersRef.current = originalRef.current
-      }
-      setData((prev) => ({ ...prev, totalContainersUnloaded: containersRef.current }))
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [disableTimer])
+    containersRef.current = containersRef.current - 4
+    if (containersRef.current <= 0) {
+      containersRef.current = originalRef.current
+    }
+    setData((prev) => ({ ...prev, totalContainersUnloaded: containersRef.current }))
+  }, 5000)
 
   return (
     <group position={position}>
+      <DistanceCullGate maxDistance={BERTH_SIGN_CULL_DISTANCE}>
       <Html
         center
         distanceFactor={200}
@@ -90,6 +95,7 @@ export function BerthUnloadSignBoard({ position, disableTimer }: { position: [nu
           </div>
         </div>
       </Html>
+      </DistanceCullGate>
     </group>
   )
 }

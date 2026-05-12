@@ -21,12 +21,16 @@ function progress(t: number, start: number, end: number): number {
   return Math.min(Math.max((t - start) / (end - start), 0), 1)
 }
 
+// Module-scoped scratch tuple. lerpTuple writes into this and returns it,
+// avoiding a fresh 3-element array on every call. Safe because every call
+// site consumes the result before the next lerpTuple call (within the same
+// useFrame), and React's render loop runs each useFrame body sequentially.
+const _lerpScratch: THREE.Vector3Tuple = [0, 0, 0]
 function lerpTuple(a: THREE.Vector3Tuple, b: THREE.Vector3Tuple, t: number): THREE.Vector3Tuple {
-  return [
-    a[0] + (b[0] - a[0]) * t,
-    a[1] + (b[1] - a[1]) * t,
-    a[2] + (b[2] - a[2]) * t,
-  ]
+  _lerpScratch[0] = a[0] + (b[0] - a[0]) * t
+  _lerpScratch[1] = a[1] + (b[1] - a[1]) * t
+  _lerpScratch[2] = a[2] + (b[2] - a[2]) * t
+  return _lerpScratch
 }
 
 interface VesselProps {

@@ -1,6 +1,12 @@
 import { Html } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 import yardUnloadStats from '../data/yard-unload-stats.json'
+import { useStaggeredInterval } from '../hooks/useStaggeredInterval'
+import { DistanceCullGate } from './DistanceCullGate'
+
+// Past ~850 units the sign's distanceFactor=200 makes it tiny on screen, and
+// its drei <Html> still pays per-frame DOM transform cost while mounted.
+const YARD_SIGN_CULL_DISTANCE = 850
 
 function pickRandom() {
   return yardUnloadStats[Math.floor(Math.random() * yardUnloadStats.length)]
@@ -20,23 +26,21 @@ export function YardUnloadSignBoard({ position, disableTimer, zeroContainers }: 
   }, [zeroContainers])
 
   // Decrement containersReceived by 4 every 5 seconds, reset to original on 0
-  useEffect(() => {
+  useStaggeredInterval(() => {
     if (disableTimer) return
-    const interval = setInterval(() => {
-      receivedRef.current = receivedRef.current - 4
-      if (receivedRef.current <= 0) {
-        receivedRef.current = originalReceivedRef.current
-      }
-      setData((prev) => ({
-        ...prev,
-        containersReceived: receivedRef.current,
-      }))
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [disableTimer])
+    receivedRef.current = receivedRef.current - 4
+    if (receivedRef.current <= 0) {
+      receivedRef.current = originalReceivedRef.current
+    }
+    setData((prev) => ({
+      ...prev,
+      containersReceived: receivedRef.current,
+    }))
+  }, 5000)
 
   return (
     <group position={position}>
+      <DistanceCullGate maxDistance={YARD_SIGN_CULL_DISTANCE}>
       <Html
         center
         distanceFactor={200}
@@ -99,6 +103,7 @@ export function YardUnloadSignBoard({ position, disableTimer, zeroContainers }: 
           </div>
         </div>
       </Html>
+      </DistanceCullGate>
     </group>
   )
 }

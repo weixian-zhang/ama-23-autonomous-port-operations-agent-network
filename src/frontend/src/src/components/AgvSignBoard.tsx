@@ -32,21 +32,9 @@ export function AgvSignBoard({ agvName }: { agvName: string }) {
     ])
   }, [])
 
-  // Randomize speed, RPM, and temperature every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setData((prev) => ({
-        ...prev,
-        motion: { ...prev.motion, speedKph: Math.round((5 + Math.random() * 25) * 10) / 10 },
-        engine: {
-          ...prev.engine,
-          rpm: Math.round(800 + Math.random() * 700),
-          engineTempC: Math.round(70 + Math.random() * 35),
-        },
-      }))
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+  // Telemetry is picked once on mount and never refreshed. The previous
+  // periodic randomization triggered ~16 React re-renders + drei <Html>
+  // DOM transforms per cycle, which is unnecessary for a demo display.
 
   const healthColor =
     data.health.overallHealthScore >= 90

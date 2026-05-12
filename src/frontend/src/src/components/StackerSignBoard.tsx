@@ -32,25 +32,9 @@ export function StackerSignBoard({ stackerName }: { stackerName: string }) {
     ])
   }, [])
 
-  // Randomize speed, RPM, temperature and load height every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setData((prev) => ({
-        ...prev,
-        motion: {
-          ...prev.motion,
-          speedKph: Math.round((3 + Math.random() * 15) * 10) / 10,
-          loadHeightMeters: Math.round(Math.random() * 12 * 10) / 10,
-        },
-        engine: {
-          ...prev.engine,
-          rpm: Math.round(1000 + Math.random() * 600),
-          engineTempC: Math.round(75 + Math.random() * 30),
-        },
-      }))
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+  // Telemetry is picked once on mount and never refreshed. The previous
+  // periodic randomization triggered ~16 React re-renders + drei <Html>
+  // DOM transforms per cycle, which is unnecessary for a demo display.
 
   const healthColor =
     data.health.overallHealthScore >= 90

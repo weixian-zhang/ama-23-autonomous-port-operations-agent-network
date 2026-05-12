@@ -34,7 +34,5 @@ Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 7 Salacia’s Agent Engineering 
 8 Software Architecture
 9 Azure Architecture
-0 Software Architecture Design
-11 Azure Architecture Design
 12 IoT DevOps
 13 Demo of Salacia

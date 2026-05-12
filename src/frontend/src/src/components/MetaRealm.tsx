@@ -136,7 +136,12 @@ function FirstPersonController() {
     const onMouseDown = (e: MouseEvent) => {
       if (e.button === 2) {
         rightMouseDown.current = true
-        prevMouse.current = { x: e.clientX, y: e.clientY }
+        // Mutate in place to avoid a per-event allocation. High-poll mice fire
+        // hundreds of mousemove events per second; allocating a new {x, y}
+        // object each time creates measurable GC pressure exactly while the
+        // camera is moving.
+        prevMouse.current.x = e.clientX
+        prevMouse.current.y = e.clientY
         // Tell the rest of the scene we're in look-mode so they can
         // suspend expensive pointer-event raycasts (yard tooltips, etc.).
         setLookActive(true)
@@ -159,7 +164,9 @@ function FirstPersonController() {
       if (!rightMouseDown.current) return
       pendingDx.current += e.clientX - prevMouse.current.x
       pendingDy.current += e.clientY - prevMouse.current.y
-      prevMouse.current = { x: e.clientX, y: e.clientY }
+      // Mutate in place — see onMouseDown comment.
+      prevMouse.current.x = e.clientX
+      prevMouse.current.y = e.clientY
     }
     const onWheel = (e: WheelEvent) => {
       targetPos.current.y -= e.deltaY * 0.1
