@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { OperatorSignBoard } from './OperatorSignBoard'
+import { DistanceCullGate } from './DistanceCullGate'
 
 // --- Tuning ---
 const NPC_SCALE = 5.6                // 20% smaller than the original 7
@@ -13,6 +14,16 @@ const PATROL_Z_MAX = 500            // just past Berth 1 (z = 480)
 const BASE_WALK_SPEED = 11          // units per second (varied slightly per NPC)
 const FACING_OFFSET = 0
 const ANIMATION_INDEX = 0           // each rig has 1 walk clip
+
+// Beyond this world-space distance, an NPC's skeletal AnimationMixer is no
+// longer ticked each frame. The static (last-evaluated) pose still draws,
+// the skeleton just stops re-computing — invisible at distance, but a real
+// CPU saving across the 15-NPC roster while the camera roams the port.
+const NPC_MIXER_CULL_DISTANCE = 500
+// Beyond this distance the floating Operator sign board is unmounted (its
+// drei <Html> DOM node removed), so the browser stops paying per-frame
+// CSS-transform cost for signs that are barely a pixel on screen anyway.
+const NPC_SIGN_CULL_DISTANCE = 280
 
 const NPC_GLBS = [
   '/blender-asset/operator-female-1.glb',
@@ -250,6 +261,9 @@ function buildRoster(): NpcSpec[] {
   return fullRoster.filter((_, i) => !dropIdx.has(i))
 }
 
+// Reused inside Npc.useFrame so we don't allocate a Vector3 every tick.
+const _npcWorldPos = new THREE.Vector3()
+
 /**
  * Renders a single NPC. We clone the skinned scene with SkeletonUtils so
  * every NPC owns its own skeleton (drei's useGLTF returns a shared scene),
@@ -363,11 +377,23 @@ function Npc({ spec }: { spec: NpcSpec }) {
     }
   }, [clonedScene, cleanClips, spec.mode, spec.position])
 
-  useFrame((_, delta) => {
-    mixerRef.current?.update(delta)
-    if (spec.mode !== 'walk') return
-
+  useFrame((state, delta) => {
     const group = groupRef.current
+
+    // Distance-cull the skeletal mixer. The cost of mixer.update() scales
+    // with bone count; skipping it for far-away NPCs is a real CPU win and
+    // visually undetectable at this distance.
+    if (group) {
+      group.getWorldPosition(_npcWorldPos)
+      const camDist = state.camera.position.distanceTo(_npcWorldPos)
+      if (camDist < NPC_MIXER_CULL_DISTANCE) {
+        mixerRef.current?.update(delta)
+      }
+    } else {
+      mixerRef.current?.update(delta)
+    }
+
+    if (spec.mode !== 'walk') return
     if (!group) return
 
     const speed = BASE_WALK_SPEED * spec.speedFactor
@@ -394,7 +420,9 @@ function Npc({ spec }: { spec: NpcSpec }) {
       name={spec.id}
     >
       <primitive object={clonedScene} scale={NPC_SCALE} />
-      <OperatorSignBoard yOffset={signYOffset} operatorId={spec.id} />
+      <DistanceCullGate maxDistance={NPC_SIGN_CULL_DISTANCE}>
+        <OperatorSignBoard yOffset={signYOffset} operatorId={spec.id} />
+      </DistanceCullGate>
     </group>
   )
 }

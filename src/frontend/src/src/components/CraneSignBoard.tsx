@@ -4,9 +4,28 @@ import craneSignalData from '../data/crane-signal.data.json'
 
 type CraneSignal = (typeof craneSignalData)[number]
 
+// Berth operational status — kept in sync with the BerthSignBoard / BerthUnloadSignBoard
+// placements in MetaRealm.tsx. Each crane inherits its parent berth's status.
+const BERTH_STATUS: Record<number, 'Loading' | 'Unloading'> = {
+  1: 'Loading',
+  2: 'Unloading',
+  3: 'Unloading',
+  4: 'Loading',
+  5: 'Unloading',
+}
+
+function statusForCrane(craneName: string): 'Loading' | 'Unloading' | undefined {
+  // craneName format: "crane-berth-{N}-{i}"
+  const match = craneName.match(/^crane-berth-(\d+)-/)
+  if (!match) return undefined
+  return BERTH_STATUS[Number(match[1])]
+}
+
 function pickByName(name: string): CraneSignal {
   const match = craneSignalData.find((d) => d.craneName === name)
-  return match ?? craneSignalData[Math.floor(Math.random() * craneSignalData.length)]
+  const base = match ?? craneSignalData[Math.floor(Math.random() * craneSignalData.length)]
+  const berthStatus = statusForCrane(name)
+  return berthStatus ? { ...base, status: berthStatus } : base
 }
 
 export function CraneSignBoard({ craneName }: { craneName: string }) {

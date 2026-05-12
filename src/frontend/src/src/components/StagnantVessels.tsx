@@ -4,6 +4,13 @@ import * as THREE from 'three'
 import vesselSignalData from '../data/vessel-signal.json'
 import { type VesselSignalRecord } from './VesselSignBoard'
 import { StagnantVesselSignBoard } from './StagnantVesselSignBoard'
+import { DistanceCullGate } from './DistanceCullGate'
+
+// Beyond this world-space distance, the floating ANCHORED sign for a stagnant
+// vessel is unmounted entirely. distanceFactor=160 already shrinks them to a
+// near-unreadable size at this range, so users lose nothing perceptually but
+// drei stops doing per-frame DOM-transform work for ~50+ off-screen signs.
+const STAGNANT_SIGN_CULL_DISTANCE = 750
 
 const VESSEL_GLBS = [
   '/blender-asset/vessel-1.glb',
@@ -101,7 +108,9 @@ function StagnantVessel({ spec }: { spec: StagnantVesselSpec }) {
       <primitive object={scene as THREE.Object3D} scale={spec.scale} />
       {/* Counter-rotate the sign board so it always reads the same orientation as docked vessels */}
       <group rotation={[0, -spec.rotationY, 0]}>
-        <StagnantVesselSignBoard data={spec.signal} />
+        <DistanceCullGate maxDistance={STAGNANT_SIGN_CULL_DISTANCE}>
+          <StagnantVesselSignBoard data={spec.signal} />
+        </DistanceCullGate>
       </group>
     </group>
   )

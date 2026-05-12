@@ -42,7 +42,10 @@ const SKY_DISTANCE = 6000
 // --- Cloud field constants ---
 // Scattered fair-weather cumulus high above the port. Deterministic seed so
 // they don't rearrange between renders.
-const CLOUD_COUNT = 36
+// Reduced from 36 -> 24: each <Cloud> instance still costs a separate set of
+// alpha-blended sprites; lowering the count is the cheapest single fillrate
+// win because the sky reads as "many fluffy clouds" well past 20.
+const CLOUD_COUNT = 24
 const CLOUD_HEIGHT = 520
 const CLOUD_SPREAD_X = 1800
 const CLOUD_SPREAD_Z = 1800
@@ -121,16 +124,34 @@ function FirstPersonController() {
     const onMouseUp = (e: MouseEvent) => {
       if (e.button === 2) rightMouseDown.current = false
     }
-    const onMouseMove = (e: MouseEvent) => {
-      if (!rightMouseDown.current) return
-      const dx = e.clientX - prevMouse.current.x
-      const dy = e.clientY - prevMouse.current.y
-      prevMouse.current = { x: e.clientX, y: e.clientY }
-      phi.current   -= (dx / window.innerWidth)  * LOOK_SPEED_X
+
+    // Coalesce mouse-look deltas into a single per-frame update via rAF.
+    // High-poll mice on macOS can fire mousemove far more often than the
+    // render rate; without coalescing, every event would trigger trig +
+    // clamp work even though only the latest delta matters per frame.
+    let pendingDx = 0
+    let pendingDy = 0
+    let rafScheduled = false
+    const flushLook = () => {
+      rafScheduled = false
+      if (pendingDx === 0 && pendingDy === 0) return
+      phi.current   -= (pendingDx / window.innerWidth)  * LOOK_SPEED_X
       theta.current  = THREE.MathUtils.clamp(
-        theta.current - (dy / window.innerHeight) * LOOK_SPEED_Y,
+        theta.current - (pendingDy / window.innerHeight) * LOOK_SPEED_Y,
         -Math.PI / 3, Math.PI / 3,
       )
+      pendingDx = 0
+      pendingDy = 0
+    }
+    const onMouseMove = (e: MouseEvent) => {
+      if (!rightMouseDown.current) return
+      pendingDx += e.clientX - prevMouse.current.x
+      pendingDy += e.clientY - prevMouse.current.y
+      prevMouse.current = { x: e.clientX, y: e.clientY }
+      if (!rafScheduled) {
+        rafScheduled = true
+        requestAnimationFrame(flushLook)
+      }
     }
     const onWheel = (e: WheelEvent) => {
       targetPos.current.y -= e.deltaY * 0.1
@@ -244,7 +265,10 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
       rotationY: rand() * Math.PI * 2,
       seed: Math.floor(rand() * 1000),
       bounds: [80 + rand() * 40, 12 + rand() * 8, 80 + rand() * 40] as [number, number, number],
-      volume: 50 + rand() * 30,
+      // Lower volume = fewer alpha-blended sprites per cloud => much less
+      // overdraw on the GPU while panning the camera. Visually almost
+      // identical to the previous 50–80 sprites/cloud at this scale.
+      volume: 28 + rand() * 16,
       opacity: 0.7 + rand() * 0.25,
     }))
   }, [])
@@ -256,7 +280,29 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
       // set just past that so the sky is never clipped, and near=1 keeps the
       // depth buffer well-balanced for the rest of the scene.
       camera={{ position: [-300, 250, 70], fov: 60, near: 1, far: 8000 }}
-      gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.85 }}
+      // Cap the device pixel ratio. Retina/HiDPI screens default to 2x,
+      // which doubles fragment-shader work for every cloud, water, and
+      // alpha-blended sprite in the scene — the dominant cost while the
+      // camera is moving. 1.5 keeps text/edges crisp without paying the
+      // full 4x pixel tax of dpr=2.
+      dpr={[1, 1.5]}
+      // R3F's adaptive performance: when the frame rate drops (e.g. during
+      // WASD movement) it temporarily lowers dpr toward `min`, then restores
+      // full quality once the camera is idle. This makes movement smooth
+      // without sacrificing the still-shot look of the port.
+      performance={{ min: 0.5 }}
+      gl={{
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 0.85,
+        // Hint Chrome to pick the discrete/performant GPU on dual-GPU
+        // laptops (e.g. Intel + AMD MacBook Pros) rather than the
+        // power-saving integrated GPU.
+        powerPreference: 'high-performance',
+        // We don't use the stencil buffer — turning it off saves a small
+        // amount of per-frame setup and memory.
+        stencil: false,
+        antialias: true,
+      }}
     >
       {/* --- Bright sunny-afternoon sky ---
           Drei <Sky> wraps three's atmospheric scattering shader. The sun is
