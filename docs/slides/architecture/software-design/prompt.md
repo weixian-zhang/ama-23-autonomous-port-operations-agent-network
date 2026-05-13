@@ -10,6 +10,7 @@
 ## tasks
 
 * retain original diagram in infographics
+* do not duplicate graphics
 * all text color follow original diagram 
 * all text are clear and readable
 * add cartoonish graphics to diagram to better explain
