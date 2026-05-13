@@ -1,6 +1,6 @@
 
 
-## style guide
+## style guide OLD
 
 color: Primary Palette (Monochromatic Lean): The image is dominated by cool tones to create a "clean," high-tech, and professional atmosphere.
 High-Contrast Accents: To prevent the image from looking flat, vibrant "pop" colors are used for containers orange, red, yellow, and green.
@@ -12,10 +12,20 @@ Lighting: Bright, high-key, and sterile.
 Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 
 
+## style guide
+
+Style: The style is a clean, technical and innovative
+Atmosphere: 8k resolution, 16:9, architectural concept art style., clinical, and innovative.
+Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
+Lighting: Bright, high-key, and sterile.
+Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
+
+
 ## task
 
 * Generate infographics for `systems use in port`.
 * ensure TOS and its 4 modules are grouped as 1 group. And PCS is a separate group.
+* ensure graphics are not `duplicated`
 * ensure each modules is distinctively separated.
 * Do not include `title`
 

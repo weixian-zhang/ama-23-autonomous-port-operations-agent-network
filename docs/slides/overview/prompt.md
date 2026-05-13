@@ -27,7 +27,7 @@ Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 ## overview
 1 Challenge Recap & Assumptions
 2 Anatomy of a Port
-3 What is Terminal OS
+3 Systems ued in a Port
 4 Problems with Mainstream Terminal OS
 5 Current vs Futre Business State with Salacia
 6 Salacia – The Agentic Terminal OS 

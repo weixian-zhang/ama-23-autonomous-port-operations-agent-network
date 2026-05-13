@@ -244,7 +244,14 @@ class TeamsBot extends ActivityHandler {
     }
 
     if (approved && auctionResultForBroadcast) {
-      const payload = { ...auctionResultForBroadcast };
+      // Force the discriminator `type` field — the frontend MainPage subscribes
+      // via socketClient.on('fleetmarket-vessel-late', …); without this exact
+      // type the WS message arrives but no handler fires and the vessel-late
+      // animation never triggers.
+      const payload = {
+        ...auctionResultForBroadcast,
+        type: 'fleetmarket-vessel-late' as const,
+      };
       console.log('[Bot][HITL] broadcasting vessel-late payload:', JSON.stringify(payload));
       broadcast(payload);
       await context.sendActivity(

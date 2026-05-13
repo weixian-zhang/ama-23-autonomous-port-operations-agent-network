@@ -196,7 +196,14 @@ async function fleetMarketAnalyze(
   let auctionResult: AuctionResult
   try {
     const jsonMatch = content.match(/\{[\s\S]*\}/)
-    auctionResult = JSON.parse(jsonMatch?.[0] ?? content) as AuctionResult
+    const parsed = JSON.parse(jsonMatch?.[0] ?? content) as Partial<AuctionResult>
+    // Always force the discriminator type — the LLM occasionally omits it,
+    // which causes the frontend's `socketClient.on('fleetmarket-vessel-late', …)`
+    // subscriber to never fire and the vessel-late animation to never trigger.
+    auctionResult = {
+      type: 'fleetmarket-vessel-late',
+      'auction-result': parsed['auction-result'] ?? [],
+    }
   } catch {
     // Fallback: pick top 2 AGV and top 2 Stacker by bid score
     const agvBids = state.bids.filter((b) => b.type === 'agv').sort((a, b) => b.bid - a.bid)
