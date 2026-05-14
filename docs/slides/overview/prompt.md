@@ -21,18 +21,18 @@ Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 
 * create infographics for overview 
 * do not include title
+* du not duplicate topics
 * ensure numbering in each topic
 * Give it a Sea port theme
 
 ## overview
-1 Challenge Recap & Assumptions
-2 Anatomy of a Port
-3 Systems ued in a Port
-4 Problems with Mainstream Terminal OS
-5 Current vs Futre Business State with Salacia
-6 Salacia – The Agentic Terminal OS 
-7 Salacia’s Agent Engineering 
-8 Software Architecture
-9 Azure Architecture
-12 IoT DevOps
-13 Demo of Salacia
+1. Anatomy of a Port
+2. Systems used in a Port
+3. Problems with Mainstream Terminal OS
+4. Current vs Future Business State with Salacia
+5. Salacia – The Agentic Terminal OS 
+6. Salacia’s Agent Engineering 
+7. Software Architecture
+8. Azure Architecture
+9. DevOps - IoT
+10. Demo of Salacia

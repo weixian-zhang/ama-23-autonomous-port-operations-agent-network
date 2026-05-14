@@ -15,28 +15,25 @@ Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
 
 ## tasks
 
-* create the infographic of 2 devops process step by step
+* create the infographic of 2 silo separated devops process step by step
+* clearly separate 2 processes
 * do not include title
+* Do not duplicate graphics
+* use uploaded image as style guide
 
-## onboard Nvidia Jetson edge device with IoT DPS
+## onboard Nvidia Jetson edge device
 
 FACTORY
-├─ 1. Flash DPS client onto device
-├─ 2. TPM generates private key (stays in TPM)
-├─ 3. TPM generates CSR (public key)
-├─ 4. CSR → CA → CA issues certificate
-├─ 5. Certificate installed on device
-├─ 6. DPS config installed on device
-└─ 7. Device shipped
-
-        │
-        ▼
-FIRST BOOT
-├─ 8. DPS client reads config
-├─ 9. Connects to DPS from DPS config (TLS)
-├─ 10. Sends certificate + proves private key
-├─ 11. DPS verifies cert chain and creates device in IoT Hub
-└─ 12. Device connects to IoT Hub
+├─ 1. for each Nvidia Jetson Odin device, factory generate key-pair, private store in TPM. 
+|- 2. OEM pass public keys to Salacia team, we generate CSR from public keys and get them CA signed.
+├─ 3. Salacia team pass signed device certs to factory.
+├─ 4. Factory injects each cert into device cert store
+├─ 6. Factory deploys Azure DPS client and config on device
+|- 7. device now has private key, signed cert, DPS ID + global Url
+|- 8. Devices send to Salacia team
+├─ 9. Boot up devices, DPS clients connects to DPS from DPS config (TLS)
+├─ 10. DPS verifies cert chain and creates device in IoT Hub
+└─ 11. Devices send to Salacia team
 
 ## deploy Salacia Edge Agents to edge device devops process
 
