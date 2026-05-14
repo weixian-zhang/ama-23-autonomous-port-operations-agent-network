@@ -1,11 +1,19 @@
 
-## style guide
+## style guide old
 
 color: dominated by cool tones to create a clean high-tech, and professional atmosphere.
 High-Contrast Accents: To prevent the image from looking flat, vibrant "pop" colors.
 Style: The style is a clean, technical digital drawing. Labels with text in futuristic, semi-transparent UI callout boxes.
 resolution: widescreen 16:9, 8k resolution, architectural concept art style.
 Atmosphere: Scientific, clinical, and innovative.
+Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
+Lighting: Bright, high-key, and sterile.
+Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
+
+## style
+
+Style: The style is a clean, technical and innovative
+Atmosphere: 8k resolution, 16:9, architectural concept art style., clinical, and innovative.
 Visuals: High-tech futuristic architectural details balanced with a polished, professional slightly cartoonish yet realistic.
 Lighting: Bright, high-key, and sterile.
 Finish: Clean surfaces, crisp edges, and sophisticated tech-design.
@@ -24,39 +32,30 @@ Salacia is a fake next generation AI powered terminal OS used in port. Below con
 * Separation between front end and back end have section of space between them
 * create AI Agent graphics for each cloud agents
 
-## core components
 
 
-frontend
- * Salacia Edge Agents
-        Crane Edge Agent
+## Salacia Edge Agents
+
+* Crane Edge Agent
             ○ Bidding: Competes for crane-to-bay and container-move jobs auctioned by the Crane Auctioneer.
             ○ Safety: Streams crane operator images to detect fatigue or distress in real time.
             ○ Telemetry: Continuously reports crane health and performance data to the Health Guardian.
         
-        AGV Edge Agent
+* AGV Edge Agent
             ○ Bidding: Competes for transport jobs auctioned by the Fleet Market Agent.
             ○ Telemetry: Continuously reports AGV health and performance data to the Health Guardian.
             
-        Stacker Edge Agent
+* Stacker Edge Agent
             ○ Bidding: Competes for transport jobs auctioned by the Fleet Market Agent.
     Telemetry: Continuously reports stacker health and performance data to the Health Guardian.
 
- * Salacia Nomad A mobile/tablet app (iOS & Android) for field operators. It provides a read-only digital twin view of the MetaRealm 3D Map and key operational modules (Berth, Crane, Fleet, Yard, Metallic Queen).
 
- * MCP clients - enable external AI agents to use Salacia as AI tools
+## cloud agents and edge agents integration and Backend Services integration
 
- * Teams chatbots - human operators uses Teams chat with Cloud Agents.
-
-
-Salacia Gateway - The core communication channel between frontend and backend components.
+* Salacia Event Mesh - message hub between `Cloud Agents` and `Edge Agents`
 
 
-Backend components
-
-* Salacia MetaRealm A live 3D digital twin VR environment of the entire port—including vessels, yard, equipment, and personnel.
-
-* Salacia Cloud Agents
+## Salacia Cloud Agents
 
         Apex Planner Agent
         Role: The Master Planner
@@ -91,19 +90,32 @@ Backend components
             * Monitoring: Tracks the mechanical health and status of all hardware (Cranes, AGVs, Stackers).
             * Alerting: Proactively broadcasts breakdown notifications and maintenance alerts to Teams channels
 
- * Services
-    * Salacia Wisdom - A agent skills hub that equips Cloud and Edge Agents with domain-specific workflows to handle specialized tasks.
+## frontends
+
+* Salacia Hive - Web UI
+
+* Salacia Nomad A mobile/tablet app (iOS & Android) for field operators. It provides a read-only digital twin view of the MetaRealm 3D Map and key operational modules (Berth, Crane, Fleet, Yard, Metallic Queen).
+
+* MCP clients - enable external AI agents to use Salacia as AI tools
+
+* Teams chatbots - human operators uses Teams chat with Cloud Agents.
+
+## Frontend and Backend Services integration
+
+* Salacia Gateway - The core communication channel between `Hive`, `Nomad` and `Backend Services`
+
+## Backend Services
+
+* Salacia MetaRealm A live 3D digital twin VR environment of the entire port—including vessels, yard, equipment, and personnel.
+
+* Salacia Wisdom - A agent skills hub that equips Cloud and Edge Agents with new workflows
         * skills e.g:
             * Edge Agent can download new agent skill to manage new vehicle telemetry and features
             * Metallic Queen download new agent skill to monitor new vehicle type
-     * Salacia MCP Server - expose Salacia features as AI tools to external AI agents
-     * Alert microservice - Guardian sends alerts to Teams on vehicle breakdown
-     * Human-Behavior Detection microservice - detects crane operator 
+* Salacia MCP Server - expose Salacia features as AI tools to external AI agents
+* Alert microservice - Guardian sends alerts to Teams on vehicle breakdown
+* Human-Behavior Detection microservice - detects crane operator 
      TOS Adapter microservice - interfaces with existing Terminal OS
+* Computer Vision Object Detection - smart camera mounted in quay crane pod connected to Crane Edge Agent to monitor crane operator falling asleep
+* IoT Device Management (via Azure IoT Hub) Handles the secure onboarding, authentication, and patching of all hardware control devices (Cranes, AGVs, Reachers).
 
-
- * Edge Event Mesh A high-speed message hub enabling low-latency, event-driven communication between Cloud Agents and Edge Agents.
-
- * IoT Device Management (via Azure IoT Hub) Handles the secure onboarding, authentication, and patching of all hardware control devices (Cranes, AGVs, Reachers).
-
- * Computer Vision Object Detection - smart camera mounted in quay crane pod connected to Crane Edge Agent to monitor crane operator falling asleep
