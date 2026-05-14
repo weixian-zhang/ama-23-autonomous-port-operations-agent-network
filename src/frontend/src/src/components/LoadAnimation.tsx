@@ -38,6 +38,14 @@ function lerpTuple(a: THREE.Vector3Tuple, b: THREE.Vector3Tuple, t: number): THR
   return _lerpScratch
 }
 
+// Per-iteration scratch tuples — each useFrame loop body fills these in and
+// consumes them immediately, so no aliasing risk. Eliminates ~10 fresh
+// 3-element arrays per frame body (×5 berths × 60fps = ~3,000/sec saved).
+const _handoverScratch: THREE.Vector3Tuple = [0, 0, 0]
+const _startScratch: THREE.Vector3Tuple = [0, 0, 0]
+const _endScratch: THREE.Vector3Tuple = [0, 0, 0]
+const _roadScratch: THREE.Vector3Tuple = [0, 0, 0]
+
 interface LoadAnimationProps {
   berthId: number
   vesselScale?: number
@@ -207,14 +215,16 @@ export function LoadAnimation({
       if (stackerOwner !== null && stackerOwner !== 'load') continue
       const stagger = i * STAGGER
       const cranePos = zone.cranes[i].position
-      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+      _handoverScratch[0] = zone.yardHandover[0]
+      _handoverScratch[1] = zone.yardHandover[1]
+      _handoverScratch[2] = cranePos[2]
 
       if (ct < C.stackerStart + stagger) {
         // Stacker at yard position
         stacker.position.set(pickPos[0], pickPos[1], pickPos[2])
       } else if (ct <= C.stackerEnd) {
         const p = progress(ct, C.stackerStart + stagger, C.stackerEnd)
-        const pos = lerpTuple(pickPos, handover, p)
+        const pos = lerpTuple(pickPos, _handoverScratch, p)
         stacker.position.set(pos[0], pos[1], pos[2])
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
@@ -232,17 +242,19 @@ export function LoadAnimation({
       if (agvOwner !== null && agvOwner !== 'load') continue
       const cranePos = zone.cranes[i].position
       const stagger = i * STAGGER
-      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+      _handoverScratch[0] = zone.yardHandover[0]
+      _handoverScratch[1] = zone.yardHandover[1]
+      _handoverScratch[2] = cranePos[2]
 
       if (ct < C.agvStart) {
         if (ct >= C.stackerStart) {
-          agv.position.set(handover[0], handover[1], handover[2])
+          agv.position.set(_handoverScratch[0], _handoverScratch[1], _handoverScratch[2])
           agv.rotation.set(0, 0, 0)
         }
       } else if (ct <= C.agvEnd) {
         const p = progress(ct, C.agvStart + stagger, C.agvEnd)
-        const endPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1], cranePos[2]]
-        const pos = lerpTuple(handover, endPos, p)
+        _endScratch[0] = zone.road[0]; _endScratch[1] = zone.road[1]; _endScratch[2] = cranePos[2]
+        const pos = lerpTuple(_handoverScratch, _endScratch, p)
         agv.position.set(pos[0], pos[1], pos[2])
         agv.rotation.set(0, 0, 0)
         if (cRef) {
@@ -265,17 +277,17 @@ export function LoadAnimation({
         if (fullP < 0.5) {
           // First half: lift from road to crane height
           const p = fullP / 0.5
-          const startPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1] + 2, cranePos[2]]
-          const endPos: THREE.Vector3Tuple = [cranePos[0], CRANE_LIFT_Y, cranePos[2]]
-          const pos = lerpTuple(startPos, endPos, p)
+          _startScratch[0] = zone.road[0]; _startScratch[1] = zone.road[1] + 2; _startScratch[2] = cranePos[2]
+          _endScratch[0] = cranePos[0]; _endScratch[1] = CRANE_LIFT_Y; _endScratch[2] = cranePos[2]
+          const pos = lerpTuple(_startScratch, _endScratch, p)
           cRef.position.set(pos[0], pos[1], pos[2])
           cRef.rotation.set(0, YARD_ROTATION * (1 - p), 0)
         } else {
           // Second half: drop from crane height down into vessel
           const p = (fullP - 0.5) / 0.5
-          const startPos: THREE.Vector3Tuple = [cranePos[0], CRANE_LIFT_Y, cranePos[2]]
-          const endPos: THREE.Vector3Tuple = [-55, 3, cranePos[2]]
-          const pos = lerpTuple(startPos, endPos, p)
+          _startScratch[0] = cranePos[0]; _startScratch[1] = CRANE_LIFT_Y; _startScratch[2] = cranePos[2]
+          _endScratch[0] = -55; _endScratch[1] = 3; _endScratch[2] = cranePos[2]
+          const pos = lerpTuple(_startScratch, _endScratch, p)
           cRef.position.set(pos[0], pos[1], pos[2])
           cRef.rotation.set(0, 0, 0)
 
@@ -298,7 +310,9 @@ export function LoadAnimation({
       const agvBorrowed = agvOwner !== null && agvOwner !== 'load'
       const stackerBorrowed = stackerOwner !== null && stackerOwner !== 'load'
       const cranePos = zone.cranes[i].position
-      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+      _handoverScratch[0] = zone.yardHandover[0]
+      _handoverScratch[1] = zone.yardHandover[1]
+      _handoverScratch[2] = cranePos[2]
       const stagger = i * STAGGER
 
       if (ct > C.retreatStart && ct <= C.retreatEnd) {
@@ -306,8 +320,8 @@ export function LoadAnimation({
 
         // AGV: road → handover, rotated 180° (facing handover direction) then settle to 90°
         if (agv && !agvBorrowed) {
-          const roadPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1], cranePos[2]]
-          const pos = lerpTuple(roadPos, handover, p)
+          _roadScratch[0] = zone.road[0]; _roadScratch[1] = zone.road[1]; _roadScratch[2] = cranePos[2]
+          const pos = lerpTuple(_roadScratch, _handoverScratch, p)
           agv.position.set(pos[0], pos[1], pos[2])
           if (p < 0.8) {
             // Traveling: face toward handover (+X direction = 180° / Math.PI)
@@ -321,13 +335,13 @@ export function LoadAnimation({
 
         // Stacker: handover → back toward yard (its pick position as proxy)
         if (stacker && !stackerBorrowed) {
-          const pos = lerpTuple(handover, pickPos, p)
+          const pos = lerpTuple(_handoverScratch, pickPos, p)
           stacker.position.set(pos[0], pos[1], pos[2])
         }
       } else if (ct > C.retreatEnd) {
         // Hold at end positions
         if (agv && !agvBorrowed) {
-          agv.position.set(handover[0], handover[1], handover[2])
+          agv.position.set(_handoverScratch[0], _handoverScratch[1], _handoverScratch[2])
           agv.rotation.set(0, Math.PI / 2, 0)
         }
         if (stacker && !stackerBorrowed) {

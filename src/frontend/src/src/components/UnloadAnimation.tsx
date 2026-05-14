@@ -40,6 +40,15 @@ function lerpTuple(a: THREE.Vector3Tuple, b: THREE.Vector3Tuple, t: number): THR
   return _lerpScratch
 }
 
+// Additional module scratch tuples for the per-frame intermediate positions
+// (handover, lift start/end, road start) that previously allocated a fresh
+// 3-element array on every loop iteration. Each is a single shared instance
+// that the useFrame body fills in and consumes immediately, so there is no
+// aliasing risk.
+const _handoverScratch: THREE.Vector3Tuple = [0, 0, 0]
+const _startScratch: THREE.Vector3Tuple = [0, 0, 0]
+const _endScratch: THREE.Vector3Tuple = [0, 0, 0]
+
 function getSlotsForLoop(rows: number, cols: number, tiers: number, loop: number) {
   const totalCells = rows * cols
   const baseIdx = (loop * 4) % totalCells
@@ -180,9 +189,9 @@ export function UnloadAnimation({
       } else if (ct <= C.craneEnd) {
         ref.visible = true
         const p = progress(ct, C.craneStart + stagger, C.craneEnd)
-        const startPos: THREE.Vector3Tuple = [cranePos[0], CRANE_LIFT_Y, cranePos[2]]
-        const endPos: THREE.Vector3Tuple = [zone.road[0], zone.road[1] + 2, cranePos[2]]
-        const pos = lerpTuple(startPos, endPos, p)
+        _startScratch[0] = cranePos[0]; _startScratch[1] = CRANE_LIFT_Y; _startScratch[2] = cranePos[2]
+        _endScratch[0] = zone.road[0]; _endScratch[1] = zone.road[1] + 2; _endScratch[2] = cranePos[2]
+        const pos = lerpTuple(_startScratch, _endScratch, p)
         ref.position.set(pos[0], pos[1], pos[2])
         ref.rotation.set(0, (Math.PI / 2) * p, 0)
       }
@@ -197,13 +206,16 @@ export function UnloadAnimation({
       if (agvOwner !== null && agvOwner !== 'unload') continue
       const cranePos = zone.cranes[i].position
       const stagger = i * STAGGER
-      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+      _handoverScratch[0] = zone.yardHandover[0]
+      _handoverScratch[1] = zone.yardHandover[1]
+      _handoverScratch[2] = cranePos[2]
 
       if (ct < C.agvStart) {
         if (ct >= C.craneStart) agv.position.set(zone.road[0], zone.road[1], cranePos[2])
       } else if (ct <= C.agvEnd) {
         const p = progress(ct, C.agvStart + stagger, C.agvEnd)
-        const pos = lerpTuple([zone.road[0], zone.road[1], cranePos[2]], handover, p)
+        _startScratch[0] = zone.road[0]; _startScratch[1] = zone.road[1]; _startScratch[2] = cranePos[2]
+        const pos = lerpTuple(_startScratch, _handoverScratch, p)
         agv.position.set(pos[0], pos[1], pos[2])
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
@@ -224,13 +236,15 @@ export function UnloadAnimation({
       if (!slot || !targetPos) continue
       const stagger = i * STAGGER
       const cranePos = zone.cranes[i].position
-      const handover: THREE.Vector3Tuple = [zone.yardHandover[0], zone.yardHandover[1], cranePos[2]]
+      _handoverScratch[0] = zone.yardHandover[0]
+      _handoverScratch[1] = zone.yardHandover[1]
+      _handoverScratch[2] = cranePos[2]
 
       if (ct < C.stackerStart) {
-        if (ct >= C.agvStart) stacker.position.set(handover[0], handover[1], handover[2])
+        if (ct >= C.agvStart) stacker.position.set(_handoverScratch[0], _handoverScratch[1], _handoverScratch[2])
       } else if (ct <= C.stackerEnd) {
         const p = progress(ct, C.stackerStart + stagger, C.stackerEnd)
-        const pos = lerpTuple(handover, targetPos, p)
+        const pos = lerpTuple(_handoverScratch, targetPos, p)
         stacker.position.set(pos[0], pos[1], pos[2])
         if (cRef) {
           cRef.position.set(pos[0], pos[1] + 2, pos[2])
@@ -242,11 +256,11 @@ export function UnloadAnimation({
       } else if (ct <= C.retreatEnd) {
         if (!placed.current[i] && cRef) placeContainerInYard(i, cRef, targetPos, slot)
         const p = progress(ct, C.retreatStart + stagger, C.retreatEnd)
-        const pos = lerpTuple(targetPos, handover, p)
+        const pos = lerpTuple(targetPos, _handoverScratch, p)
         stacker.position.set(pos[0], pos[1], pos[2])
       } else {
         if (!placed.current[i] && cRef) placeContainerInYard(i, cRef, targetPos, slot)
-        stacker.position.set(handover[0], handover[1], handover[2])
+        stacker.position.set(_handoverScratch[0], _handoverScratch[1], _handoverScratch[2])
       }
     }
   })

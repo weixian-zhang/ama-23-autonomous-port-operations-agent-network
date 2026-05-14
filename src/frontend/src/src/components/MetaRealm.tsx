@@ -43,10 +43,10 @@ const SKY_DISTANCE = 6000
 // --- Cloud field constants ---
 // Scattered fair-weather cumulus high above the port. Deterministic seed so
 // they don't rearrange between renders.
-// Reduced from 36 -> 24: each <Cloud> instance still costs a separate set of
-// alpha-blended sprites; lowering the count is the cheapest single fillrate
-// win because the sky reads as "many fluffy clouds" well past 20.
-const CLOUD_COUNT = 24
+// Reduced from 36 -> 24 -> 16: each <Cloud> instance is a separate cluster
+// of alpha-blended sprites; cutting the count is the cheapest fillrate win
+// because the sky still reads as "many fluffy clouds" past 14-16.
+const CLOUD_COUNT = 16
 const CLOUD_HEIGHT = 520
 const CLOUD_SPREAD_X = 1800
 const CLOUD_SPREAD_Z = 1800
@@ -295,11 +295,12 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
       scale: 1 + rand() * 1.5,
       rotationY: rand() * Math.PI * 2,
       seed: Math.floor(rand() * 1000),
-      bounds: [80 + rand() * 40, 12 + rand() * 8, 80 + rand() * 40] as [number, number, number],
+      bounds: [80 + rand() * 40, 10 + rand() * 6, 80 + rand() * 40] as [number, number, number],
       // Lower volume = fewer alpha-blended sprites per cloud => much less
-      // overdraw on the GPU while panning the camera. Visually almost
-      // identical to the previous 50–80 sprites/cloud at this scale.
-      volume: 28 + rand() * 16,
+      // overdraw on the GPU while panning the camera. Dropping from
+      // 28-44 to 18-26 sprites/cloud is invisible at this distance/scale
+      // but cuts the cloud field's fragment-shader cost ~35%.
+      volume: 18 + rand() * 8,
       opacity: 0.7 + rand() * 0.25,
     }))
   }, [])
@@ -330,9 +331,11 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
       // Cap the device pixel ratio. Retina/HiDPI screens default to 2x,
       // which doubles fragment-shader work for every cloud, water, and
       // alpha-blended sprite in the scene — the dominant cost while the
-      // camera is moving. 1.5 keeps text/edges crisp without paying the
-      // full 4x pixel tax of dpr=2.
-      dpr={[1, 1.5]}
+      // camera is moving. Lowered 1.5 -> 1.25 here for another ~30%
+      // fragment-shader headroom on Retina. The Sky atmospheric-scattering
+      // shader and Cloud sprites are fillrate-bound, so this is the
+      // largest single per-frame win on most laptops.
+      dpr={[1, 1.25]}
       // R3F's adaptive performance: when the frame rate drops (e.g. during
       // WASD movement) it temporarily lowers dpr toward `min`, then restores
       // full quality once the camera is idle. This makes movement smooth
@@ -376,8 +379,12 @@ export function MetaRealm({ onVesselClick, vesselLateHandleRef }: MetaRealmProps
             bounds={c.bounds}
             volume={c.volume}
             opacity={c.opacity}
-            growth={4}
-            speed={0.06}
+            // growth lowered 4 -> 2: tighter cluster expansion = fewer sprites
+            // generated. speed lowered 0.06 -> 0.02: the per-frame sprite
+            // position update for ~16 clouds drops by ~3x, and visual drift
+            // is still perceptible against the static sun position.
+            growth={2}
+            speed={0.02}
             color="#ffffff"
           />
         ))}
