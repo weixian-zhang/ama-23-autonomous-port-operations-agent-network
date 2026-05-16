@@ -13,7 +13,7 @@ Named after the Roman goddess of the sea, Salacia replaces static rule‑engines
 
 ## What is a Terminal OS?
 
-A **Terminal Operating System (TOS)** is essentially the **ERP system for a shipping port** — the same way SAP runs the day‑to‑day operations of a manufacturer or retailer, a TOS runs the day‑to‑day operations of a container terminal. It is the central nervous system of the port: every container that comes off a vessel and onto a truck or train passes through it, and every piece of equipment, work order, and billing event is tracked inside it.
+A **Terminal Operating System (TOS)** is essentially the **ERP system for a shipping port** — the same way SAP runs the day‑to‑day operations of a manufacturer or retailer, a TOS runs the day‑to‑day operations of a container terminal.
 
 A TOS typically coordinates:
 
@@ -43,22 +43,24 @@ Salacia treats every piece of equipment as an **autonomous agent** with its own 
 
 ## Live demo
 
-### Salacia Hive (web)
+### Salacia Hive (Web UI)
 
-The live MetaRealm and operations console — a 3D digital twin of the Salacia port:
+The live MetaRealm and operations console — a 3D digital twin of your physical port
+
+MetaRealm first person camera control:
+ * W S A D for forward, backward, strafe, left and right
+ * Hold down mouse-right button to look around
 
 **[https://aca-ama-frontend.victoriouspond-ae9c07d8.southeastasia.azurecontainerapps.io](https://aca-ama-frontend.victoriouspond-ae9c07d8.southeastasia.azurecontainerapps.io)**
-
-> Hosted on Azure Container Apps in Southeast Asia.
 
 ### Microsoft Teams chatbot
 
 Talk to the Fleet Market, Yard King, and Crane Auctioneer agents directly from Teams.
 
-1. Download the manifest package: [src/frontend/ms-teams/salacia-teams-bot.zip](src/frontend/ms-teams/salacia-teams-bot.zip)
+1. Download [MS Teams manifest package](https://github.com/weixian-zhang/ama-23-autonomous-port-operations-agent-network/raw/refs/heads/main/src/frontend/ms-teams/teams-bot-salacia-fleet-market.zip)
 2. In Microsoft Teams, open **Apps → Manage your apps → Upload an app → Upload a custom app**.
-3. Select the downloaded `salacia-teams-bot.zip`.
-4. Add the **Salacia** bot to a personal chat, group chat, or channel.
+3. Select the downloaded `teams-bot-salacia-fleet-market.zip`
+4. Add the **Salacia - Fleet Market Agent** bot to a personal chat, group chat, or channel.
 
 Try messages like:
 - *"What's the status of crane berth-1-2?"*
